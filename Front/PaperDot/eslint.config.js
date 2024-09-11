@@ -1,28 +1,26 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
 
-export default tseslint.config(
-  { ignores: ['dist'] },
-  {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
+export default [
+  { 
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"], 
+    languageOptions: { 
+      globals: globals.browser 
+    } 
   },
-)
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  pluginReact.configs.flat.recommended,
+  {
+    "extends": ["react-app", "eslint:recommended", "prettier"],
+    "rules": {
+      "no-var": "error", // var 금지
+      "no-console": ["error", { "allow": ["warn", "error", "info"] }], // console.log() 금지
+      "eqeqeq": "error", // 일치 연산자 사용 필수
+      "dot-notation": "error", // 가능하다면 dot notation 사용
+      "no-unused-vars": "error" // 사용하지 않는 변수 금지
+    }
+  }
+];
