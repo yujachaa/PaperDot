@@ -1,2 +1,2 @@
 // jang 확인중
-const a = "Hello, world!";
+const a = "Hello, world"
