@@ -12,10 +12,10 @@
     "preview": "vite preview"
   },
   "lint-staged": {
-  "*.{js,ts,tsx,css,scss}": [
-    "prettier --write",
-    "git add"
-  ]
+    "*.{js,ts,tsx,css,scss}": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "husky": {
     "hooks": {
