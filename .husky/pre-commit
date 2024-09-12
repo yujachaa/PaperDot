@@ -1,1 +1,1 @@
-cd Front && npm run format
+cd front && npm run format
