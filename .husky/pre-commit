@@ -1,1 +1,1 @@
-cd Front && npm run format
+cd Front && npx lint-staged
