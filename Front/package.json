@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky install",
     "format": "prettier --cache --write .",
     "lint": "eslint --cache .",
     "dev": "vite",
