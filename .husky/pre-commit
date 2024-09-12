@@ -1,2 +1,1 @@
-
-echo "Pre-commit hook is working!"
+cd Front && npm run format
