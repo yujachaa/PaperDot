@@ -1,3 +1,10 @@
+import Header from '../components/common/Header';
+
 export default function Main() {
-  return <div>메인페이지</div>;
+  return (
+    <>
+      <Header />
+      메인페이지
+    </>
+  );
 }
