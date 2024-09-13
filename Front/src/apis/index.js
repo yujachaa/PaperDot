@@ -7,6 +7,5 @@
 // }
 
 //테스트
-const a = 'test';
-const b = 'test';
-const b = 'test';
+// const a = 'test';
+// const b = 'test';
