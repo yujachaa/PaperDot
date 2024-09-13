@@ -1,4 +1,9 @@
 import './Header.scss';
+import LoginButton from './LoginButton';
 export default function Header() {
-  return <div className="header">헤더입니당</div>;
+  return (
+    <div className="header">
+      <LoginButton />
+    </div>
+  );
 }
