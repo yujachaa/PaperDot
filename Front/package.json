@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prepare": "cd .. && husky install Front/.husky",
+    "prepare": "cd .. && husky Front/.husky",
     "format": "prettier --cache --write .",
     "lint": "eslint --cache .",
     "dev": "vite",
