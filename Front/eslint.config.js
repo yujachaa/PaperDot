@@ -22,7 +22,7 @@ const config = [
         { allowConstantExport: true },
       ],
       "no-var": "error",
-      "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+      // "no-console": ["warn", { allow: ["warn", "error", "info"] }],
       eqeqeq: "error",
       "dot-notation": "error",
       "no-unused-vars": "error",
