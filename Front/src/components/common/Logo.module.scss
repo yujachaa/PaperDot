@@ -5,3 +5,9 @@
     cursor: pointer;
   }
 }
+
+@media (max-width: 360px) {
+  .logo {
+    width: 133px;
+  }
+}
