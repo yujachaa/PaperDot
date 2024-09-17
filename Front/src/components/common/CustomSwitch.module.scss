@@ -1,0 +1,34 @@
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  width: 72px; /* Set the width to 72px */
+  height: 40px; /* Set the height to 40px */
+  background-color: #e2e8f0; /* Default background color */
+  border-radius: 9999px; /* Fully rounded */
+  transition: background-color 0.3s ease;
+}
+
+.switchOn {
+  background-color: #2f855a; /* Checked background color */
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px; /* Adjust for vertical alignment */
+  left: 2px; /* Adjust for horizontal alignment */
+  width: 36px; /* Thumb size */
+  height: 36px; /* Thumb size */
+  background-color: #ffffff; /* Thumb color */
+  border-radius: 9999px; /* Fully rounded */
+  transition: transform 0.3s ease;
+}
+
+.switchThumbOn {
+  transform: translateX(calc(100% - 36px)); /* Move thumb to the right */
+}
+
+.switchThumbOff {
+  transform: translateX(0); /* Move thumb to the left */
+}

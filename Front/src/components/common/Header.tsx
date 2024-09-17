@@ -1,9 +1,18 @@
 import './Header.scss';
 import LoginButton from './LoginButton';
-export default function Header() {
+import Logo from './Logo';
+import CustomSwitch from './CustomSwitch';
+const Header = () => {
   return (
     <div className="header">
-      <LoginButton />
+      <Logo />
+
+      <div className="header_right">
+        <CustomSwitch />
+        <LoginButton />
+      </div>
     </div>
   );
-}
+};
+
+export default Header;

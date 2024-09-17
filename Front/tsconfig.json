@@ -6,6 +6,8 @@
   ]
   ,
   "compilerOptions": {
+    "types": ["vite-plugin-svgr/client"],
     "allowJs": true
-  }
+  },
+  "include": ["images.d.ts"],
 }
