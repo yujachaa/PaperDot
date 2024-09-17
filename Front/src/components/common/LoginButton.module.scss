@@ -16,5 +16,12 @@
     border: 1px solid #2e2e2e;
     background: #fafafa;
     color: #2e2e2e;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 360px) {
+  .button {
+    width: 85px;
   }
 }
