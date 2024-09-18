@@ -25,3 +25,14 @@
     width: 85px;
   }
 }
+
+.dark {
+  background-color: #fafafa;
+  color: #2e2e2e;
+  border: none;
+  &:hover {
+    background: #2e2e2e;
+    color: #fafafa;
+    border: 1px solid #fafafa;
+  }
+}
