@@ -25,15 +25,13 @@ const Logo = () => {
     setSrc(isDarkMode ? webLogoDark : webLogoLight); // 원래 이미지로 변경
   };
   return (
-    <>
-      <img
-        src={src}
-        alt="webLogoLight"
-        className={`${styles.logo}`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      />
-    </>
+    <img
+      src={src}
+      alt="webLogoLight"
+      className={`${styles.logo}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    />
   );
 };
 
