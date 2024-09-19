@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Login.module.scss';
+import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
 
 const Login: React.FC = () => {
@@ -13,7 +14,7 @@ const Login: React.FC = () => {
         />
       </div>
       <div className={styles.loginRight}>
-        <h1 className={styles.loginTitle}>PAPER.</h1>
+        <Logo className="mb-8" />
         <form className={styles.loginForm}>
           <div className={styles.formGroup}>
             <label htmlFor="id">ID</label>

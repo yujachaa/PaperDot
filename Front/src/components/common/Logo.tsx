@@ -7,7 +7,10 @@ import webLogoDarkHover from '../../assets/images/웹 로고 다크 호버.svg';
 import styles from './Logo.module.scss';
 import useTheme from '../../zustand/theme';
 
-const Logo = () => {
+type Props = {
+  className: string;
+};
+const Logo = ({ className }: Props) => {
   const { isDarkMode } = useTheme((state) => state);
   const [src, setSrc] = useState(isDarkMode ? webLogoDark : webLogoLight);
   const [hoverSrc, setHoverSrc] = useState(isDarkMode ? webLogoDarkHover : webLogoLightHover);
@@ -29,7 +32,7 @@ const Logo = () => {
       <img
         src={src}
         alt="webLogoLight"
-        className={`${styles.logo}`}
+        className={`${styles.logo} ${className}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       />
