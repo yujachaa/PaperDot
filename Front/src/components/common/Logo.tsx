@@ -8,7 +8,7 @@ import styles from './Logo.module.scss';
 import useTheme from '../../zustand/theme';
 
 type Props = {
-  className: string;
+  className?: string;
 };
 const Logo = ({ className }: Props) => {
   const { isDarkMode } = useTheme((state) => state);
