@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       screens: {
-        mobile: { max: '360px' }, // 360px 이하에서 적용
+        mobile: { max: '768px' }, // 768px 이하에서 적용
       },
     },
     colors: {
