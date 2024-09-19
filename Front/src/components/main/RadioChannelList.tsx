@@ -5,7 +5,7 @@ const RadioChannelList = () => {
 
   return (
     <div className={styles.radioList}>
-      <div>라디오 채널</div>
+      <div className="text-lg font-bold">라디오 채널</div>
       <div>관심분야의 논문 라디오를 들어보세요</div>
       {channels.map((channel, index) => (
         <div

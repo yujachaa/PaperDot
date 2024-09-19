@@ -1,3 +1,9 @@
+@media (max-width: 768px) {
+  .button {
+    display: none;
+  }
+}
+
 .searchBar {
   display: flex;
   width: 50vw;
@@ -63,13 +69,9 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 0.625rem;
-    flex-shrink: 0;
-
     border-radius: 3.75rem;
     border: none;
     background: #a7c7e7;
-
     color: #2e2e2e;
     font-size: 1rem;
     font-weight: 700;
