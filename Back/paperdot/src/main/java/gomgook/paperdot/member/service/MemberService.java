@@ -24,6 +24,12 @@ public class MemberService {
         return memberRepository.findByUserId(userId).orElse(null);
     }
 
+
+    public Member findByNickname(String nickname) {
+
+        return memberRepository.findByNickname(nickname).orElse(null);
+    }
+
     public Member createMember(RegisterDto signUpInfo) {
         String encoded_password = passwordEncoder.encode(signUpInfo.getPassword());
         Member newMember = Member.builder()

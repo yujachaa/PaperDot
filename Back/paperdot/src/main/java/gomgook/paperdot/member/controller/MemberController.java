@@ -7,10 +7,7 @@ import gomgook.paperdot.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +35,7 @@ public class MemberController {
             }
         } else {
             if (check_exist.isActive()) {
-
+                response.put("message", "이미 존재하는 아이디 입니다.");
             } else {
                 response.put("message", "탈퇴한 계정입니다.");
             }
@@ -47,6 +44,35 @@ public class MemberController {
 
     }
 
+    @GetMapping("/validation-userid/{userid}")
+    public ResponseEntity<Map<String, String>> checkIdValidation(@PathVariable String userid) {
+        Map<String, String> response = new HashMap<>();
+        Member check_exist = memberService.findByUserId(userid);
+
+        if(check_exist==null || !check_exist.isActive()) {
+            response.put("message", "사용 가능한 아이디입니다.");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "이미 존재하는 아이디입니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping("/validation-nickname/{nickname}")
+    public ResponseEntity<Map<String, String>> checkNicknameValidation(@PathVariable String nickname) {
+        Map<String, String> response = new HashMap<>();
+        Member check_exist = memberService.findByNickname(nickname);
+
+        if(check_exist==null || !check_exist.isActive()) {
+            response.put("message", "사용 가능한 닉네임입니다.");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "이미 존재하는 닉네임입니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
     @Transactional
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginMember(@RequestBody LoginDto loginInfo) {
