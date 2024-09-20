@@ -12,6 +12,7 @@ body {
   transition:
     background-color 0.1s ease,
     color 0.1s ease;
+  box-sizing: border-box;
 }
 
 .dark {
