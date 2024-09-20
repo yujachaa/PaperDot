@@ -96,6 +96,7 @@ const RadioChannelList: React.FC = () => {
           slidesToScroll: 1,
           swipeToSlide: true,
           infinite: true,
+          arrows: false,
         },
       },
     ],
@@ -113,7 +114,7 @@ const RadioChannelList: React.FC = () => {
   return (
     <div className={styles.radioList}>
       <div className="text-xl font-bold ml-3">라디오 채널</div>
-      <div className="text-lg ml-3">관심분야의 논문 라디오를 들어보세요</div>
+      <div className="text-base ml-3 mb-1">관심분야의 논문 라디오를 들어보세요.</div>
       <div className={styles.channelList}>
         <Slider {...settings}>
           {channels.map((channel, index) => (
@@ -122,6 +123,11 @@ const RadioChannelList: React.FC = () => {
               className={styles.imgContainer}
               onMouseEnter={() => setHoveredIndex(index)} // 마우스가 위에 있을 때 인덱스 설정
               onMouseLeave={() => setHoveredIndex(null)} // 마우스가 나갈 때 인덱스 해제
+              onFocus={() => setHoveredIndex(index)} // 포커스 이벤트 추가
+              onBlur={() => setHoveredIndex(null)} // 포커스 해제 시 이벤트 추가
+              onTouchStart={() => setHoveredIndex(index)} // 모바일 터치 이벤트 추가
+              onTouchEnd={() => setHoveredIndex(null)} // 터치 해제 시 이벤트 추가
+              tabIndex={0} // 키보드 포커스 가능하게 설정
             >
               <img
                 src={hoveredIndex === index ? channel.hoverImg : channel.defaultImg} // 호버 상태에 따라 이미지 변경

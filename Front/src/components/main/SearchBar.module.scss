@@ -9,6 +9,13 @@
   border: 1px solid #2e2e2e;
   background: #fff;
 
+  & {
+    @media (max-width: 768px) {
+      height: 3rem;
+      width: 80vw;
+    }
+  }
+
   .input {
     flex: 1 0 0;
     min-width: 100px;
