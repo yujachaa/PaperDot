@@ -18,3 +18,10 @@ body {
   background-color: #2e2e2e;
   color: #fafafa;
 }
+
+/*기존 슬라이더 화살표 없애기*/
+.slick-prev::before,
+.slick-next::before {
+  opacity: 0;
+  display: none;
+}

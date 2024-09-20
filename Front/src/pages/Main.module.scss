@@ -3,4 +3,10 @@
   flex-direction: column;
   align-items: center;
   gap: 4.875rem;
+
+  & {
+    @media (max-width: 768px) {
+      gap: 1.5625rem;
+    }
+  }
 }
