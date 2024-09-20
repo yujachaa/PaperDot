@@ -1,8 +1,10 @@
 .radioList {
   display: flex;
+  padding: 18.75rem 13rem 0rem 13rem;
   flex-direction: column;
-  gap: 10px;
-  margin: 20px;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
 }
 
 .channelItem {
@@ -15,4 +17,29 @@
   &:hover {
     background-color: #e0e0e0;
   }
+}
+
+.channelList {
+  width: 100%;
+}
+
+.imgContainer {
+  cursor: pointer;
+  width: 300px;
+  height: auto;
+  // overflow: hidden;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.hoverImg {
+  border-radius: 35px;
+  transition: box-shadow 0.3s ease;
+}
+
+.hoverImg:hover {
+  border-radius: 35px;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); // 그림자 추가
 }
