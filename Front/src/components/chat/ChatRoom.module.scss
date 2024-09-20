@@ -1,0 +1,34 @@
+.box {
+  width: 34%;
+  height: 550px;
+  border-radius: 20px;
+  border: 1px solid #c4c4c4;
+  position: relative;
+}
+
+.title {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 700;
+  padding-left: 25px;
+  border-bottom: 1px solid #c4c4c4;
+}
+
+.chatbox {
+  width: 100%;
+  height: 490px;
+  overflow-y: auto;
+  padding: 1rem;
+  scrollbar-color: #626262 transparent;
+  scrollbar-width: auto;
+}
+
+@media (max-width: 768px) {
+  .box {
+    width: 100%;
+  }
+}
