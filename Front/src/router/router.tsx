@@ -4,6 +4,7 @@ import Signup from '../pages/Signup';
 import Mypage from '../pages/Mypage';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
+import Radio from '../pages/Radio';
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />,
+      },
+      {
+        path: '/radio',
+        element: <Radio />,
       },
       {
         path: '/signup',

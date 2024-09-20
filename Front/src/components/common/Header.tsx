@@ -5,7 +5,7 @@ import CustomSwitch from './CustomSwitch';
 const Header = () => {
   return (
     <div className="header">
-      <Logo />
+      <Logo className="ml-16" />
 
       <div className="header_right">
         <CustomSwitch />

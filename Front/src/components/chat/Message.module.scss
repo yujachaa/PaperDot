@@ -1,0 +1,20 @@
+.box {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  margin-bottom: 15px;
+}
+.nickname {
+  width: 15%;
+  color: #71717a;
+}
+.text {
+  width: 85%;
+}
+
+.dark {
+  color: #fafafa;
+}
