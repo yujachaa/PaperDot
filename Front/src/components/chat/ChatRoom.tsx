@@ -1,6 +1,7 @@
 import styles from './ChatRoom.module.scss';
 import notice from '../../assets/images/공지사항.svg';
 import Message from './Message';
+import SendInput from './SendInput';
 type ChatRoomProps = {
   className?: string;
 };
@@ -21,6 +22,10 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
         <Message />
         <Message />
         <Message />
+      </div>
+
+      <div className={styles.inputbox}>
+        <SendInput />
       </div>
     </div>
   );
