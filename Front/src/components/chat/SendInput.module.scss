@@ -3,6 +3,7 @@
   outline: none;
   font-size: 1rem;
   padding-left: 15px;
+  margin-left: 5px;
   width: calc(100% - 10px - 33px);
 }
 
@@ -17,4 +18,8 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+.dark {
+  background-color: #626262;
 }
