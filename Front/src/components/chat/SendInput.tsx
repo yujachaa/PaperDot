@@ -1,6 +1,6 @@
 import styles from './SendInput.module.scss';
-import sendImage from '../../assets/images/입력.svg';
 import useTheme from '../../zustand/theme';
+import InputIcon from '../../assets/images/입력.svg?react';
 type InputProps = {
   className?: string;
 };
@@ -14,11 +14,7 @@ const SendInput = ({ className }: InputProps) => {
         placeholder="댓글 입력..."
         className={`${styles.input} ${isDarkMode ? `${styles.dark}` : ''}`}
       />
-      <img
-        src={sendImage}
-        alt="보내기버튼"
-        className="ml-auto mr-3"
-      />
+      <InputIcon className={`ml-auto mr-3 cursor-pointer dark:text-white`} />
     </div>
   );
 };
