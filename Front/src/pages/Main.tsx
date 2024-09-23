@@ -3,17 +3,17 @@ import Logo from '../components/common/Logo';
 import BestPaper from '../components/main/BestPaper';
 import RadioChannelList from '../components/main/RadioChannelList';
 import SearchBar from '../components/main/SearchBar';
+import styles from './Main.module.scss';
 
 const Main = () => {
   return (
-    <>
+    <div className={styles.container}>
       <Header />
-      메인페이지
       <Logo />
       <SearchBar />
       <RadioChannelList />
       <BestPaper />
-    </>
+    </div>
   );
 };
 

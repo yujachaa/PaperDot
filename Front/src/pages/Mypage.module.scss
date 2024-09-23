@@ -1,7 +1,6 @@
 .mypageContainer {
   max-width: 680px;
   margin: 0 auto;
-  color: #2e2e2e;
 }
 
 .tabMenu {
@@ -10,6 +9,10 @@
   margin-bottom: 2rem;
   border-bottom: 5px solid #2e2e2e;
   gap: 5%;
+}
+
+.dark {
+  border-bottom: 5px solid #fafafa;
 }
 
 .tabButton {
@@ -46,6 +49,9 @@
     gap: 3%;
   }
 
+  .dark {
+    border-bottom: 2px solid #fafafa;
+  }
   .tabButton {
     padding: 0.5rem;
     font-size: 1.5rem;
