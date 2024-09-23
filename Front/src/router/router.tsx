@@ -5,6 +5,7 @@ import Mypage from '../pages/Mypage';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
+import SearchResult from '../pages/SearchResult';
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         path: '/mypage',
         element: <Mypage />,
+      },
+      {
+        path: '/result',
+        element: <SearchResult />,
       },
     ],
   },

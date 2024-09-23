@@ -1,8 +1,9 @@
+import React, { useState } from 'react';
+import useTheme from '../../zustand/theme';
 import styles from './RadioChannelList.module.scss';
+import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import React, { useState } from 'react';
-import Slider from 'react-slick';
 import 인문사회 from '../../assets/images/channel/상태=인문사회.svg';
 import 인문사회호버 from '../../assets/images/channel/상태=인문사회 호버.svg';
 import 공학 from '../../assets/images/channel/상태=공학.svg';
@@ -23,42 +24,52 @@ type ArrowProps = {
 };
 
 function RightArrow(props: ArrowProps) {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   const { className, style, onClick } = props;
+
+  // isDarkMode에 따른 스타일 설정
+  const arrowStyle = {
+    width: '3rem',
+    height: '3rem',
+    right: '-5rem',
+    display: 'block',
+    backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
+    WebkitMaskImage: `url(${오른화살표})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskSize: '100%',
+    WebkitMaskRepeat: 'no-repeat',
+    cursor: 'pointer',
+  };
+
   return (
     <div
       className={className}
-      style={{
-        ...style,
-        width: '3rem',
-        height: '3rem',
-        right: '-5rem',
-        display: 'block',
-        backgroundImage: `url(${오른화살표})`,
-        backgroundSize: '100%',
-        backgroundRepeat: 'no-repeat',
-        cursor: 'pointer',
-      }}
+      style={{ ...style, ...arrowStyle }}
       onClick={onClick}
     />
   );
 }
 
 function LeftArrow(props: ArrowProps) {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   const { className, style, onClick } = props;
+
+  // isDarkMode에 따른 스타일 설정
+  const arrowStyle = {
+    width: '3rem',
+    height: '3rem',
+    left: '-5rem',
+    display: 'block',
+    backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
+    WebkitMaskImage: `url(${왼화살표})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskSize: '100%',
+    WebkitMaskRepeat: 'no-repeat',
+    cursor: 'pointer',
+  };
+
   return (
     <div
       className={className}
-      style={{
-        ...style,
-        width: '3rem',
-        height: '3rem',
-        left: '-5rem',
-        display: 'block',
-        backgroundImage: `url(${왼화살표})`,
-        backgroundSize: '100%',
-        backgroundRepeat: 'no-repeat',
-        cursor: 'pointer',
-      }}
+      style={{ ...style, ...arrowStyle }}
       onClick={onClick}
     />
   );
