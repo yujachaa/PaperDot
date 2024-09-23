@@ -2,6 +2,7 @@ import Main from '../pages/Main';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Mypage from '../pages/Mypage';
+import Star from '../pages/Star';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         path: '/mypage',
         element: <Mypage />,
+      },
+      {
+        path: '/star',
+        element: <Star />,
       },
     ],
   },
