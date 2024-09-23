@@ -77,4 +77,17 @@
       }
     }
   }
+
+  .dark {
+    background: #8bafc9; //다크모드 버튼색상
+    color: #fafafa;
+
+    &:hover {
+      background-color: #7295b0; //다크모드 호버색상
+    }
+  }
+}
+
+.dropdown {
+  width: 50vw;
 }

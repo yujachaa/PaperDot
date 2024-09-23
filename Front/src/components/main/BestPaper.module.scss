@@ -20,6 +20,17 @@
   position: relative;
   &:hover,
   &.activeTab {
+    &.dark::after {
+      background-color: #8bafc9; //다크모드 버튼색상
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 45%;
+      height: 0.8rem;
+      width: 100%;
+      z-index: -1; // 글씨 위에 덮이지 않게
+    }
     &::after {
       content: '';
       position: absolute;
