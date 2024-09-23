@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './BestPaper.module.scss';
+import useTheme from '../../zustand/theme';
 
 type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능' | '전체';
 
@@ -51,31 +52,34 @@ const papers: Record<Category, string[]> = {
 };
 
 const BestPaper: React.FC = () => {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState<Category>('인문/사회');
 
   return (
     <div className={styles.bestPaper}>
       <div className="text-xl font-bold ml-3">Best 논문</div>
       <p className="text-base ml-3">최근 가장 많이 찾은 논문입니다.</p>
-      <div className="flex justify-between mt-4 ml-3 w-full px-2">
-        {categories.map((category) => (
-          <div
-            key={category}
-            className={`cursor-pointer ${styles.tab} ${
-              selectedCategory === category ? styles.activeTab : ''
-            }`}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category}
-          </div>
-        ))}
+      <div className="w-full overflow-x-auto">
+        <div className="flex justify-between mt-4 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
+          {categories.map((category) => (
+            <div
+              key={category}
+              className={`cursor-pointer ${styles.tab} ${
+                selectedCategory === category ? styles.activeTab : ''
+              } ${selectedCategory === category && isDarkMode ? styles.dark : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </div>
+          ))}
+        </div>
+        <hr className="w-full mobile:min-w-[24rem]" />
       </div>
-      <hr className="w-full ml-3" />
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col items-start w-full gap-3 ml-1 mr-1">
         {papers[selectedCategory].map((paper, index) => (
           <li
             key={index}
-            className="text-lg ml-3 cursor-pointer"
+            className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
           >
             <span className="mr-1">0{index + 1}</span> {paper}
           </li>
