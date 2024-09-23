@@ -3,15 +3,17 @@ import Header from '../components/common/Header';
 import EditProfile from '../components/mypage/EditProfile';
 import ChangePassword from '../components/mypage/ChangePassword';
 import styles from './Mypage.module.scss';
+import useTheme from '../zustand/theme';
 
 const Mypage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  const isDarkMode = useTheme((state) => state.isDarkMode);
 
   return (
     <>
       <Header />
       <div className={styles.mypageContainer}>
-        <div className={styles.tabMenu}>
+        <div className={`${styles.tabMenu} ${isDarkMode ? `${styles.dark}` : ''}`}>
           <button
             className={`${styles.tabButton} ${activeTab === 'profile' ? styles.active : ''}`}
             onClick={() => setActiveTab('profile')}
