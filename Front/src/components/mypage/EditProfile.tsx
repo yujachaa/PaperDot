@@ -1,6 +1,9 @@
 import styles from './EditProfile.module.scss';
+import useTheme from '../../zustand/theme';
 
 const EditProfile: React.FC = () => {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
+
   return (
     <div className={styles.EditProfile}>
       <form className={styles.editform}>
@@ -75,7 +78,9 @@ const EditProfile: React.FC = () => {
           </button>
         </div>
         <div>
-          <button className={styles.withdrawButton}>회원 탈퇴</button>
+          <button className={`${styles.withdrawButton} ${isDarkMode ? `${styles.dark}` : ''}`}>
+            회원 탈퇴
+          </button>
         </div>
       </form>
     </div>
