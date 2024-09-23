@@ -1,0 +1,35 @@
+.bestPaper {
+  display: flex;
+  padding: 0rem 13rem 7rem 13rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
+
+  & {
+    @media (max-width: 768px) {
+      padding: 2rem 2rem 0rem 2rem;
+      align-items: center;
+    }
+  }
+}
+
+.tab {
+  font-size: 1.125rem; // Tailwind의 text-lg 크기
+  font-weight: 600;
+  position: relative;
+  &:hover,
+  &.activeTab {
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 45%;
+      height: 0.8rem;
+      width: 100%;
+      background-color: #a7c7e7;
+      z-index: -1; // 글씨 위에 덮이지 않게
+    }
+  }
+}
