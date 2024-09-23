@@ -2,15 +2,16 @@ import { create } from 'zustand';
 
 type State = {
   isDarkMode: boolean;
-};
-
-type Actions = {
   toggleDarkMode: () => void;
+  setDarkTrue: () => void;
+  setDarkFalse: () => void;
 };
 
-const useTheme = create<State & Actions>((set) => ({
+const useTheme = create<State>()((set) => ({
   isDarkMode: false,
   toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+  setDarkTrue: () => set({ isDarkMode: true }),
+  setDarkFalse: () => set({ isDarkMode: false }),
 }));
 
 export default useTheme;
