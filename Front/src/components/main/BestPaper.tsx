@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './BestPaper.module.scss';
+import useTheme from '../../zustand/theme';
 
 type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능' | '전체';
 
@@ -51,6 +52,7 @@ const papers: Record<Category, string[]> = {
 };
 
 const BestPaper: React.FC = () => {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState<Category>('인문/사회');
 
   return (
@@ -64,7 +66,7 @@ const BestPaper: React.FC = () => {
               key={category}
               className={`cursor-pointer ${styles.tab} ${
                 selectedCategory === category ? styles.activeTab : ''
-              }`}
+              } ${selectedCategory === category && isDarkMode ? styles.dark : ''}`}
               onClick={() => setSelectedCategory(category)}
             >
               {category}
