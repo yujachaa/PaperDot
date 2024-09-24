@@ -2,10 +2,12 @@ import Main from '../pages/Main';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Mypage from '../pages/Mypage';
+import Star from '../pages/Star';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
 import SearchResult from '../pages/SearchResult';
+import Replay from '../pages/Replay';
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +27,10 @@ export const router = createBrowserRouter([
         element: <Radio />,
       },
       {
+        path: '/replay',
+        element: <Replay />,
+      },
+      {
         path: '/signup',
         element: <Signup />,
       },
@@ -34,6 +40,11 @@ export const router = createBrowserRouter([
       },
       {
         path: '/search',
+        path: '/star',
+        element: <Star />,
+      },
+      {
+        path: '/result',
         element: <SearchResult />,
       },
     ],
