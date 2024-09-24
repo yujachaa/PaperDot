@@ -41,7 +41,7 @@ const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteR
                   src={timeIcon}
                   alt="시간아이콘"
                 />
-                <span className="grow ml-1">{record}</span>
+                <span className="grow ml-1 text-light-text">{record}</span>
                 <img
                   src={xIcon}
                   alt="x아이콘"

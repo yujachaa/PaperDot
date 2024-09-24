@@ -87,13 +87,13 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ searchTerm, className }
           className={styles.searchItem}
           onClick={() => goDetail(item.id)} // 클릭 시 id를 전달
         >
-          <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%]">
+          <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] text-light-text">
             {highlightText(item.title, searchTerm)}
           </p>
-          <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%]">
+          <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] text-light-text">
             {highlightText(item.author, searchTerm)}
           </p>
-          <p className={styles.year}>{item.year}</p>
+          <p className="text-light-text">{item.year}</p>
         </div>
       ))}
     </div>
