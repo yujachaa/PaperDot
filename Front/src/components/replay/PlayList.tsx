@@ -48,6 +48,7 @@ const PlayList = ({ className }: PlayListProps) => {
       <div className={`${styles.content}`}>
         {data.map((item, index) => (
           <div
+            key={index}
             className={`relative   ${index === 1 && `${styles.checked} ${isDarkMode ? styles.dark : ''}`}`}
           >
             <PlayListItem ListItem={item} />

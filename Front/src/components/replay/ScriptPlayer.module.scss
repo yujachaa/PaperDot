@@ -2,35 +2,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 1.25rem;
+  gap: 1rem;
 }
 
 .controls {
+  width: 80%;
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 
-.controls button {
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.controls button:hover {
-  background-color: #0056b3;
+  svg {
+    cursor: pointer;
+  }
 }
 
 .progress {
   display: flex;
+  width: 75%;
   align-items: center;
   gap: 10px;
+
+  span {
+    font-weight: 700;
+  }
 }
 
 .progress input[type='range'] {
-  width: 300px;
+  width: 100%;
+
+  outline: none;
+  accent-color: #5a9bd8;
+}
+
+.volumeContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.volumeIcon {
+  cursor: pointer;
+}
+
+.volume {
+  position: absolute;
+  top: -55px; /* 아이콘 바로 위에 슬라이더 배치 */
+  left: -30px; /* 아이콘과 슬라이더의 좌우 간격 */
+  width: 100px; /* 슬라이더의 너비 */
+  transform: rotate(-90deg); /* 수직으로 회전 */
+  accent-color: #5a9bd8;
 }

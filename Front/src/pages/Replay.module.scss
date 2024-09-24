@@ -26,3 +26,23 @@
   flex-direction: column;
   margin-top: 1rem;
 }
+
+@media (max-width: 768px) {
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+  }
+  .content {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+    padding: 0;
+  }
+  .radio {
+    width: 100%;
+  }
+}
