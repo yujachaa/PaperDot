@@ -2,8 +2,15 @@ import React from 'react';
 import styles from './Login.module.scss';
 import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleSignupClick = () => {
+    navigate('/signup');
+  };
+
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginLeft}>
@@ -36,6 +43,7 @@ const Login: React.FC = () => {
             <button
               type="button"
               className={styles.signupBtn}
+              onClick={handleSignupClick}
             >
               회원 가입
             </button>
