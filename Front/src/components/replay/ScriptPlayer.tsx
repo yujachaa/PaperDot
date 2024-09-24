@@ -1,10 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './ScriptPlayer.module.scss';
+import Script from './Script';
+import SkipBack from '../../assets/images/뒤로감기.svg?react';
+import { FaStop } from 'react-icons/fa';
+import { HiMiniPlay } from 'react-icons/hi2';
+import { HiMiniPause } from 'react-icons/hi2';
+import SkipForward from '../../assets/images/빨리감기.svg?react';
+import { HiMiniSpeakerWave } from 'react-icons/hi2';
 
 const ScriptPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(7200); // 2시간 = 7200초
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isVolumeOn, setIsVolumeOn] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Play/Pause toggle function
@@ -20,7 +29,7 @@ const ScriptPlayer = () => {
   // Skip forward by 30 seconds
   const skipForward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.min(currentTime + 30, duration);
+      audioRef.current.currentTime = Math.min(currentTime + 10, duration);
       setCurrentTime(audioRef.current.currentTime);
     }
   };
@@ -28,7 +37,7 @@ const ScriptPlayer = () => {
   // Skip backward by 30 seconds
   const skipBackward = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(currentTime - 30, 0);
+      audioRef.current.currentTime = Math.max(currentTime - 10, 0);
       setCurrentTime(audioRef.current.currentTime);
     }
   };
@@ -39,6 +48,10 @@ const ScriptPlayer = () => {
       audioRef.current.currentTime = 0;
       setCurrentTime(0);
     }
+  };
+
+  const handleVolume = () => {
+    setIsVolumeOn((prev) => !prev);
   };
 
   // Handle time update during playback
@@ -56,39 +69,104 @@ const ScriptPlayer = () => {
     };
   }, []);
 
-  // Format time as mm:ss
+  useEffect(() => {
+    const handleMetadataLoaded = () => {
+      if (audioRef.current) {
+        setDuration(audioRef.current.duration); // MP3 파일의 총 재생 시간 설정
+      }
+    };
+
+    audioRef.current?.addEventListener('loadedmetadata', handleMetadataLoaded);
+
+    return () => {
+      audioRef.current?.removeEventListener('loadedmetadata', handleMetadataLoaded);
+    };
+  }, []);
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
+  // 볼륨 조절 함수
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume; // 볼륨 조절
+    }
+  };
 
   return (
-    <div className={styles.playerContainer}>
-      <div className={styles.controls}>
-        <button onClick={resetToStart}>⏮ 처음으로</button>
-        <button onClick={skipBackward}>⏪ 30초 뒤로</button>
-        <button onClick={togglePlayPause}>{isPlaying ? '⏸ 정지' : '▶️ 재생'}</button>
-        <button onClick={skipForward}>⏩ 30초 앞으로</button>
-      </div>
-      <div className={styles.progress}>
-        <span>{formatTime(currentTime)}</span>
-        <input
-          type="range"
-          min="0"
-          max={duration}
-          value={currentTime}
-          onChange={(e) => {
-            const newTime = parseFloat(e.target.value);
-            if (audioRef.current) {
-              audioRef.current.currentTime = newTime;
-            }
-            setCurrentTime(newTime);
-          }}
+    <>
+      <Script />
+      <div className={styles.playerContainer}>
+        <audio
+          ref={audioRef}
+          src="testaudio.mp3"
+          preload="metadata"
         />
-        <span>{formatTime(duration)}</span>
+        <div className={styles.progress}>
+          <span>{formatTime(currentTime)}</span>
+          <input
+            type="range"
+            min="0"
+            step="0.01"
+            max={duration}
+            value={currentTime}
+            onChange={(e) => {
+              const newTime = parseFloat(e.target.value);
+              if (audioRef.current) {
+                audioRef.current.currentTime = newTime;
+              }
+              setCurrentTime(newTime);
+            }}
+          />
+          <span>{formatTime(duration)}</span>
+        </div>
+        <div className={styles.controls}>
+          <SkipBack onClick={skipBackward} />
+          <FaStop
+            size={37}
+            color="#5A9BD8"
+            onClick={resetToStart}
+          />
+          {isPlaying ? (
+            <HiMiniPause
+              size={37}
+              color="#5A9BD8"
+              onClick={togglePlayPause}
+            />
+          ) : (
+            <HiMiniPlay
+              size={37}
+              color="#5A9BD8"
+              onClick={togglePlayPause}
+            />
+          )}
+          <SkipForward onClick={skipForward} />
+          <div className={styles.volumeContainer}>
+            <HiMiniSpeakerWave
+              size={37}
+              color="#5A9BD8"
+              className={styles.volumeIcon}
+              onClick={handleVolume}
+            />
+            {isVolumeOn && (
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                className={styles.volume}
+                onChange={handleVolumeChange}
+              />
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
