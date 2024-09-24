@@ -1,5 +1,4 @@
 import ChatRoom from '../components/chat/ChatRoom';
-import Footer from '../components/common/Footer';
 import Header from '../components/common/Header';
 import PlayList from '../components/radio/PlayList';
 import RadioScript from '../components/radio/RadioScript';

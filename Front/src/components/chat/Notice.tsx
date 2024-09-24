@@ -1,12 +1,15 @@
 import style from './Notice.module.scss';
 import Cancel from '../../assets/images/취소.svg?react';
+import useTheme from '../../zustand/theme';
 
 type NoticeProps = {
   onClose: () => void;
 };
 export default function Notice({ onClose }: NoticeProps) {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
+
   return (
-    <div className={style.notice}>
+    <div className={`${style.notice} ${isDarkMode ? style.dark : ''}`}>
       <div className={style.content}>
         <Cancel
           onClick={onClose}
