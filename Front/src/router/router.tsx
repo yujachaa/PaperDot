@@ -7,6 +7,7 @@ import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
 import SearchResult from '../pages/SearchResult';
+import Replay from '../pages/Replay';
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
       {
         path: '/radio',
         element: <Radio />,
+      },
+      {
+        path: '/replay',
+        element: <Replay />,
       },
       {
         path: '/signup',
