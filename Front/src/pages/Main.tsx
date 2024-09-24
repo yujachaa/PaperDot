@@ -1,3 +1,4 @@
+import Footer from '../components/common/Footer';
 import Header from '../components/common/Header';
 import Logo from '../components/common/Logo';
 import BestPaper from '../components/main/BestPaper';
@@ -13,6 +14,7 @@ const Main = () => {
       <SearchBar />
       <RadioChannelList />
       <BestPaper />
+      <Footer />
     </div>
   );
 };
