@@ -1,0 +1,36 @@
+.box {
+  width: 34%;
+  height: 560px;
+  border-radius: 20px;
+  border: 1px solid #c4c4c4;
+  position: relative;
+  margin-top: 1rem;
+}
+
+.title {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 700;
+  padding-left: 25px;
+}
+
+.content {
+  width: 100%;
+  height: calc(560px - 60px);
+  overflow-y: auto;
+  scrollbar-color: #626262 transparent;
+  scrollbar-width: auto;
+}
+
+.checked {
+  background-color: #d0e0f0;
+  font-weight: 700;
+
+  &.dark {
+    background-color: #5a9bd8;
+  }
+}
