@@ -6,6 +6,7 @@ import Star from '../pages/Star';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
+import SearchResult from '../pages/SearchResult';
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
       {
         path: '/star',
         element: <Star />,
+      },
+      {
+        path: '/result',
+        element: <SearchResult />,
       },
     ],
   },
