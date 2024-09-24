@@ -1,8 +1,120 @@
 .favorites {
-  text-align: center;
+  position: relative;
 }
 
 .networkChart {
   width: 1000px;
-  height: 500px;
+  height: 450px;
+}
+
+.infoBox {
+  font-weight: 500;
+  position: absolute;
+  top: 20px;
+  left: 80px;
+  width: 330px;
+  max-height: 500px;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  z-index: 1000;
+  overflow-y: auto;
+  font-size: 1.1rem;
+}
+
+.bookmarkButton {
+  display: inline-block;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  background: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.nodeList {
+  list-style: none;
+  padding: 0;
+}
+
+.nodeList li {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #fafafa;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.nodeList li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.nodeList p {
+  margin: 0.3rem 0;
+}
+
+.infoBox::-webkit-scrollbar {
+  width: 0.5rem;
+}
+
+.infoBox::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+}
+
+.infoBox::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 1rem;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.infoBox::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+@media (max-width: 768px) {
+  .networkChart {
+    width: 300px;
+    height: 450px;
+  }
+
+  .infoBox {
+    width: 290px;
+    max-height: 200px;
+    padding: 0.5rem;
+    left: 50%;
+    top: 300px;
+    transform: translateX(-50%);
+    font-size: 1rem;
+  }
+
+  .closeButton {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .nodeList li {
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .nodeList li:last-child {
+    margin-bottom: 0;
+  }
+
+  .nodeList p {
+    margin: 3px 0;
+  }
 }
