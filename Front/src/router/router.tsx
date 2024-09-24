@@ -39,12 +39,11 @@ export const router = createBrowserRouter([
         element: <Mypage />,
       },
       {
-        path: '/search',
         path: '/star',
         element: <Star />,
       },
       {
-        path: '/result',
+        path: '/search',
         element: <SearchResult />,
       },
     ],
