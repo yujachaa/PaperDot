@@ -42,7 +42,7 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
 
   // 상세 페이지로 이동하는 함수
   const goDetail = (id: number) => {
-    // navigate(`/paper/${id}`); // 예시로 /paper/ID 경로로 이동하도록 설정
+    navigate(`/paper/${id}`);
     console.log('고 디테일!!!!');
   };
 
