@@ -35,7 +35,6 @@ public class MemberService {
         Member newMember = Member.builder()
                 .userId(signUpInfo.getUserId())
                 .password(encoded_password)
-                .name(signUpInfo.getName())
                 .nickname(signUpInfo.getNickname())
                 .age(signUpInfo.getBirthyear())
                 .gender(GenderType.valueOf(signUpInfo.getGender()))

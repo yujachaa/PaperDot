@@ -36,6 +36,7 @@ public class SecurityConfig {
 //                                .anyRequest().permitAll()
 //                );
         http
+                .cors(cors ->cors.disable())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/bookmarks/**")).authenticated()

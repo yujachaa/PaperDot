@@ -10,7 +10,6 @@ import lombok.Setter;
 public class RegisterDto  {
     private String userId;
     private String password;
-    private String name;
     private String nickname;
     private String birthyear;
     private String gender;

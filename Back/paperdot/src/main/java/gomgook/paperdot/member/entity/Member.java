@@ -20,8 +20,6 @@ public class Member {
     @Column(nullable = false, unique = true, length = 16)
     private String userId;
 
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     private String password;
@@ -49,7 +47,6 @@ public class Member {
     }
 
     public void updateMemberInfo(String name, String nickname){
-        this.name = name;
         this.nickname = nickname;
     }
 
