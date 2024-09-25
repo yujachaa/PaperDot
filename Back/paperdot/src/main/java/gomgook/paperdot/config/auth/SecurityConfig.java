@@ -21,8 +21,6 @@ public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
 
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
@@ -40,8 +38,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/members/**")).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/bookmarks/**")).authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
