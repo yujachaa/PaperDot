@@ -1,0 +1,124 @@
+{
+	"doc_id": "JAKO202011263062677",
+	"title": {
+		"ko": "화학공학 분야에서 통계적 실험계획법 적용에 대한 서지 검토",
+		"en": "Application of Statistical Design of Experiments in the Field of Chemical Engineering: A Bibliographical Review"
+	},
+	"authors": "유계상",
+	"journal": {
+		"ko": "공업화학",
+		"en": "Applied Chemistry for Engineering"
+	},
+	"year": "2020",
+	"abstract": {
+		"ko": "통계학적 실험계획법(DOE)은 수십 년 동안 산업계에서 품질을 개선하기 위해 사용되어온 방법이다. 본 연구에서는 화학공학 분야에서 통계적 실험계획법이 적용된 사례 115건을 검토해 보았다. 모든 사례는 지난 10년간 주요 과학저널에 발표된 내용이다. 적용되는 설계 유형, 실험 규모, 반응 변수에 영향을 미치는 요인 및 수준의 수 및 적용 분야가 분석되었다. 무엇보다 통계학적 실험계획법에 관련된 연구논문이 점차 증가하는 것을 알 수 있었다.",
+		"en": "Design of experiments (DOE) is a method that has been applied in the industry to improve value for many decades. This study provides an overview of 115 cases of statistical DOE applications in the field of chemical engineering. All cases were published in important scientific journals for the last ten years. The applied design type, the experiment size, the number of factors and levels affecting the response variable, and the area of application for the design were all analyzed. Obviously, the number of publications related with statistical DOE increased over time."
+	},
+	"keywords": {
+		"en": "Design of experiments;Chemical engineering applications;Bibliographical;"
+	},
+	"body_text": [
+		{
+			"section": "1. 서론",
+			"text": [
+				"실험계획법(Design of Experiment: DOE)이란 실험목적에 부합한 실험 방법을 제시하고, 결과적으로 수집한 자료의 취급방법과 통계적 자료해석에 의해 최소의 실험 횟수만으로도 최대의 정보를 얻을 수 있게 사전에 실험 내용을 계획하는 것이다. 실험계획법은 1920년대에서 1930대 사이에 유전학자인 R. A. Fisher에 의해 농업 및 생물분야 에서 시작되었고, 최근에는 오히려 제조업 분야에서 주로 활용되고 있다. 특히 6시그마 방법의 핵심 요소로서 생산 현장에서 품질관리와 공정관리를 위하여 실험계획법을 적극적으로 활용하고 있다. 하지만 생산현장에서 사용되는 실험계획법은 비교적 단순한 공정변수에 따른 결과에 대한 예측 및 분석으로 고도화된 첨단 공정 및 연구분야에서의 적용은 아직까지 미진한 실정이다. 이에 실험계획법이 이론적인 연구에서 벗어나 실제 다양한 분야에서 어떻게 활용되고 있는지에 대한 고찰이 필요하다."
+			]
+		},
+		{
+			"section": "1.1. Objective of the study",
+			"text": [
+				"실험계획법에 관련된 문헌은 통계학적인 관점에서 기술된 이론적 측면에 대해 주로 발표되었다. 대표적으로 ‘Design and Analysis of Experiment’[1]나 ‘Statistics for Experiment’[2]와 같은 저서를 통해 발표되었다. 그러나 DOE를 실제 산업에 적용하는 경우에 대한 연구는 활발하지 않은 게 현실이다. 특히 공학 분야에서 DOE에 대한 실용적이고 실제적으로 적용 사례는 많지 않다. 하지만 몇몇의 학자들이 통계학적 DOE를 공학 분야에 적용한 사례에 관한 조사를 실시하여 발표하였다. 1992년에 Bisgaard[3]는 1975년부터 발표된 공학 분야에 실험계획법을 적용한 131건의 사례 연구를 조사하였다. Prvan과 Street [4]는 2002년에 다양한 분야에서 실험계획법 중 요인설계법을 이용한 140건의 적용사례를 조사하였다. 이 중에는 38건은 공학 분야의 연구로 보고되었다. 2008년 Ilzarbe[5] 등은 2001년부터 2005년사이에 발표된 공학분야에 관련된 실제적인 실험계획법 논문 77편에 대해서 조사하였다.",
+				"본 연구의 목적은 지난 10년간(2010~2019년) 화학공학 분야에서 SCI급 논문에 발표된 통계학적 DOE가 적용된 실제 사례를 수집하고 응용에 대한 설명 연구를 수행하는 것이다. 수집된 사례들은 학자, 컨설턴트 및 실무자들에게 해당 분야에 맞는 응용 사례를 찾을 수 있는 기회를 제공한다. 또한 실무자들이 본 사례를 통해 관련된 기술을 실 제로 어떻게 적용할 수 있는지 배울 수 있는 장점이 있다."
+			]
+		},
+		{
+			"section": "1.2. Database used in the study",
+			"text": [
+				"본 연구에 필요한 자료를 수집하기 위하여 대표적인 데이터베이스인 ‘Web of Science’를 이용하였다. 먼저 검색년도를 1960년부터 2019년으로 지정하였다. 검색대상에 “제목”을 선택한 후 “design* of experiment*”를 입력하여 검색을 수행하였다. 그 결과 모두 2,316개의 자료가 검색되었다. 이 중 분야별로 발표된 논문의 수가 많은 상위 5개 분야를 조사하였다. Figure 1과 같이 chemical engineering이 259개로 가장 높은 빈도를 보였다. 이를 본격적으로 연구결과가 나타나기 시작한 1990년부터 연도별로 발표된 논문의 수를 Figure 2에 도시하였다. 2008년 이후부터 점차적으로 발표되는 논문의 숫자가 증가하는 것을 알 수 있었다. 이 중 지난 10년간 발표된 article만 screening한 결과 174개의 논문으로 정리되었다. 이들 논문의 내용 분석 결과 통계학적 실험계획법을 이용하여 화학공학 분야에 실제적으로 적용한 경우는 모두 115편으로 조사되었다. 이렇게 선택된 논문을 이용하여 보다 자세한 내용분석을 수행하였다."
+			]
+		},
+		{
+			"section": "2. 분석 결과"
+		},
+		{
+			"section": "2.1. Aim of the study",
+			"text": [
+				"실험계획법을 실제 실험에 적용할 때 통산적으로 Wu와 Hamada가 제시한 세 가지 유형으로 분류할 수 있다[6]. 첫 번째 유형은 ‘traditional’로 정의된 경우로 반응 변수에 따른 요인의 영향을 이해하는 것으로 screening 및 characterization 단계가 포함된다. 두 번째 유형은 “response surface methodology” (RSM)로 정의된 경우로 프로세스 동작에 대한 이해와 최적의 성능 포인트를 찾는 방법이다[7]. 세 번째 유형은 “robust parameter design” (RPD)로 정의된 경우로 노이즈 요인에서 전송되는 변동성을 최소화하는 제어 가능한 설계 요인의 설정을 찾는데 사용된다[8]. 이 밖에도 인자들의 배합비율을 조사하는 실험계획법으로 인자들의 배합비의 합이 100%를 이루는 “mixture” 설계 및 새로운 방법론들이 연구되고 있다.",
+				"이를 토대로 본 연구에서 조사한 115편의 논문의 유형별로 분류해 보았다. Figure 3에 도시한 바와 같이 RSM가 전체의 45%에 해당되었다. 그 다음은 traditional 방법으로 37%가 해당되었다. RPD는 10%를 점유하였고 나머지는 각각 4%가 해당되었다. 이는 비록 적용 분야에 다소 차이는 있지만 10년 전에 비해서 RSM 방법에 대한 연구는 점차 증가하고 traditional 방법은 감소하는 것으로 조사되었다[5]. 특히 화학공학 분야의 특성상 Mixture 법의 사용이 증가하는 것도 주목할 필요가 있다."
+			]
+		},
+		{
+			"section": "2.2. Number of factors and levels",
+			"text": [
+				"Aim of study가 결정되면 실험 설계의 다음 단계는 실험의 내용을 구성할 인자(factor)와 수준(level)을 결정하는 것이다. 인자는 반응 변수에 영향을 준다고 생각되는 많은 원인들 중에서 직접 실험에 취급 되는 원인에 해당한다. 예를 들면 화학공정에서 온도, 압력, 조성 등이 이에 해당한다. 본 연구에서 조사된 논문에서 사용된 인자의 수를 Figure 4에 분석하였다. 실제 적용 사례의 90%에서 요인의 수가 5 이하임을 알 수 있다. 사용된 요인의 평균 수는 6.2이고 13가지 이상의 요소가 사용된 논문은 없었다. 최근에는 traditional 방법을 이용해서 주요 요인의 수를 선별한 후 RSM을 사용하는 논문이 발표되고 있어 요인의 수는 크게 증가하지 않고 있다.",
+				"본 연구에서 조사된 논문에서 사용된 수준의 수를 분석해서 Figure5에 도시하였다. 수준은 실험을 하기 위한 인자의 조건, 즉 공정에 영향을 주는 요인들의 변화량이다. 예를 들어 온도의 경우 50, 100, 200 ℃로 실험 조건을 설정하면 수준이 3이 되는 것이다. 사례에서 사용된 수준의 50% 정도는 3으로 가장 많이 사용되었다. 그 다음으로는 5와 2 순으로 사용되었고 7 이상의 수준은 사용되지 않았다."
+			]
+		},
+		{
+			"section": "2.3. Type of design",
+			"text": [
+				"실험 계획법의 다음 단계는 사용할 설계 디자인 유형을 선택하는 것이다. 화학공학 분야에 적용된 설계 디자인 유형별 논문 수를 분석하여 Figure 6에 제시하였다. 먼저 반응 표면 분석법(RSM) 중에서는 2차 회귀모형(second order regression model)이 적절하다고 생각될 경우에 사용하는 중심합성계획(central composite design)법, Box-Behnken 계획법 및 회전중심합성계획(central composite rotatable design)이 사용되었다. 실제 화학공학 실험에서 실험조건을 변경시키는 경우 실험을 추가로 실시하는 데 시간과 비용이 많이든다. 따라서 적은 실험횟수로 2차 다항모형의 회귀계수를 추정할 수 있는 효율적인 실험법인 CCD가 가장 많이 사용된다. 본 연구에서도 조사된 사례 중 26%가 CCD 법으로 가장 많이 사용되었다. 또한 회귀식에서 원점에서 동일 한 거리에 있는 좌표에서 추정된 회귀식의 분산 크기가 같다는 가정 하에 실험을 설계하는 CCRD 법도 일부 사용되었다(3%). 이 밖에도 인자가 계량 인자이고 수준이 3인 경우 2차 회귀방적식을 구하고 최적의 조건도 찾을 수 있는 Box-Behnken 법이 16% 정도 사용된 것으로 조사되었다.",
+				"전통적인 실험계획법인 요인배치법(factorial design)도 화학공학 분야에서 많이 사용되고 있다. 실험인자의 모든 수준조합에서 실험을 수행하는 full factorial 배치법이 18%로 두 번째로 많이 사용된 설계 디자인 유형이었다. 불필요한 교호작용이나 고차의 교호작용은 구하지 않고 각 인자의 조합 중에서 일부만 선택하여 실험하는 일부실시법 (fractional factorial design)도 14% 정도 사용된 것으로 조사되었다. 품질관리 분야에서 획기적인 기여를 한 Taguchi 법의 경우 화학공학 분야에서는 널리 사용되고 있지는 않는 것으로 조사되었다. 약 10% 정 도의 논문에서 Taguchi 법을 이용한 실험계획법의 연구 사례로 발표되었다. 추가적인 설계 디자인 유형으로 D-optimal 법이 5%, Placket-Burmann 법이 4% 정도 사용된 것으로 분석되었다. 이외에도 Bayesian, IV-optimal, Definitive Screening Design 법을 설계 디자인으로 사용한 논문이 소개되었다."
+			]
+		},
+		{
+			"section": "2.4. Number of experiments",
+			"text": [
+				"설계 유형과 연구에 포함된 요소의 수를 선택한 후에는 수행할 실험 수를 결정해야 한다. 가용 예산, 앞에서 언급한 변수(인자 및 설계 유형) 및 실험의 반복여부 등 실험자의 의견에 따라 실험의 횟수는 결정된다. Figure 7에서 볼 수 있듯이 57%의 사례에서 11~20개 실험을 수행하였다. 10개 이하의 실험을 수행한 경우와 21~30개의 실험을 수행한 경우가 각각 15%를 차지하였다. 31~40개의 실험을 수행한 경우는 11%이고 41개 이상의 실험을 수행한 경우는 3%에 불과하였다. 이처럼 대부분의 경우 30개 이하에서 실험을 진행하여 연구를 수행하였다."
+			]
+		},
+		{
+			"section": "2.5. Field of application",
+			"text": [
+				"본 연구에서 조사된 사례들의 연구분야를 보다 구체적으로 분석하여 Figure 8에 도시하였다. 가장 많이 연구된 분야로는 재료분야와 반응공학 분야이다. 이는 재료 합성 및 반응공정에 영향을 미치는 변수가 많기 때문에 실험계획법을 이용하면 연구에 효율적인 정보를 제공할 수 있기 때문으로 사료된다. 다음으로는 흡착공정 연구에 많이 사 용되었다. 이는 반응공학과 유사하게 여러 가지 공정변수가 실험결과에 영향을 미치기 때문이다. 그 다음으로는 에너지, 분리공정, 환경, 염색, 이동현상 및 식품공정 순으로 연구가 진행되었다."
+			]
+		},
+		{
+			"section": "2.6. Number of publications over time",
+			"text": [
+				"지난 10년 동안 화학공학 분야의 SCI급 저널에 발표된 실험계획법에 관련된 논문의 수를 Figure 9에 도시하였다. 발표된 논문의 수는 지속적으로 증가하였고 이는 DOE가 연구자들 사이에 점차 많이 알려졌고 이를 이용하는 컴퓨터 프로그램도 발달했기 때문이다. 하지만 다른 분야와 다르게 보수적인 경향이 강한 화학공학 분야에서는 실험계 획법을 이용한 연구결과에 대한 신뢰도가 높은 편은 아니다. 따라서 향후 이와 같은 인식개선이 이루어진다면 보다 많은 연구자들이 실험 계획법을 이용한 연구에 관심을 갖게 될 것으로 생각된다."
+			]
+		},
+		{
+			"section": "3. 결론",
+			"text": [
+				"DOE는 주로 제품 및 프로세스 최적화에 사용되는 유용한 기술이다. 이 기술을 최대한 활용하려면 도구에 대한 깊은 지식을 가진 사람들, 프로세스에 대한 실질적인 지식을 가진 사람들, 실험 분야에서 경험이 있는 사람들로 구성된 작업 팀을 구성해야 한다. 화학공학 분야에서 이 기술의 사용을 개선하려면 통계학 개념과 실용적인 지식을 결 합하는 수단을 찾아야 한다. 지난 10년간 출판된 화학공학 분야에서 DOE의 실제 응용에 대한 논문의 수가 증가함에 따라 그 사용이 확산되고 있으며 더 자주 적용되고 있음을 알 수 있다.",
+				"본 논문을 통해 학계, 컨설턴트 및 실무자에게 해당 분야에서 응용 프로그램을 찾을 수 있는 기회를 제공하기를 바란다. DOE는 다양한 화학공학 분야에 적용될 수 있는 기술이기 때문에 주목해야 한다. 따라서 향후 DOE를 이용한 연구가보다 활발히 진행되고 보다 많은 연구 논문이 발간되어 엔지니어링 커뮤니티 전체에 DOE 사용을 확산하길 기대한다"
+			]
+		}
+	],
+	"ref_entries": {
+		"FIGURE[1]": {
+			"text": "Figure 1. Number of papers by research area related to DOE published since 1961.",
+			"type": "figure"
+		},
+		"FIGURE[2]": {
+			"text": "Figure 2. Yearly numbers of papers related to DOE published after 1990.",
+			"type": "figure"
+		},
+		"FIGURE[3]": {
+			"text": "Figure 4. Number of factors inclued in the study.",
+			"type": "figure"
+		},
+		"FIGURE[4]": {
+			"text": "Figure 5. Number of levels inclued in the study.",
+			"type": "figure"
+		},
+		"FIGURE[5]": {
+			"text": "Figure 6. Type of design inclued in the study.",
+			"type": "figure"
+		},
+		"FIGURE[6]": {
+			"text": "Figure 7. Number of experiments inclued in the study.",
+			"type": "figure"
+		},
+		"FIGURE[7]": {
+			"text": "Figure 8. Field of applications included in the study.",
+			"type": "figure"
+		},
+		"FIGURE[8]": {
+			"text": "Figure 9. Evoluation of papers over time.",
+			"type": "figure"
+		}
+	}
+}
