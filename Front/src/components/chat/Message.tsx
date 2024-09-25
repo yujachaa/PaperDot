@@ -1,13 +1,16 @@
 import { useRef } from 'react';
 import useTheme from '../../zustand/theme';
 import style from './Message.module.scss';
+import { GroupMessage } from '../../interface/chat';
 
 type MessageProps = {
   className?: string;
-  openModal: (position: { top: number; left: number }) => void; // prop 추가
+  openModal: (position: { top: number; left: number }, data: GroupMessage) => void; // prop 추가
+  data: GroupMessage;
 };
 
-const Message = ({ className, openModal }: MessageProps) => {
+const Message = ({ className, openModal, data }: MessageProps) => {
+  const { Writernickname, message } = data;
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const boxRef = useRef<HTMLDivElement>(null); // .box 요소의 참조
 
@@ -18,7 +21,7 @@ const Message = ({ className, openModal }: MessageProps) => {
       const left = boxRef.current.offsetLeft;
 
       // 결과를 모달 위치에 넘김
-      openModal({ top, left });
+      openModal({ top, left }, data);
     }
   };
 
@@ -28,14 +31,12 @@ const Message = ({ className, openModal }: MessageProps) => {
       ref={boxRef}
     >
       <div
-        className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''}`}
+        className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''} cursor-pointer`}
         onClick={handleClick}
       >
-        김싸피
+        {Writernickname}
       </div>
-      <div className={`${style.text}`}>
-        대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용대화내용
-      </div>
+      <div className={`${style.text}`}>{message}</div>
     </div>
   );
 };

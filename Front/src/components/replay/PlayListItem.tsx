@@ -1,6 +1,7 @@
 import styles from './PlayListItem.module.scss';
 
 type ListItem = {
+  id: number;
   title: string;
   year: number;
   author: string;
