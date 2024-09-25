@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class PythonSearchResponse {
+public class PythonPaper {
     private Long id;
     private String docId;
     private String title;

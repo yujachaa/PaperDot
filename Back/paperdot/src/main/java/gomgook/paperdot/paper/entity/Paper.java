@@ -23,7 +23,7 @@ public class Paper {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private int bookmark_cnt;
+    private Long bookmarkCnt;
 
     private String title;
     private String author;
