@@ -44,7 +44,7 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
     //(미완)첫페이지 검색결과 API 호출하기
 
     if (value.trim()) {
-      navigate(`/search?q=${encodeURIComponent(value)}`);
+      navigate(`/search?q=${encodeURIComponent(value)}&p=1`);
     }
   };
 
