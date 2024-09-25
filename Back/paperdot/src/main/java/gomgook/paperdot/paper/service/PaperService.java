@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PaperService {
@@ -71,6 +70,7 @@ public class PaperService {
         response.setTotal(pythonSearchList.size());
         response.setPaperSearchResponseList(paperSearchResponseList);
         // TODO: get bookmarks if login user exists
+
         // TODO: paperSearchResponseList caching
         String redisKey = "searchData::"+keyword;
 //        saveToRedis(redisKey, paperSearchResponseList);
