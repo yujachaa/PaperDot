@@ -96,14 +96,14 @@ const Favorites = () => {
       // 노드 테두리 색상
       .attr('stroke', '#fff')
       // 노드 테두리 두께
-      .attr('stroke-width', 1)
-      .selectAll('circle')
+      // .attr('stroke-width', 0.5)
+      .selectAll('polygon')
       // 노드 데이터 바인딩
       .data(nodesData)
       .enter()
-      .append('circle')
-      // 노드 반지름 설정
-      .attr('r', 15)
+      .append('polygon')
+      // 별 좌표 생성
+      .attr('points', createStarPoints(0, 0, 15, 7, 5))
       // 그룹에 따른 색상 지정
       .attr('fill', (d: any) => color(d.group))
       // 드래그 핸들러 추가
@@ -136,7 +136,7 @@ const Favorites = () => {
         .attr('x2', (d: any) => d.target.x)
         .attr('y2', (d: any) => d.target.y);
       // 노드 위치 설정
-      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+      node.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
       // 텍스트 위치 설정
       text.attr('x', (d: any) => d.x + 10).attr('y', (d: any) => d.y + 5);
     });
@@ -229,3 +229,22 @@ const Favorites = () => {
 };
 
 export default Favorites;
+
+function createStarPoints(cx, cy, outerRadius, innerRadius, numPoints) {
+  let points = '';
+  // 별의 각도 계산
+  const angle = Math.PI / numPoints;
+
+  for (let i = 0; i < 2 * numPoints; i++) {
+    // 바깥과 안쪽 반지름을 번갈아 사용
+    const r = i % 2 === 0 ? outerRadius : innerRadius;
+    // x 좌표 계산
+    const x = cx + r * Math.cos(i * angle);
+    // y 좌표 계산
+    const y = cy + r * Math.sin(i * angle);
+    points += `${x},${y} `;
+  }
+
+  // 최종 좌표 반환
+  return points.trim();
+}
