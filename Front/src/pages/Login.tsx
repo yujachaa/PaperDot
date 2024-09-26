@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './Login.module.scss';
 import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../apis/user';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login: React.FC = () => {
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await login(userId, password);
+      if (response?.status === 200) {
+        // toast.success('로그인이 완료되었습니다.');
+        const token = response.data.token;
+        sessionStorage.setItem('token', token);
+        setTimeout(() => {
+          navigate('/');
+        }, 0);
+      } else {
+        toast.error('로그인에 실패했습니다.');
+      }
+    } catch (error) {
+      toast.error('로그인 중 오류가 발생했습니다.');
+    }
+  };
 
   const handleSignupClick = () => {
     navigate('/signup');
@@ -22,13 +46,18 @@ const Login: React.FC = () => {
       </div>
       <div className={styles.loginRight}>
         <Logo className="mb-8" />
-        <form className={styles.loginForm}>
+        <form
+          className={styles.loginForm}
+          onSubmit={handleLogin}
+        >
           <div className={styles.formGroup}>
             <label htmlFor="id">ID</label>
             <input
               type="text"
               id="id"
               placeholder="ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
             />
           </div>
           <div className={styles.formGroup}>
@@ -37,6 +66,8 @@ const Login: React.FC = () => {
               type="password"
               id="pw"
               placeholder="PW"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className={styles.buttonGroup}>
@@ -56,6 +87,7 @@ const Login: React.FC = () => {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };
