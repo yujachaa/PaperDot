@@ -7,8 +7,8 @@ export async function signup(
   password: string,
   nickname: string,
   birthyear: string,
-  gender: any,
-  degree: any,
+  gender: string,
+  degree: string,
 ) {
   try {
     const response = await api.post('api/members/register', {
