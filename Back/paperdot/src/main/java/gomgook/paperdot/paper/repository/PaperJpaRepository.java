@@ -4,8 +4,9 @@ import gomgook.paperdot.paper.entity.Paper;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface PaperRepository extends JpaRepository<Paper, Long> {
+public interface PaperJpaRepository extends JpaRepository<Paper, Long> {
 
-    List<Paper> findByDocIdIn(List<String> docIds);
+    Optional<List<Paper>> findByDocIdIn(List<String> docIds);
 }

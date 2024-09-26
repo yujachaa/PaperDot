@@ -14,7 +14,7 @@ public enum CustomException {
     DUPLICATED_FRIEND_REQUEST_EXCEPTION(400,"DuplicatedFriendRequestException","이미 보낸 친구 요청입니다."),
     NOT_FOUND_MEMBER_EXCEPTION(400,"NotFoundMemberException","유저가 존재하지 않습니다."),
     NOT_FOUND_SPECIES_EXCEPTION(400, "NotFoundSpeciesException", "해당 종이 존재하지 않습니다."),
-    NOT_FOUND_FOREST_EXCEPTION(400, "NotFoundForestException", "숲이 존재하지 않습니다."),
+    NOT_FOUND_PAPER_EXCEPTION(400, "NotFoundPaperException", "논문이 존재하지 않습니다."),
     NOT_FOUND_ITEM_EXCEPTION(400, "NotFoundItemException", "아이템을 불러오지 못했습니다."),
     NOT_FOUND_FOREST_ITEM_EXCEPTION(400, "NotFoundForestItemException", "숲에 아이템이 없습니다."),
     NOT_FOUND_BACKGROUND_ITEM_EXCEPTION(400, "NotFoundBackgroundItemException", "테마를 불러오지 못했습니다."),
