@@ -5,6 +5,7 @@
   display: flex;
   justify-content: space-between;
 }
+
 .header_right {
   display: flex;
   flex-direction: row;
@@ -12,4 +13,7 @@
   align-items: center;
   margin-right: 64px;
   gap: 30px;
+}
+
+.user-dropdown {
 }
