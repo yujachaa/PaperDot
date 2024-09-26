@@ -39,12 +39,16 @@
 
 .imgContainer {
   cursor: pointer;
-  width: 300px;
+  // width: 300px;
   height: auto;
   // overflow: hidden;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .hoverImg {

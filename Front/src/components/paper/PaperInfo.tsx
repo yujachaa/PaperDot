@@ -12,7 +12,10 @@ interface PaperInfoProps {
     author: string[];
     year: number;
     docId: string;
-    abstract: string;
+    abstractText: {
+      ko: string;
+      en: string;
+    };
     keyword: string[];
     cnt: number;
     bookmark: boolean;
@@ -30,6 +33,10 @@ interface PaperInfoProps {
 const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
   const paperLink =
     'https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn=' + paperData.docId;
+
+  // ko가 빈 문자열이면 en을 사용하고, 그렇지 않으면 ko를 사용
+  const abstract = paperData.abstractText.ko || paperData.abstractText.en;
+
   return (
     <div className={styles.info}>
       <div className={styles.infoText}>
@@ -60,7 +67,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
         <p>
           <strong>초록</strong>
         </p>
-        <p>{paperData.abstract}</p>
+        <p>{abstract}</p>
       </div>
       <div className={styles.infoText}>
         <p>
