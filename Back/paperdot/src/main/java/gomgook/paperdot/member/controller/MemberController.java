@@ -1,5 +1,6 @@
 package gomgook.paperdot.member.controller;
 
+import gomgook.paperdot.config.auth.JwtUtil;
 import gomgook.paperdot.member.dto.LoginDto;
 import gomgook.paperdot.member.dto.RegisterDto;
 import gomgook.paperdot.member.entity.Member;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RequestMapping(value = "/members" )
 @RequiredArgsConstructor
 public class MemberController {
+    private final JwtUtil jwtUtil;
     private final MemberService memberService;
 
     @PostMapping("/register")
@@ -95,4 +97,24 @@ public class MemberController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @DeleteMapping
+    public ResponseEntity<?> resignMember(@RequestHeader(value = "Authorization", required = false) String token) {
+        Map<String, String> response = new HashMap<>();
+        Long memberId = null;
+
+        if (token != null && !token.isEmpty()){
+            memberId = jwtUtil.extractMemberId(token);
+
+            memberService.resignMember(memberId);
+            response.put("message", "회원 탈퇴에 성공했습니다");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "로그인된 사용자가 없습니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
 }

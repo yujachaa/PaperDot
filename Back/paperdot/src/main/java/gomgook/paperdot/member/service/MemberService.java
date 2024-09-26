@@ -59,4 +59,8 @@ public class MemberService {
         }
         return null;
     }
+
+    public void resignMember(Long memberId) {
+
+    }
 }

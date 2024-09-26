@@ -7,12 +7,13 @@ import java.util.List;
 
 @Getter @Setter
 public class PythonPaper {
-    private TitleDTO title;
+    private Long id;
+    private LanguageDTO title;
     private List<String> author;
     private String year;
     private String docId;
-    private String abstractText;
-    private List<String> keyword;
+    private LanguageDTO abstractText;
+    private LanguageDTO keyword;
     private int cnt;
     private boolean bookmark;
 }

@@ -18,6 +18,7 @@ import reactor.core.publisher.Flux;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -132,7 +133,7 @@ public class PaperService {
         response.setYear(pythonPaper.getYear());
         response.setCnt(sqlPaper.getBookmarkCnt());
         response.setAuthor(pythonPaper.getAuthor());
-        response.setTitle(new TitleDTO(pythonPaper.getTitle().getKo(), pythonPaper.getTitle().getEn()));
+        response.setTitle(pythonPaper.getTitle().getKo());
         response.setBookmark(false);
         return response;
     }
@@ -158,13 +159,18 @@ public class PaperService {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
-        paperDetail.setAuthor(paperDocument.getAuthor());
+
+        String authors = paperDocument.getAuthors();
+        paperDetail.setAuthor(Arrays.stream(authors.split(";")).toList());
         paperDetail.setTitle(paperDocument.getTitle());
         paperDetail.setYear(paperDocument.getYear());
-        paperDetail.setDocId(paperDocument.getDocId());
-        paperDetail.setKeyword(paperDocument.getKeyword());
+        paperDetail.setDocId(paperDocument.getDoc_id());
+
+        String keywords = paperDocument.getKeywords().getKo();
+        paperDetail.setKeyword(Arrays.stream(keywords.split(";")).toList());
         paperDetail.setAbstractText(paperDocument.getAbstractText());
         paperDetail.setCnt(paper.getBookmarkCnt());
+        paperDetail.setCategory(paperDocument.getCategory());
         paperDetail.setRelation(paperDocument.getRelation());
 
         if(bookmark != null) paperDetail.setBookmark(true);
