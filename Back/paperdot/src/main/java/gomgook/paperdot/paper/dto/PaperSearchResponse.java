@@ -9,7 +9,7 @@ import java.util.List;
 public class PaperSearchResponse {
     private Long id;
     private String docId;
-    private TitleDTO title;
+    private String title;
     private List<String> author;
     private String year;
     private Long cnt;

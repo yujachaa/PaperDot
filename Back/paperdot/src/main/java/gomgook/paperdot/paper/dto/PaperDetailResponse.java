@@ -9,14 +9,15 @@ import java.util.List;
 public class PaperDetailResponse {
 
     private Long id;
-    private TitleDTO title;
+    private LanguageDTO title;
     private List<String> author;
     private String year;
     private String docId;
-    private String abstractText;
+    private LanguageDTO abstractText;
     private List<String> keyword;
     private Long cnt;
     private boolean bookmark;
+    private int category;
     private List<RelationDTO> relation;
 
 }
