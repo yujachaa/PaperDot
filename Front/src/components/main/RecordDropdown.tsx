@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './RecordDropdown.module.scss';
 import timeIcon from '../../assets/images/time.svg';
 import xIcon from '../../assets/images/close.svg';
+import { useNavigate } from 'react-router-dom';
 
 type DropDownProps = {
   className?: string;
@@ -10,10 +11,11 @@ type DropDownProps = {
 };
 
 const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteRecord }) => {
+  const navigate = useNavigate();
   // 검색 기록을 클릭했을 때 실행되는 함수
   const handleClick = (record: string) => {
     console.log(`검색어로 검색 실행: ${record}`);
-    // 여기에 검색을 실행하는 로직 추가
+    navigate(`/search?q=${encodeURIComponent(record)}&p=1`);
   };
 
   // x 아이콘을 눌렀을 때 해당 기록을 삭제하는 함수
