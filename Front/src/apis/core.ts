@@ -10,3 +10,18 @@ const config = {
 
 // axios 인스턴스 생성
 export const api = axios.create(config);
+export const Authapi = axios.create(config);
+
+// axios 요청에 토큰 추가하는 인터셉터
+Authapi.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
