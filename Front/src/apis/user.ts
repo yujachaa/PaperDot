@@ -65,3 +65,23 @@ export async function checkNickname(nickname: string) {
     }
   }
 }
+
+// 로그인
+export async function login(userId: string, password: string) {
+  try {
+    const response = await api.post('/api/members/login', {
+      userId,
+      password,
+    });
+    return response;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      if (!err.response) {
+        return undefined;
+      } else {
+        console.log(err.response);
+        return err.response;
+      }
+    }
+  }
+}
