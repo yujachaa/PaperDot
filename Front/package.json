@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",
+    "@nivo/core": "^0.87.0",
+    "@nivo/pie": "^0.87.0",
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "@typescript-eslint/parser": "^8.5.0",
