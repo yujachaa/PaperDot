@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import webLogoLight from '../../assets/images/웹 로고 라이트.svg';
-import webLogoLightHover from '../../assets/images/웹 로고 라이트 호버.svg';
-import webLogoDark from '../../assets/images/웹 로고 다크.svg';
-import webLogoDarkHover from '../../assets/images/웹 로고 다크 호버.svg';
+import webLogoLight from '../../assets/images/logoLight.svg';
+import webLogoLightHover from '../../assets/images/logoLightHover.svg';
+import webLogoDark from '../../assets/images/logoDark.svg';
+import webLogoDarkHover from '../../assets/images/logoDarkHover.svg';
 import styles from './Logo.module.scss';
 import useTheme from '../../zustand/theme';
 import { useNavigate } from 'react-router-dom';

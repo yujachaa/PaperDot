@@ -5,11 +5,17 @@
   display: flex;
   justify-content: space-between;
 }
+
 .header_right {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   margin-right: 64px;
+  margin-left: auto;
   gap: 30px;
+}
+
+.user-dropdown {
+  display: flex;
 }

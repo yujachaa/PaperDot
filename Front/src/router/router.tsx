@@ -8,6 +8,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
 import SearchResult from '../pages/SearchResult';
 import Replay from '../pages/Replay';
+import PapaerDetail from '../pages/PaperDetail';
 
 export const router = createBrowserRouter([
   {
@@ -23,11 +24,11 @@ export const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: '/radio',
+        path: '/radio/:id',
         element: <Radio />,
       },
       {
-        path: '/replay',
+        path: '/replay/:id',
         element: <Replay />,
       },
       {
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path: '/search',
         element: <SearchResult />,
+      },
+      {
+        path: '/paper/:id',
+        element: <PapaerDetail />,
       },
     ],
   },

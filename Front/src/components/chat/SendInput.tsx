@@ -1,6 +1,6 @@
 import styles from './SendInput.module.scss';
 import useTheme from '../../zustand/theme';
-import InputIcon from '../../assets/images/입력.svg?react';
+import InputIcon from '../../assets/images/submit.svg?react';
 import { forwardRef } from 'react';
 type InputProps = {
   className?: string;

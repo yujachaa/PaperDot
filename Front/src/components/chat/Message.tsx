@@ -5,7 +5,7 @@ import { GroupMessage } from '../../interface/chat';
 
 type MessageProps = {
   className?: string;
-  openModal: (position: { top: number; left: number }, data: GroupMessage) => void; // prop 추가
+  openModal: (top: number, left: number, data: GroupMessage) => void; // prop 추가
   data: GroupMessage;
 };
 
@@ -21,7 +21,7 @@ const Message = ({ className, openModal, data }: MessageProps) => {
       const left = boxRef.current.offsetLeft;
 
       // 결과를 모달 위치에 넘김
-      openModal({ top, left }, data);
+      openModal(top, left, data);
     }
   };
 

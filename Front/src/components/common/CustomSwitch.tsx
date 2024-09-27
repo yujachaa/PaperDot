@@ -1,6 +1,6 @@
 import { Switch } from '@headlessui/react';
-import Light from '../../assets/images/스위치 라이트.svg';
-import Dark from '../../assets/images/스위치 다크.svg';
+import Light from '../../assets/images/switchLight.svg';
+import Dark from '../../assets/images/switchDark.svg';
 import useTheme from '../../zustand/theme';
 
 const CustomSwitch = () => {
@@ -22,7 +22,7 @@ const CustomSwitch = () => {
           isDarkMode ? 'translate-x-10' : 'translate-x-0'
         } mobile:h-6 mobile:w-6 ${isDarkMode ? 'mobile:translate-x-6' : 'mobile:translate-x-0'}`}
         style={{
-          backgroundImage: `url(${isDarkMode ? Dark : Light})`,
+          backgroundImage: `url("${isDarkMode ? Dark : Light}")`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
