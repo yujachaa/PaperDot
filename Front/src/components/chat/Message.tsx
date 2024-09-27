@@ -6,7 +6,7 @@ type MessageProps = {
   className?: string;
   openModal: (top: number, left: number) => void; // prop 추가
 };
-const a = 1;
+
 const Message = ({ className, openModal }: MessageProps) => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const boxRef = useRef<HTMLDivElement>(null); // .box 요소의 참조
