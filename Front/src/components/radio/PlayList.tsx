@@ -15,7 +15,12 @@ const PlayList = ({ className }: PlayListProps) => {
         </div>
         <div className={`${styles.sub}`}>정서연(2024)</div>
       </div>
-      <BookMark className="absolute top-2.5 right-5" />
+      {/* (미완) 북마크 props 하드코딩 수정할 것 */}
+      <BookMark
+        paperId={1}
+        bookmark={true}
+        className="absolute top-2.5 right-5"
+      />
       <div className="absolute bottom-1.5 right-4 cursor-pointer">상세보기 &gt; </div>
     </div>
   );

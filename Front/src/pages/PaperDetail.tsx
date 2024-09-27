@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
 import styles from './PaperDetail.module.scss';
@@ -60,7 +60,7 @@ const paperData = {
 
 const PapaerDetail: React.FC = () => {
   // useParams 훅을 사용하여 id 값을 가져옵니다.
-  const { id } = useParams<{ id: string }>();
+  // const { id } = useParams<{ id: string }>();
   // const [paperData, setPaperData] = useState<any>(null); // 서버로부터 받은 데이터를 저장할 상태 변수
 
   // 처음 렌더링될 때 데이터 요청

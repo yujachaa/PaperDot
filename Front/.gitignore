@@ -25,3 +25,6 @@ dist-ssr
 
 # eslint
 .eslintcache
+
+#build 관련
+*.tsbuildinfo

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import styles from './Relation.module.scss';
 import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
