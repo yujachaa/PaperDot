@@ -4,6 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import prettier from 'eslint-config-prettier';
 import typescriptParser from '@typescript-eslint/parser';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 const config = [
   js.configs.recommended,
   {
@@ -17,6 +18,7 @@ const config = [
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      '@typescript-eslint': typescriptPlugin,
     },
     rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
