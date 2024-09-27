@@ -58,7 +58,7 @@ const paperData = {
   ],
 };
 
-const PapaerDetail: React.FC = () => {
+const PaperDetail: React.FC = () => {
   // useParams 훅을 사용하여 id 값을 가져옵니다.
   // const { id } = useParams<{ id: string }>();
   // const [paperData, setPaperData] = useState<any>(null); // 서버로부터 받은 데이터를 저장할 상태 변수
@@ -125,4 +125,4 @@ const PapaerDetail: React.FC = () => {
   );
 };
 
-export default PapaerDetail;
+export default PaperDetail;

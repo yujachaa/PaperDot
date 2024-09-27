@@ -49,11 +49,18 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 100%; /* 필요에 따라 높이 조정 */
+  // height: 100%; /* 필요에 따라 높이 조정 */
   font-size: 1rem;
   color: #000;
   padding: 2rem;
   line-height: 2rem;
+
+  overflow: hidden; /* 내용이 넘칠 때 숨김 */
+  display: -webkit-box; /* 플렉스 컨테이너로 설정 */
+  -webkit-line-clamp: 9; /* 표시할 줄 수를 7로 설정 */
+  -webkit-box-orient: vertical; /* 수직 방향으로 정렬 */
+  text-overflow: ellipsis; /* 텍스트가 넘칠 때 '...' 표시 */
+  height: calc(2em * 9); /* 높이 설정: 1줄 높이 * 7줄 */
 }
 
 .summaryButton {
