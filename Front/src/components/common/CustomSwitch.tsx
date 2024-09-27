@@ -1,6 +1,6 @@
 import { Switch } from '@headlessui/react';
-import Light from '../../assets/images/스위치 라이트.svg';
-import Dark from '../../assets/images/스위치 다크.svg';
+import Light from '../../assets/images/switchLight.svg';
+import Dark from '../../assets/images/switchDark.svg';
 import useTheme from '../../zustand/theme';
 
 const CustomSwitch = () => {
