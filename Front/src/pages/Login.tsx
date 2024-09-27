@@ -26,7 +26,8 @@ const Login: React.FC = () => {
       } else {
         toast.error('로그인에 실패했습니다.');
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      console.log(err);
       toast.error('로그인 중 오류가 발생했습니다.');
     }
   };

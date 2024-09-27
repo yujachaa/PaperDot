@@ -24,7 +24,8 @@ const config = [
       // "no-console": ["warn", { allow: ["warn", "error", "info"] }],
       eqeqeq: 'error',
       'dot-notation': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
     },
   },
   // Prettier 설정을 추가합니다.
