@@ -58,7 +58,7 @@ public class PaperService {
             PaperSearchResponse paperSearchResponse = getPaperSearchResponse(sqlPaperList, i, pythonSearchList);
 
             for (Bookmark bookmark : bookmarks) {
-                if(paperSearchResponse.getId().equals(bookmark.getPaperId()) ) {
+                if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
                     paperSearchResponse.setBookmark(true);
                 }
             }
