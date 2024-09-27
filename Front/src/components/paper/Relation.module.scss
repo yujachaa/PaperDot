@@ -57,6 +57,9 @@
 
 .tag {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.625rem;
 }

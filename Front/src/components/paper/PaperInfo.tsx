@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './PaperInfo.module.scss';
+import Tag from './Tag';
 
 // PaperInfo 컴포넌트에서 사용할 props의 타입 정의
 interface PaperInfoProps {
@@ -73,7 +74,17 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
         <p>
           <strong>주제어</strong>
         </p>
-        <p>{paperData.keyword.join(', ')}</p>
+        <div className={styles.keyword}>
+          {paperData.keyword
+            ? paperData.keyword.map((item) => (
+                <Tag
+                  key={item}
+                  keyword={item}
+                  type="main"
+                />
+              ))
+            : null}
+        </div>
       </div>
     </div>
   );
