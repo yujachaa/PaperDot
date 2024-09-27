@@ -34,7 +34,7 @@ function RightArrow(props: ArrowProps) {
     right: '-5rem',
     display: 'block',
     backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
-    WebkitMaskImage: `url(${rightArrowIcon})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskImage: `url("${rightArrowIcon}")`, // 마스크로 SVG 이미지 설정
     WebkitMaskSize: '100%',
     WebkitMaskRepeat: 'no-repeat',
     cursor: 'pointer',
@@ -60,7 +60,7 @@ function LeftArrow(props: ArrowProps) {
     left: '-5rem',
     display: 'block',
     backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
-    WebkitMaskImage: `url(${leftArrowIcon})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskImage: `url("${leftArrowIcon}")`, // 마스크로 SVG 이미지 설정
     WebkitMaskSize: '100%',
     WebkitMaskRepeat: 'no-repeat',
     cursor: 'pointer',

@@ -22,7 +22,7 @@ const CustomSwitch = () => {
           isDarkMode ? 'translate-x-10' : 'translate-x-0'
         } mobile:h-6 mobile:w-6 ${isDarkMode ? 'mobile:translate-x-6' : 'mobile:translate-x-0'}`}
         style={{
-          backgroundImage: `url(${isDarkMode ? Dark : Light})`,
+          backgroundImage: `url("${isDarkMode ? Dark : Light}")`,
           backgroundSize: 'contain',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
