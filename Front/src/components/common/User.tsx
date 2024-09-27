@@ -1,4 +1,3 @@
-import React from 'react';
 import userImage from '../../assets/images/유저 이미지.svg';
 
 type UserProps = {

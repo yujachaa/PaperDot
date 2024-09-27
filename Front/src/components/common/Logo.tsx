@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import webLogoLight from '../../assets/images/웹 로고 라이트.svg';
 import webLogoLightHover from '../../assets/images/웹 로고 라이트 호버.svg';
