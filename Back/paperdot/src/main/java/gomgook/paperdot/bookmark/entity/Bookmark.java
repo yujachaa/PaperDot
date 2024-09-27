@@ -1,5 +1,7 @@
 package gomgook.paperdot.bookmark.entity;
 
+import gomgook.paperdot.member.entity.Member;
+import gomgook.paperdot.paper.entity.Paper;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +19,12 @@ public class Bookmark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
-    @Column(nullable = false)
-    private Long paperId;
+    @ManyToOne
+    @JoinColumn(name = "paper_id", nullable = false)
+    private Paper paper;
 
 }
