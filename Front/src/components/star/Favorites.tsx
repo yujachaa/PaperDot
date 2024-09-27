@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import BookMark from '../common/BookMark';
@@ -29,8 +29,11 @@ const Favorites = () => {
   const [linkedNodes, setLinkedNodes] = useState<any[]>([]);
 
   useEffect(() => {
+    const svgElement = svgRef.current as SVGSVGElement | null;
+    if (!svgElement) return;
+
     // D3 라이브러리로 SVG 엘리먼트
-    const svg = d3.select(svgRef.current);
+    const svg = d3.select<SVGSVGElement, unknown>(svgElement);
     // 이전 렌더링 내용 초기화
     svg.selectAll('*').remove();
 
@@ -40,9 +43,12 @@ const Favorites = () => {
     // SVG 크기 설정
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
+    // SVG 그룹 생성, 모든 노드와 링크가 그룹에 추가
+    const svgGroup = svg.append('g');
+
     // 줌 핸들러 설정(사용자가 확대/축소 가능하도록)
     const zoomHandler = d3
-      .zoom()
+      .zoom<SVGSVGElement, unknown>()
       // 줌의 최소 최대 비율 설정
       .scaleExtent([0.5, 3])
       .on('zoom', (event) => {
@@ -51,9 +57,6 @@ const Favorites = () => {
 
     // 줌 핸들러 svg에 적용
     svg.call(zoomHandler);
-
-    // SVG 그룹 생성, 모든 노드와 링크가 그룹에 추가
-    const svgGroup = svg.append('g');
 
     // 노드 색상을 그룹별로 설정
     const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -107,9 +110,15 @@ const Favorites = () => {
       // 그룹에 따른 색상 지정
       .attr('fill', (d: any) => color(d.group))
       // 드래그 핸들러 추가
-      .call(d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded))
+      .call(
+        d3
+          .drag<SVGPolygonElement, unknown>()
+          .on('start', dragStarted)
+          .on('drag', dragged)
+          .on('end', dragEnded),
+      )
       // 노드 클릭시 처리할 함수
-      .on('click', (event: any, d: any) => handleClick(d, linksData));
+      .on('click', (_: any, d: any) => handleClick(d, linksData));
 
     // 노드에 제목 추가
     const text = svgGroup
@@ -217,7 +226,10 @@ const Favorites = () => {
                   className={styles.bookmarkButton}
                   onClick={() => removeNode(node.id)}
                 >
-                  <BookMark />
+                  <BookMark
+                    paperId={0}
+                    bookmark={true}
+                  />
                 </button>
               </li>
             ))}
@@ -230,7 +242,13 @@ const Favorites = () => {
 
 export default Favorites;
 
-function createStarPoints(cx, cy, outerRadius, innerRadius, numPoints) {
+function createStarPoints(
+  cx: number,
+  cy: number,
+  outerRadius: number,
+  innerRadius: number,
+  numPoints: number,
+) {
   let points = '';
   // 별의 각도 계산
   const angle = Math.PI / numPoints;
