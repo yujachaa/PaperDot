@@ -20,8 +20,6 @@ public class Member {
     @Column(nullable = false, unique = true, length = 16)
     private String userId;
 
-    @Column(nullable = false)
-    private String name;
 
     @Column(nullable = false)
     private String password;
@@ -30,7 +28,6 @@ public class Member {
     private String nickname;
 
     @Column(nullable = false)
-
     private String age;
 
     @Enumerated(EnumType.STRING)
@@ -48,13 +45,22 @@ public class Member {
         this.token = token;
     }
 
-    public void updateMemberInfo(String name, String nickname){
-        this.name = name;
-        this.nickname = nickname;
+    public MemberBuilder toBuilder() {
+        return Member.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .password(this.password)
+                .nickname(this.nickname)
+                .age(this.age)
+                .gender(this.gender)
+                .degree(this.degree)
+                .token(this.token)
+                .isActive(this.isActive);
     }
 
     public void updatePassword(String password) {
         this.password = password;
+        this.token = null;
     }
 
 

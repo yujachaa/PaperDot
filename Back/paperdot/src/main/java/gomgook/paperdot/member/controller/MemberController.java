@@ -1,7 +1,9 @@
 package gomgook.paperdot.member.controller;
 
+import gomgook.paperdot.config.auth.JwtUtil;
 import gomgook.paperdot.member.dto.LoginDto;
 import gomgook.paperdot.member.dto.RegisterDto;
+import gomgook.paperdot.member.dto.UpdateDTO;
 import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.service.MemberService;
 import jakarta.transaction.Transactional;
@@ -16,6 +18,7 @@ import java.util.Map;
 @RequestMapping(value = "/members" )
 @RequiredArgsConstructor
 public class MemberController {
+    private final JwtUtil jwtUtil;
     private final MemberService memberService;
 
     @PostMapping("/register")
@@ -95,4 +98,82 @@ public class MemberController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+
+    @DeleteMapping
+    public ResponseEntity<?> resignMember(@RequestHeader(value = "Authorization") String token) {
+        Map<String, String> response = new HashMap<>();
+
+        if (token != null && !token.isEmpty()){
+            Long memberId = jwtUtil.extractMemberId(token);
+
+            memberService.resignMember(memberId);
+            response.put("message", "회원 탈퇴에 성공했습니다");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "로그인된 사용자가 없습니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> updateMember(@RequestHeader(value = "Authorization") String token, @RequestBody UpdateDTO updateInfo) {
+        Map<String, String> response = new HashMap<>();
+
+        if (token != null && !token.isEmpty()){
+            Long memberId = jwtUtil.extractMemberId(token);
+
+            memberService.updateMember(memberId, updateInfo);
+            response.put("message", "회원 수정에 성공했습니다");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "로그인된 사용자가 없습니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, String> passwordMap) {
+        Map<String, String> response = new HashMap<>();
+
+        if (token != null && !token.isEmpty()){
+            Long memberId = jwtUtil.extractMemberId(token);
+
+            memberService.updatePassword(memberId, passwordMap.get("password"));
+            response.put("message", "비밀번호 수정에 성공했습니다");
+            return ResponseEntity.ok().body(response);
+        }
+        else {
+            response.put("message", "로그인된 사용자가 없습니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
+    @PutMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@RequestHeader(value = "Authorization") String token, @RequestBody Map<String, String> passwordMap) {
+        Map<String, String> response = new HashMap<>();
+
+        if (token != null && !token.isEmpty()){
+            Long memberId = jwtUtil.extractMemberId(token);
+
+            if(memberService.checkPassword(memberId, passwordMap.get("password")) ){
+                response.put("message" , "비밀번호가 일치합니다");
+                return ResponseEntity.ok().body(response);
+            }
+            else {
+                response.put("message", "비밀번호가 틀립니다");
+                return ResponseEntity.ok().body(response);
+            }
+        }
+        else {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
 }
