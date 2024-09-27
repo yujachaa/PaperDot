@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './EditProfile.module.scss';
 import useTheme from '../../zustand/theme';
 
