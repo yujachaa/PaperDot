@@ -5,7 +5,7 @@ import styles from './Star.module.scss';
 import Favorites from '../components/star/Favorites';
 
 const Star = () => {
-  const { isDarkMode, toggleDarkMode, setDarkTrue } = useTheme((state) => state);
+  const { isDarkMode, setDarkTrue } = useTheme((state) => state);
 
   useEffect(() => {
     if (!isDarkMode) {

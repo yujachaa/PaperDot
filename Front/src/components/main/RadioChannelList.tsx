@@ -4,25 +4,25 @@ import styles from './RadioChannelList.module.scss';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import 인문사회 from '../../assets/images/channel/상태=인문사회.svg';
-import 인문사회호버 from '../../assets/images/channel/상태=인문사회 호버.svg';
-import 공학 from '../../assets/images/channel/상태=공학.svg';
-import 공학호버 from '../../assets/images/channel/상태=공학 호버.svg';
-import 자연과학 from '../../assets/images/channel/상태=자연.svg';
-import 자연과학호버 from '../../assets/images/channel/상태=자연 호버.svg';
-import 의약학 from '../../assets/images/channel/상태=의약학.svg';
-import 의약학호버 from '../../assets/images/channel/상태=의약학 호버.svg';
-import 예체능 from '../../assets/images/channel/상태=예체능.svg';
-import 예체능호버 from '../../assets/images/channel/상태=예체능 호버.svg';
-import 오른화살표 from '../../assets/images/channel/rightArrow.svg';
-import 왼화살표 from '../../assets/images/channel/leftArrow.svg';
+import HumanImg from '../../assets/images/channel/human.svg';
+import HumanHoverImg from '../../assets/images/channel/humanHover.svg';
+import EngineerImg from '../../assets/images/channel/engineer.svg';
+import EngineerHoverImg from '../../assets/images/channel/engineerHover.svg';
+import ScienceImg from '../../assets/images/channel/science.svg';
+import ScienceHoverImg from '../../assets/images/channel/scienceHover.svg';
+import MedicalImg from '../../assets/images/channel/medical.svg';
+import MedicalHoverImg from '../../assets/images/channel/medicalHover.svg';
+import ArtImg from '../../assets/images/channel/art.svg';
+import ArtHoverImg from '../../assets/images/channel/artHover.svg';
+import rightArrowIcon from '../../assets/images/channel/rightArrow.svg';
+import leftArrowIcon from '../../assets/images/channel/leftArrow.svg';
+import { useNavigate } from 'react-router-dom';
 
 type ArrowProps = {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
 };
-
 function RightArrow(props: ArrowProps) {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const { className, style, onClick } = props;
@@ -34,7 +34,7 @@ function RightArrow(props: ArrowProps) {
     right: '-5rem',
     display: 'block',
     backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
-    WebkitMaskImage: `url(${오른화살표})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskImage: `url("${rightArrowIcon}")`, // 마스크로 SVG 이미지 설정
     WebkitMaskSize: '100%',
     WebkitMaskRepeat: 'no-repeat',
     cursor: 'pointer',
@@ -60,7 +60,7 @@ function LeftArrow(props: ArrowProps) {
     left: '-5rem',
     display: 'block',
     backgroundColor: isDarkMode ? '#fafafa' : '#2e2e2e', // 다크 모드 시 #fafafa 색상 적용
-    WebkitMaskImage: `url(${왼화살표})`, // 마스크로 SVG 이미지 설정
+    WebkitMaskImage: `url("${leftArrowIcon}")`, // 마스크로 SVG 이미지 설정
     WebkitMaskSize: '100%',
     WebkitMaskRepeat: 'no-repeat',
     cursor: 'pointer',
@@ -77,6 +77,11 @@ function LeftArrow(props: ArrowProps) {
 
 const RadioChannelList: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  const handleRadioChannleMove = (index: number) => {
+    navigate(`/radio/${index}`);
+  };
 
   const settings = {
     infinite: true,
@@ -115,11 +120,11 @@ const RadioChannelList: React.FC = () => {
 
   // 각 이미지에 대한 정보를 배열로 관리
   const channels = [
-    { defaultImg: 인문사회, hoverImg: 인문사회호버 },
-    { defaultImg: 공학, hoverImg: 공학호버 },
-    { defaultImg: 자연과학, hoverImg: 자연과학호버 },
-    { defaultImg: 의약학, hoverImg: 의약학호버 },
-    { defaultImg: 예체능, hoverImg: 예체능호버 },
+    { defaultImg: HumanImg, hoverImg: HumanHoverImg },
+    { defaultImg: EngineerImg, hoverImg: EngineerHoverImg },
+    { defaultImg: ScienceImg, hoverImg: ScienceHoverImg },
+    { defaultImg: MedicalImg, hoverImg: MedicalHoverImg },
+    { defaultImg: ArtImg, hoverImg: ArtHoverImg },
   ];
 
   return (
@@ -139,6 +144,7 @@ const RadioChannelList: React.FC = () => {
               onTouchStart={() => setHoveredIndex(index)} // 모바일 터치 이벤트 추가
               onTouchEnd={() => setHoveredIndex(null)} // 터치 해제 시 이벤트 추가
               tabIndex={0} // 키보드 포커스 가능하게 설정
+              onClick={() => handleRadioChannleMove(index)}
             >
               <img
                 src={hoveredIndex === index ? channel.hoverImg : channel.defaultImg} // 호버 상태에 따라 이미지 변경

@@ -1,9 +1,10 @@
-import userImage from '../../assets/images/유저 이미지.svg';
+import userImage from '../../assets/images/user.svg';
 
 type UserProps = {
-  className: string;
+  className?: string;
 };
-const User = ({ className }: UserProps) => {
+
+const User = ({ className = '' }: UserProps) => {
   return (
     <img
       className={`w-14 h-14 ${className}`}

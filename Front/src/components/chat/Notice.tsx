@@ -1,5 +1,5 @@
 import style from './Notice.module.scss';
-import Cancel from '../../assets/images/취소.svg?react';
+import Cancel from '../../assets/images/cancel.svg?react';
 import useTheme from '../../zustand/theme';
 
 type NoticeProps = {

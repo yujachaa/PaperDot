@@ -1,4 +1,4 @@
-import MusicIconImage from '../../assets/images/음악볼륨.gif';
+import MusicIconImage from '../../assets/images/volume.gif';
 
 type MusicIconProps = {
   className?: string;

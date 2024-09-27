@@ -1,5 +1,5 @@
 import styles from './ChatRoom.module.scss';
-import notice from '../../assets/images/공지사항.svg';
+import notice from '../../assets/images/notice.svg';
 import Message from './Message';
 import SendInput from './SendInput';
 import UserInfoModal from './UserInfoModal';
@@ -57,8 +57,9 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
   const [selectedData, setselectedData] = useState<GroupMessage | null>(null);
   const { client, connected } = useWebSocket();
   const inputRef = useRef<HTMLInputElement>(null);
-  const openModal = (position: { top: number; left: number }, data: GroupMessage) => {
-    setModalPosition(position);
+
+  const openModal = (top: number, left: number, data: GroupMessage) => {
+    setModalPosition({ top, left });
     setModalVisible(true);
     setselectedData(data);
   };
