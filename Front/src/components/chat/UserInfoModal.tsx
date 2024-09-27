@@ -1,5 +1,5 @@
 import style from './UserInfo.module.scss';
-import Cancel from '../../assets/images/취소.svg?react';
+import Cancel from '../../assets/images/cancel.svg?react';
 type UserInfoModalProps = {
   className?: string;
   onClose: () => void;

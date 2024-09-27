@@ -1,4 +1,4 @@
-import userImage from '../../assets/images/유저 이미지.svg';
+import userImage from '../../assets/images/user.svg';
 
 type UserProps = {
   className?: string;

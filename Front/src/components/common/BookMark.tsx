@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import nonBookMark from '../../assets/images/빈북마크.svg';
-import fullBookMark from '../../assets/images/찬북마크.svg';
-import nonBookMarkDark from '../../assets/images/다크모드빈북마크.svg';
+import nonBookMark from '../../assets/images/emptyBook.svg';
+import fullBookMark from '../../assets/images/fullBook.svg';
+import nonBookMarkDark from '../../assets/images/emptyBookDark.svg';
 import useTheme from '../../zustand/theme';
 
 type BookMarkProps = {

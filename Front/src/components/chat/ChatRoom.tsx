@@ -1,5 +1,5 @@
 import styles from './ChatRoom.module.scss';
-import notice from '../../assets/images/공지사항.svg';
+import notice from '../../assets/images/notice.svg';
 import Message from './Message';
 import SendInput from './SendInput';
 import UserInfoModal from './UserInfoModal';

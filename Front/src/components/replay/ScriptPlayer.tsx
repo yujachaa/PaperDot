@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './ScriptPlayer.module.scss';
 import Script from './Script';
-import SkipBack from '../../assets/images/뒤로감기.svg?react';
+import SkipBack from '../../assets/images/back.svg?react';
 import { FaStop } from 'react-icons/fa';
 import { HiMiniPlay } from 'react-icons/hi2';
 import { HiMiniPause } from 'react-icons/hi2';
-import SkipForward from '../../assets/images/빨리감기.svg?react';
+import SkipForward from '../../assets/images/fastforward.svg?react';
 import { HiMiniSpeakerWave } from 'react-icons/hi2';
 
 const ScriptPlayer = () => {
