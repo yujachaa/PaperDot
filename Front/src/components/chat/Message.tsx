@@ -4,7 +4,7 @@ import style from './Message.module.scss';
 
 type MessageProps = {
   className?: string;
-  openModal: (position: { top: number; left: number }) => void; // prop 추가
+  openModal: (top: number, left: number) => void; // prop 추가
 };
 
 const Message = ({ className, openModal }: MessageProps) => {
@@ -18,7 +18,7 @@ const Message = ({ className, openModal }: MessageProps) => {
       const left = boxRef.current.offsetLeft;
 
       // 결과를 모달 위치에 넘김
-      openModal({ top, left });
+      openModal(top, left);
     }
   };
 

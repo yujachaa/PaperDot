@@ -14,8 +14,8 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
   const [isNotice, setIsNotice] = useState(true);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
 
-  const openModal = (position: { top: number; left: number }) => {
-    setModalPosition(position);
+  const openModal = (top: number, left: number) => {
+    setModalPosition({ top, left });
     setModalVisible(true);
   };
 

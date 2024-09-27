@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './ScriptPlayer.module.scss';
 import Script from './Script';
 import SkipBack from '../../assets/images/back.svg?react';
