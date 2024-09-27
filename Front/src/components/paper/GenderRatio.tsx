@@ -12,17 +12,17 @@ const GenderRatio: React.FC = () => {
       id: '남자',
       label: '남자',
       value: 60,
-      color: 'hsl(233, 98%, 60%)',
+      // color: 'hsl(233, 98%, 60%)',
     },
     {
       id: '여자',
       label: '여자',
       value: 40,
-      color: 'hsl(3, 70%, 50%)',
+      // color: 'hsl(3, 70%, 50%)',
     },
   ];
   return (
-    <div className="w-[300px] h-[300px]">
+    <div className="w-full h-[20rem]">
       <ResponsivePie
         data={data}
         margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
@@ -47,7 +47,7 @@ const GenderRatio: React.FC = () => {
             direction: 'row',
             justify: false,
             translateX: 0,
-            translateY: 30,
+            translateY: 50,
             itemWidth: 60,
             itemHeight: 20,
             itemsSpacing: 0,
