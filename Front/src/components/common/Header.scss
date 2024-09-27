@@ -16,6 +16,18 @@
   gap: 30px;
 }
 
-.user-dropdown {
-  display: flex;
+.header {
+  .ml-16 {
+    margin-left: 64px;
+
+    @media (max-width: 768px) {
+      margin-left: 32px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header_right {
+    margin-right: 32px;
+  }
 }

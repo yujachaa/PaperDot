@@ -1,4 +1,12 @@
+import { useState, useEffect } from 'react';
+
 export const useAuth = () => {
-  const token = sessionStorage.getItem('token');
-  return !!token;
+  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('token'));
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  return isLoggedIn;
 };
