@@ -8,7 +8,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
 import SearchResult from '../pages/SearchResult';
 import Replay from '../pages/Replay';
-import PapaerDetail from '../pages/PaperDetail';
+import PaperDetail from '../pages/PaperDetail';
 
 export const router = createBrowserRouter([
   {
@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/paper/:id',
-        element: <PapaerDetail />,
+        element: <PaperDetail />,
       },
     ],
   },
