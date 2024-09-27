@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './SendInput.module.scss';
 import useTheme from '../../zustand/theme';
 import InputIcon from '../../assets/images/submit.svg?react';

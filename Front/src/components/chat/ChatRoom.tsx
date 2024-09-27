@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './ChatRoom.module.scss';
 import notice from '../../assets/images/notice.svg';
 import Message from './Message';
