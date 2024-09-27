@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './Relation.module.scss';
 import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
+import Tag from './Tag';
 
 interface RelationPaperProps {
   relation?: {
@@ -81,7 +82,17 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
                 </p>
                 <p>{item.author.join(', ')}</p>
                 <p>{item.year}</p>
-                <div className={styles.tag}>{item.keyword.join(', ')}</div>
+                <div className={styles.tag}>
+                  {item.keyword
+                    ? item.keyword.map((item) => (
+                        <Tag
+                          key={item}
+                          keyword={item}
+                          type="relation"
+                        />
+                      ))
+                    : null}
+                </div>
               </div>
             ))}
           </Slider>
