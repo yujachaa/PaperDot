@@ -70,6 +70,7 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
   };
 
   const handleSendMessage = () => {
+    console.log(inputRef.current);
     const message = inputRef.current!.value;
 
     if (message !== '') {

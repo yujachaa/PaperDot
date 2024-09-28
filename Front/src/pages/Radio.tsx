@@ -7,7 +7,7 @@ import styles from './Radio.module.scss';
 
 const Radio = () => {
   const navigate = useNavigate();
-  let { id } = useParams();
+  const { id } = useParams();
   const handleReplayMove = () => {
     navigate(`/replay/${Number(id)}`);
   };
