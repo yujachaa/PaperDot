@@ -8,7 +8,7 @@ interface TagProps {
 
 const Tag: React.FC<TagProps> = ({ keyword, type }) => {
   const navigation = useNavigate();
-  const bgColor = type === 'main' ? '#8CAFCE' : '#FFF';
+  const bgColor = type === 'main' ? '#8CAFCE' : 'none';
   const textColor = type === 'main' ? '#fafafa' : '#5A9BD8';
 
   // 스타일 객체 정의 시 카멜 케이스를 사용해야 함

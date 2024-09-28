@@ -1,10 +1,14 @@
 .statistics {
   display: flex;
-  padding: 0px 150px 46px 150px;
+  padding: 0rem 9.375rem 2.875rem 9.375rem;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 0.625rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    padding: 0rem 1.25rem 3.5rem 1.25rem;
+  }
 }
 
 .title {
@@ -22,6 +26,14 @@
   justify-content: space-between;
   align-items: flex-start;
   align-self: stretch;
+
+  & {
+    @media (max-width: 1150px) {
+      flex-direction: column;
+      gap: 3rem;
+      align-items: center;
+    }
+  }
 }
 
 .graph {
@@ -38,4 +50,8 @@
 
 .graphTitle {
   font-weight: bold;
+}
+
+.darkLine {
+  border-bottom: 1px solid #626262;
 }
