@@ -26,7 +26,6 @@
   "dependencies": {
     "@headlessui/react": "^2.1.8",
     "@stomp/stompjs": "^7.0.0",
-    "@testing-library/react": "^16.0.1",
     "@nivo/bar": "^0.87.0",
     "@nivo/core": "^0.87.0",
     "@nivo/pie": "^0.87.0",
