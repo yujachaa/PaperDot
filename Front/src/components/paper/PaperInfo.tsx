@@ -39,7 +39,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
   const abstract = paperData.abstractText.ko || paperData.abstractText.en;
 
   return (
-    <div className={styles.info}>
+    <div className={`${styles.info} text-light-text`}>
       <div className={styles.infoText}>
         <p>
           <strong>저자</strong>
@@ -60,6 +60,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
           href={paperLink}
           target="_blank"
           rel="noopener noreferrer"
+          className="w-full break-all underline"
         >
           {paperLink}
         </a>

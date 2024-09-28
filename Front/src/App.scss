@@ -33,3 +33,8 @@ body {
     padding-right: 20px;
   }
 }
+
+//슬라이드 내용 크기만큼 width 설정
+.slick-track {
+  width: max-content;
+}

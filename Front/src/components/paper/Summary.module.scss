@@ -5,6 +5,10 @@
   align-items: flex-start;
   gap: 0.625rem;
   align-self: stretch;
+
+  @media (max-width: 768px) {
+    padding: 1.5625rem 1.25rem;
+  }
 }
 
 .title {
@@ -14,6 +18,10 @@
   gap: 0.625rem;
   align-self: stretch;
   border-bottom: 1px solid rgba(46, 46, 46, 0.2);
+}
+
+.darkLine {
+  border-bottom: 1px solid #626262;
 }
 
 .contentArea {
