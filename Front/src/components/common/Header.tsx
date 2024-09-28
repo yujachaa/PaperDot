@@ -9,7 +9,6 @@ import { useLocation } from 'react-router-dom';
 const Header = () => {
   const loaction = useLocation();
   const isLoggedIn = useAuth();
-  console.log(loaction);
   return (
     <div className="header">
       {loaction.pathname === '/' ? null : <Logo className="ml-16" />}
