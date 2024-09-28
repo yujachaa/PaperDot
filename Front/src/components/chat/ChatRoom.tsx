@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import Notice from './Notice';
 import { GroupMessage } from '../../interface/chat';
 import { useWebSocket } from '../../context/WebSocketContext';
+import { toast } from 'react-toastify';
 type ChatRoomProps = {
   className?: string;
 };
@@ -70,7 +71,6 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
   };
 
   const handleSendMessage = () => {
-    console.log(inputRef.current);
     const message = inputRef.current!.value;
 
     if (message !== '') {
@@ -86,7 +86,9 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
         );
         inputRef.current!.value = '';
       } else {
-        alert('웹소켓 연결이 끊겨 있습니다');
+        toast.warn('웹소켓 연결이 끊겨 있습니다', {
+          position: 'top-right',
+        });
       }
     }
   };
