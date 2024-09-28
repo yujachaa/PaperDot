@@ -8,7 +8,7 @@ interface WebSocketContextType {
   setConnected: (connected: boolean) => void;
 }
 
-const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
+const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [client, setClient] = useState<CompatClient | null>(null);
