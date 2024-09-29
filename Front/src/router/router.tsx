@@ -24,11 +24,11 @@ export const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: '/radio',
+        path: '/radio/:id',
         element: <Radio />,
       },
       {
-        path: '/replay',
+        path: '/replay/:id',
         element: <Replay />,
       },
       {
