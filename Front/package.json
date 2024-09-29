@@ -25,10 +25,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.1.8",
-    "@stomp/stompjs": "^7.0.0",
     "@nivo/bar": "^0.87.0",
     "@nivo/core": "^0.87.0",
     "@nivo/pie": "^0.87.0",
+    "@stomp/stompjs": "^7.0.0",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.7",
     "d3": "^7.9.0",
@@ -38,6 +38,7 @@
     "react-router-dom": "^6.26.2",
     "react-slick": "^0.30.2",
     "react-toastify": "^10.0.5",
+    "sass": "^1.79.4",
     "slick-carousel": "^1.8.1",
     "vite-tsconfig-paths": "^5.0.1",
     "zustand": "^4.5.5"
