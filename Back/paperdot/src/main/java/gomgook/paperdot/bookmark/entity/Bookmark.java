@@ -27,4 +27,8 @@ public class Bookmark {
     @JoinColumn(name = "paper_id", nullable = false)
     private Paper paper;
 
+    public void setBookmark(Member member, Paper paper) {
+        this.member = member;
+        this.paper = paper;
+    }
 }

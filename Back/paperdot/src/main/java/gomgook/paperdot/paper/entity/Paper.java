@@ -25,5 +25,12 @@ public class Paper {
     private Long bookmarkCnt;
 
 
+    public void addBookmark() {
+        this.bookmarkCnt ++;
+    }
+
+    public void removeBookmark() {
+        this.bookmarkCnt --;
+    }
 
 }

@@ -9,11 +9,15 @@ import gomgook.paperdot.bookmark.entity.BookmarkPaperIdProjection;
 import gomgook.paperdot.bookmark.repository.BookmarkRepository;
 import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
+import gomgook.paperdot.member.entity.Member;
+import gomgook.paperdot.member.repository.MemberRepository;
 import gomgook.paperdot.paper.dto.PaperSearchResponse;
 import gomgook.paperdot.paper.dto.RelationDTO;
+import gomgook.paperdot.paper.entity.Paper;
 import gomgook.paperdot.paper.entity.PaperDocument;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
+import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import gomgook.paperdot.paper.service.PaperService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final PaperESRepository paperESRepository;
     private final PapersimpleESRepository papersimpleESRepository;
+    private final MemberRepository memberRepository;
+    private final PaperJpaRepository paperJpaRepository;
     private final PaperService paperService;
 
     public BookmarkResponse getBookmarks(Long memberId) {
@@ -99,6 +105,32 @@ public class BookmarkService {
         bookmarkRelResponse.setRelation(paperSearchResponseList);
 
         return bookmarkRelResponse;
+    }
+
+    public void bookmarkToggle(Long memberId, Long paperId) {
+
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+        Bookmark bookmark = bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null);
+
+
+        if(bookmark==null) {
+
+            paper.addBookmark();
+            bookmark = new Bookmark();
+
+            bookmark.setBookmark(member, paper);
+            bookmarkRepository.save(bookmark);
+            paperJpaRepository.save(paper);
+        }
+        else {
+
+            paper.removeBookmark();
+
+            bookmarkRepository.deleteAllByMemberAndPaper(member, paper);
+            paperJpaRepository.save(paper);
+
+        }
     }
 
 
