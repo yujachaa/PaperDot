@@ -8,7 +8,6 @@ import java.util.List;
 @Getter @Setter
 public class PaperSearchResponse {
     private Long id;
-    private String docId;
     private String title;
     private List<String> author;
     private String year;

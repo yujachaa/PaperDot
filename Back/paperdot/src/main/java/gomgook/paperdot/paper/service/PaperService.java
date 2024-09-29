@@ -8,6 +8,7 @@ import gomgook.paperdot.exception.ExceptionResponse;
 import gomgook.paperdot.paper.dto.*;
 import gomgook.paperdot.paper.entity.Paper;
 import gomgook.paperdot.paper.entity.PaperDocument;
+import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +130,6 @@ public class PaperService {
         PythonPaper pythonPaper = pythonSearchList.get(i);
 
         response.setId(sqlPaper.getId());
-        response.setDocId(pythonPaper.getDocId());
         response.setYear(pythonPaper.getYear());
         response.setCnt(sqlPaper.getBookmarkCnt());
         response.setAuthor(pythonPaper.getAuthor());
@@ -138,14 +138,10 @@ public class PaperService {
         return response;
     }
 
-
-
     //
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
 
-
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
-
         Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
 
         Bookmark bookmark = (memberId != null)
@@ -155,7 +151,7 @@ public class PaperService {
         return setPaperDetail(paperDocument, paper, bookmark);
     }
 
-    private static PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, Bookmark bookmark) {
+    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, Bookmark bookmark) {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
@@ -171,7 +167,9 @@ public class PaperService {
         paperDetail.setAbstractText(paperDocument.getAbstractText());
         paperDetail.setCnt(paper.getBookmarkCnt());
         paperDetail.setCategory(paperDocument.getCategory());
-        paperDetail.setRelation(paperDocument.getRelation());
+
+        List<Long> ids = paperDocument.getRelation().stream().map(RelationDTO::getId).toList();
+        paperDetail.setRelation(setPaperRelation(ids));
 
         if(bookmark != null) paperDetail.setBookmark(true);
 
@@ -181,6 +179,26 @@ public class PaperService {
     public String getPaperSummary(Long paperId) {
         String summary = null;
         return summary;
+    }
+
+    public List<PaperSearchResponse> setPaperRelation(List<Long> ids) {
+        List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
+
+        List<PaperSimpleDocument> paperSimpleDocumentList = paperESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+
+        for(PaperSimpleDocument paper : paperSimpleDocumentList) {
+            PaperSearchResponse paperSearchResponse = new PaperSearchResponse();
+            paperSearchResponse.setId(paper.getId());
+            paperSearchResponse.setTitle(paper.getTitle().getKo());
+            paperSearchResponse.setYear(paper.getYear());
+
+            String authors = paper.getAuthors();
+            paperSearchResponse.setAuthor(Arrays.stream(authors.split(";")).toList());
+
+            paperSearchResponseList.add(paperSearchResponse);
+        }
+
+        return paperSearchResponseList;
     }
 
 }

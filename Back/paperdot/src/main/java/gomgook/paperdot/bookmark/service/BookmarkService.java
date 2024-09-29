@@ -1,15 +1,21 @@
 package gomgook.paperdot.bookmark.service;
 
+import gomgook.paperdot.bookmark.dto.BookmarkRelResponse;
 import gomgook.paperdot.bookmark.dto.BookmarkResponse;
 import gomgook.paperdot.bookmark.dto.EdgeDTO;
 import gomgook.paperdot.bookmark.dto.NodeDTO;
 import gomgook.paperdot.bookmark.entity.Bookmark;
 import gomgook.paperdot.bookmark.entity.BookmarkPaperIdProjection;
 import gomgook.paperdot.bookmark.repository.BookmarkRepository;
+import gomgook.paperdot.exception.CustomException;
+import gomgook.paperdot.exception.ExceptionResponse;
+import gomgook.paperdot.paper.dto.PaperSearchResponse;
 import gomgook.paperdot.paper.dto.RelationDTO;
 import gomgook.paperdot.paper.entity.PaperDocument;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
+import gomgook.paperdot.paper.repository.PapersimpleESRepository;
+import gomgook.paperdot.paper.service.PaperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +29,8 @@ import java.util.stream.Collectors;
 public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final PaperESRepository paperESRepository;
+    private final PapersimpleESRepository papersimpleESRepository;
+    private final PaperService paperService;
 
     public BookmarkResponse getBookmarks(Long memberId) {
 
@@ -37,7 +45,7 @@ public class BookmarkService {
         bookmarkResponse.setEdges(setEdges(papers));
         return bookmarkResponse;
     }
-    private List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
+    private static List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
 
         List<NodeDTO> nodes = new ArrayList<>();
 
@@ -55,7 +63,7 @@ public class BookmarkService {
 
         return nodes;
     }
-    private List<EdgeDTO> setEdges(List<PaperSimpleDocument> papers) {
+    private static List<EdgeDTO> setEdges(List<PaperSimpleDocument> papers) {
 
         List<EdgeDTO> edges = new ArrayList<>();
 
@@ -72,6 +80,25 @@ public class BookmarkService {
             }
         }
         return edges;
+    }
+
+    public BookmarkRelResponse getBookmarkRelation(Long paperId) {
+
+        BookmarkRelResponse bookmarkRelResponse = new BookmarkRelResponse();
+        PaperSimpleDocument paperSimpleDocument = papersimpleESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+
+        List<Long> ids = paperSimpleDocument.getRelation().stream().map(RelationDTO::getId).toList();
+        List<PaperSearchResponse> paperSearchResponseList = paperService.setPaperRelation(ids);
+
+        bookmarkRelResponse.setId(paperSimpleDocument.getId());
+        bookmarkRelResponse.setTitle(paperSimpleDocument.getTitle().getKo());
+        bookmarkRelResponse.setYear(paperSimpleDocument.getYear());
+
+        String authors = paperSimpleDocument.getAuthors();
+        bookmarkRelResponse.setAuthor(Arrays.stream(authors.split(";")).toList());
+        bookmarkRelResponse.setRelation(paperSearchResponseList);
+
+        return bookmarkRelResponse;
     }
 
 
