@@ -16,13 +16,13 @@ import ArtImg from '../../assets/images/channel/art.svg';
 import ArtHoverImg from '../../assets/images/channel/artHover.svg';
 import rightArrowIcon from '../../assets/images/channel/rightArrow.svg';
 import leftArrowIcon from '../../assets/images/channel/leftArrow.svg';
+import { useNavigate } from 'react-router-dom';
 
 type ArrowProps = {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
 };
-
 function RightArrow(props: ArrowProps) {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const { className, style, onClick } = props;
@@ -77,6 +77,11 @@ function LeftArrow(props: ArrowProps) {
 
 const RadioChannelList: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  const handleRadioChannleMove = (index: number) => {
+    navigate(`/radio/${index}`);
+  };
 
   const settings = {
     infinite: true,
@@ -139,6 +144,7 @@ const RadioChannelList: React.FC = () => {
               onTouchStart={() => setHoveredIndex(index)} // 모바일 터치 이벤트 추가
               onTouchEnd={() => setHoveredIndex(null)} // 터치 해제 시 이벤트 추가
               tabIndex={0} // 키보드 포커스 가능하게 설정
+              onClick={() => handleRadioChannleMove(index)}
             >
               <img
                 src={hoveredIndex === index ? channel.hoverImg : channel.defaultImg} // 호버 상태에 따라 이미지 변경

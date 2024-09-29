@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import useTheme from './zustand/theme';
 import { useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -16,6 +17,7 @@ function App() {
   return (
     <>
       <Outlet />
+      <ToastContainer />
     </>
   );
 }

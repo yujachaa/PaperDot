@@ -1,12 +1,14 @@
 import style from './UserInfo.module.scss';
 import Cancel from '../../assets/images/cancel.svg?react';
+import { GroupMessage } from '../../interface/chat';
 type UserInfoModalProps = {
   className?: string;
   onClose: () => void;
   position: { top: number; left: number };
+  data: GroupMessage | null;
 };
 
-const UserInfoModal = ({ className, onClose, position }: UserInfoModalProps) => {
+const UserInfoModal = ({ className, onClose, position, data }: UserInfoModalProps) => {
   return (
     <div
       className={`${style.box} ${className}`}
@@ -17,8 +19,8 @@ const UserInfoModal = ({ className, onClose, position }: UserInfoModalProps) => 
           onClick={onClose}
           className="absolute top-3 right-3 cursor-pointer"
         />
-        <div>김싸피</div>
-        <div>별 보러 가기</div>
+        <div>{data?.Writernickname}</div>
+        <div className="cursor-pointer">별 보러 가기</div>
       </div>
     </div>
   );
