@@ -81,7 +81,7 @@ public class MemberService {
     }
 
     public void resignMember(Long memberId) {
-        bookmarkRepository.deleteAllByMemberId(memberId);
+//        bookmarkRepository.deleteAllByMemberId(memberId);
         chatRepository.deleteAllByMemberId(memberId);
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));

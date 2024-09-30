@@ -5,6 +5,8 @@ import gomgook.paperdot.bookmark.entity.Bookmark;
 import gomgook.paperdot.bookmark.repository.BookmarkRepository;
 import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
+import gomgook.paperdot.member.entity.Member;
+import gomgook.paperdot.member.repository.MemberRepository;
 import gomgook.paperdot.paper.dto.*;
 import gomgook.paperdot.paper.entity.Paper;
 import gomgook.paperdot.paper.entity.PaperDocument;
@@ -33,8 +35,11 @@ public class PaperService {
     @Autowired
     private PaperESRepository paperESRepository;
 
+//    @Autowired
+//    private BookmarkRepository bookmarkRepository;
+
     @Autowired
-    private BookmarkRepository bookmarkRepository;
+    private MemberRepository memberRepository;
     private final WebClient webClient;
 
 //    @Autowired
@@ -48,21 +53,22 @@ public class PaperService {
         TotalPageSearchResponse response = new TotalPageSearchResponse();
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
         // bookmarkInfo from MySQL
         List<Paper> sqlPaperList = paperJpaRepository.findByDocIdIn(docIds).orElse(new ArrayList<>());
-        List<Bookmark> bookmarks = (memberId != null)
-                ? bookmarkRepository.findAllByMemberId(memberId).orElseGet(ArrayList::new)
-                : Collections.emptyList();
+//        List<Bookmark> bookmarks = (memberId != null)
+//                ? bookmarkRepository.findAllByMember(member).orElseGet(ArrayList::new)
+//                : Collections.emptyList();
 
 
         for(int i=0; i< pythonSearchList.size(); i++) {
             PaperSearchResponse paperSearchResponse = getPaperSearchResponse(sqlPaperList, i, pythonSearchList);
 
-            for (Bookmark bookmark : bookmarks) {
-                if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
-                    paperSearchResponse.setBookmark(true);
-                }
-            }
+//            for (Bookmark bookmark : bookmarks) {
+//                if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
+//                    paperSearchResponse.setBookmark(true);
+//                }
+//            }
 
             paperSearchResponseList.add(paperSearchResponse);
         }
@@ -143,15 +149,16 @@ public class PaperService {
 
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
         Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
 
-        Bookmark bookmark = (memberId != null)
-                ? bookmarkRepository.findAllByMemberIdAndPaperId(memberId, paperId).orElse(null)
-                : null;
+//        Bookmark bookmark = (member != null)
+//                ? bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null)
+//                : null;
 
-        return setPaperDetail(paperDocument, paper, bookmark);
+        return setPaperDetail(paperDocument, paper, false);
     }
 
-    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, Bookmark bookmark) {
+    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, boolean bookmark) {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
@@ -171,7 +178,8 @@ public class PaperService {
         List<Long> ids = paperDocument.getRelation().stream().map(RelationDTO::getId).toList();
         paperDetail.setRelation(setPaperRelation(ids));
 
-        if(bookmark != null) paperDetail.setBookmark(true);
+//        if(bookmark != null)
+            paperDetail.setBookmark(true);
 
         return paperDetail;
     }

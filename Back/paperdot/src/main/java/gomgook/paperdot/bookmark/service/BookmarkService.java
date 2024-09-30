@@ -42,13 +42,13 @@ public class BookmarkService {
 
         BookmarkResponse bookmarkResponse = new BookmarkResponse();
 
-        List<BookmarkPaperIdProjection> paperIds = bookmarkRepository.findAllPaperIdByMemberId(memberId);
-        List<Long> paperIdList = paperIds.stream().map(BookmarkPaperIdProjection::getPaperId).toList();
-
-        List<PaperSimpleDocument> papers = paperESRepository.findAllByIdIn(paperIdList).orElse(new ArrayList<>());
-
-        bookmarkResponse.setNodes(setNodes(papers));
-        bookmarkResponse.setEdges(setEdges(papers));
+//        List<BookmarkPaperIdProjection> paperIds = bookmarkRepository.findAllPaperIdByMember(memberId);
+//        List<Long> paperIdList = paperIds.stream().map(BookmarkPaperIdProjection::getPaperId).toList();
+//
+//        List<PaperSimpleDocument> papers = paperESRepository.findAllByIdIn(paperIdList).orElse(new ArrayList<>());
+//
+//        bookmarkResponse.setNodes(setNodes(papers));
+//        bookmarkResponse.setEdges(setEdges(papers));
         return bookmarkResponse;
     }
     private static List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
@@ -108,29 +108,31 @@ public class BookmarkService {
     }
 
     public void bookmarkToggle(Long memberId, Long paperId) {
+        System.out.println("BookmarkToggle service in");
+        System.out.println(memberId + "   " + paperId);
+//        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+//        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+//        Bookmark bookmark = bookmarkRepository.findAllByMember_IdAndPaper_Id(memberId, paperId).orElse(null);
 
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
-        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
-        Bookmark bookmark = bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null);
+//        System.out.println("bookmark="+bookmark+" paper="+paper.getId()+" member="+member.getUserId());
 
-
-        if(bookmark==null) {
-
-            paper.addBookmark();
-            bookmark = new Bookmark();
-
-            bookmark.setBookmark(member, paper);
-            bookmarkRepository.save(bookmark);
-            paperJpaRepository.save(paper);
-        }
-        else {
-
-            paper.removeBookmark();
-
-            bookmarkRepository.deleteAllByMemberAndPaper(member, paper);
-            paperJpaRepository.save(paper);
-
-        }
+//        if(bookmark==null) {
+//
+//            paper.addBookmark();
+//            bookmark = new Bookmark();
+//
+//            bookmark.setBookmark(member, paper);
+//            bookmarkRepository.save(bookmark);
+//            paperJpaRepository.save(paper);
+//        }
+//        else {
+//
+//            paper.removeBookmark();
+//
+//            bookmarkRepository.deleteAllByMemberAndPaper(member, paper);
+//            paperJpaRepository.save(paper);
+//
+//        }
     }
 
 

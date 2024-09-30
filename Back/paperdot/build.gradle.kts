@@ -23,6 +23,11 @@ repositories {
 	mavenCentral()
 }
 
+
+tasks.withType<JavaCompile> {
+	options.compilerArgs.add("-parameters")
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
