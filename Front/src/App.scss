@@ -38,3 +38,36 @@ body {
 .slick-track {
   width: max-content;
 }
+
+//마크다운 표시를 위한 h1, h2, h3 태그 설정
+h1 {
+  font-weight: bold;
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.5rem; /* 24px */
+}
+
+ul > li {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
+ol > li {
+  list-style-type: decimal;
+  list-style-position: inside;
+}
+
+li > ul {
+  text-indent: 1rem;
+}
