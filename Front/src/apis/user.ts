@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { api } from './core';
+import { api, Authapi } from './core';
 
 // 회원가입
 export async function signup(
@@ -73,6 +73,23 @@ export async function login(userId: string, password: string) {
       userId,
       password,
     });
+    return response;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      if (!err.response) {
+        return undefined;
+      } else {
+        console.log(err.response);
+        return err.response;
+      }
+    }
+  }
+}
+
+// 회원 탈퇴
+export async function withdrawUser() {
+  try {
+    const response = await Authapi.delete('/api/members');
     return response;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
