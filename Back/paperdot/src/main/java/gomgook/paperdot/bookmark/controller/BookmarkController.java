@@ -35,16 +35,16 @@ public class BookmarkController {
         return ResponseEntity.ok(bookmarkResponse);
     }
 
-    @GetMapping("/relation/{paperId}")
-    public ResponseEntity<?> getRelations(@RequestHeader(value = "Authorization") String token, @PathVariable Long paperId) {
+    @GetMapping("/relation")
+    public ResponseEntity<?> getRelations(@RequestHeader(value = "Authorization") String token, @RequestParam("paperId") Long paperId) {
 
         BookmarkRelResponse bookmarkRelResponse = bookmarkService.getBookmarkRelation(paperId);
 
         return ResponseEntity.ok(bookmarkRelResponse);
     }
 
-    @GetMapping("/{paperId}")
-    public ResponseEntity<?> bookmarkToggle(@RequestHeader(value = "Authorization") String token, @PathVariable Long paperId) {
+    @GetMapping
+    public ResponseEntity<?> bookmarkToggle(@RequestHeader(value = "Authorization") String token, @RequestParam("paperId") Long paperId) {
         Map<String, String> response = new HashMap<>();
         Long memberId = null;
 

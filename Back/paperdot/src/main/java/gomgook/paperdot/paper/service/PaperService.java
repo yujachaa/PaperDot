@@ -35,8 +35,8 @@ public class PaperService {
     @Autowired
     private PaperESRepository paperESRepository;
 
-//    @Autowired
-//    private BookmarkRepository bookmarkRepository;
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -56,19 +56,19 @@ public class PaperService {
         Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
         // bookmarkInfo from MySQL
         List<Paper> sqlPaperList = paperJpaRepository.findByDocIdIn(docIds).orElse(new ArrayList<>());
-//        List<Bookmark> bookmarks = (memberId != null)
-//                ? bookmarkRepository.findAllByMember(member).orElseGet(ArrayList::new)
-//                : Collections.emptyList();
+        List<Bookmark> bookmarks = (memberId != null)
+                ? bookmarkRepository.findAllByMember(member).orElseGet(ArrayList::new)
+                : Collections.emptyList();
 
 
         for(int i=0; i< pythonSearchList.size(); i++) {
             PaperSearchResponse paperSearchResponse = getPaperSearchResponse(sqlPaperList, i, pythonSearchList);
 
-//            for (Bookmark bookmark : bookmarks) {
-//                if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
-//                    paperSearchResponse.setBookmark(true);
-//                }
-//            }
+            for (Bookmark bookmark : bookmarks) {
+                if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
+                    paperSearchResponse.setBookmark(true);
+                }
+            }
 
             paperSearchResponseList.add(paperSearchResponse);
         }
@@ -151,9 +151,9 @@ public class PaperService {
         Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
 
-//        Bookmark bookmark = (member != null)
-//                ? bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null)
-//                : null;
+        Bookmark bookmark = (member != null)
+                ? bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null)
+                : null;
 
         return setPaperDetail(paperDocument, paper, false);
     }

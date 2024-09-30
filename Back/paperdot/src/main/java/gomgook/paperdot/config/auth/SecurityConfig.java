@@ -18,7 +18,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-
+    @Autowired
     private final JwtRequestFilter jwtRequestFilter;
 
 

@@ -44,30 +44,22 @@ public class PaperController {
         return ResponseEntity.ok(paperSearchResponseList);
     }
 
-//    @GetMapping("/{paperId}")
-//    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long paperId) throws Exception {
-//        Long memberId = null;
-//
-//        if (token != null && !token.isEmpty()){
-//            memberId = jwtUtil.extractMemberId(token);
-//        }
-//        PaperDetailResponse paperDetail = paperService.getPaperDetail(paperId, memberId);
-//
-//        return ResponseEntity.ok(paperDetail);
-//    }
-
-    @GetMapping("/{paperId}")
-    public ResponseEntity<?> test( @PathVariable Long paperId) throws Exception {
+    @GetMapping
+    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("paperId") Long paperId) throws Exception {
         Long memberId = null;
 
-
+        if (token != null && !token.isEmpty()){
+            memberId = jwtUtil.extractMemberId(token);
+        }
         PaperDetailResponse paperDetail = paperService.getPaperDetail(paperId, memberId);
 
         return ResponseEntity.ok(paperDetail);
     }
 
-    @GetMapping("/summary/{paperId}")
-    public ResponseEntity<?> getSummary(@PathVariable Long paperId) throws Exception {
+
+
+    @GetMapping("/summary")
+    public ResponseEntity<?> getSummary(@RequestParam("paperId") Long paperId) throws Exception {
 
         String summary  = paperService.getPaperSummary(paperId);
 
