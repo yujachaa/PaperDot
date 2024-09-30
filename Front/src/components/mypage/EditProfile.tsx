@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './EditProfile.module.scss';
 import useTheme from '../../zustand/theme';
+import ConfirmModal from '../common/ConfirmModal';
+import { useNavigate } from 'react-router-dom';
+import { withdrawUser } from '../../apis/user';
 
 const EditProfile: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      const response = await withdrawUser();
+      if (response?.status === 200) {
+        navigate('/');
+      } else {
+        console.error('회원 탈퇴 실패:', response?.data);
+      }
+    } catch (error) {
+      console.error('회원 탈퇴 중 오류 발생:', error);
+    } finally {
+      handleCloseModal();
+    }
+  };
 
   return (
     <div className={styles.EditProfile}>
@@ -79,11 +107,23 @@ const EditProfile: React.FC = () => {
           </button>
         </div>
         <div>
-          <button className={`${styles.withdrawButton} ${isDarkMode ? `${styles.dark}` : ''}`}>
+          <button
+            type="button"
+            className={`${styles.withdrawButton} ${isDarkMode ? styles.dark : ''}`}
+            onClick={handleOpenModal}
+          >
             회원 탈퇴
           </button>
         </div>
       </form>
+
+      {isModalOpen && (
+        <ConfirmModal
+          onConfirm={handleWithdraw}
+          onCancel={handleCloseModal}
+          message="정말 탈퇴하시겠습니까?"
+        />
+      )}
     </div>
   );
 };
