@@ -13,6 +13,7 @@ import gomgook.paperdot.paper.entity.PaperDocument;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
+import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PaperService {
@@ -31,6 +29,8 @@ public class PaperService {
 
     @Autowired
     private PaperJpaRepository paperJpaRepository;
+    @Autowired
+    private PapersimpleESRepository papersimpleESRepository;
 
     @Autowired
     private PaperESRepository paperESRepository;
@@ -49,13 +49,13 @@ public class PaperService {
         this.webClient = webClientBuilder.baseUrl("http://j11b208.p.ssafy.io:9870/webhdfs").build();
     }
 
-    public TotalPageSearchResponse setResponse(Long memberId, List<String> docIds, List<PythonPaper> pythonSearchList) {
+    public TotalPageSearchResponse setResponse(Long memberId, List<Long> ids, List<PythonPaper> pythonSearchList) {
         TotalPageSearchResponse response = new TotalPageSearchResponse();
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
         Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
         // bookmarkInfo from MySQL
-        List<Paper> sqlPaperList = paperJpaRepository.findByDocIdIn(docIds).orElse(new ArrayList<>());
+        List<Paper> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
         List<Bookmark> bookmarks = (memberId != null)
                 ? bookmarkRepository.findAllByMember(member).orElseGet(ArrayList::new)
                 : Collections.emptyList();
@@ -84,8 +84,8 @@ public class PaperService {
         Flux<PythonPaper> pythonSearchResponseFlux  = sendRequest(keyword);
 
         // docIds from EX (flux -> long)
-        List<String> docIds = pythonSearchResponseFlux
-                .map(PythonPaper::getDocId)
+        List<Long> ids = pythonSearchResponseFlux
+                .map(PythonPaper::getId)
                 .collectList()
                 .block();
 
@@ -99,7 +99,7 @@ public class PaperService {
 //        String redisKey = "searchData::"+keyword;
 //        saveToRedis(redisKey, paperSearchResponseList);
 
-        return setResponse(memberId, docIds, pythonSearchList);
+        return setResponse(memberId, ids, pythonSearchList);
     }
 
     // python 서버에 paper 데이터 요청
@@ -148,38 +148,59 @@ public class PaperService {
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
 
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
-        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_COUNT_EXCEPTION));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
 
         Bookmark bookmark = (member != null)
                 ? bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null)
                 : null;
 
-        return setPaperDetail(paperDocument, paper, false);
+        return setPaperDetail(paperDocument, paper, bookmark);
     }
+//    private  () {
+//
+//    }
 
-    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, boolean bookmark) {
+    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, Bookmark bookmark) {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
 
         String authors = paperDocument.getAuthors();
-        paperDetail.setAuthor(Arrays.stream(authors.split(";")).toList());
+        paperDetail.setAuthor(
+                Optional.ofNullable(authors)
+                        .filter(a -> !a.isEmpty())
+                        .map(a -> Arrays.stream(a.split(";")).toList())
+                        .orElse(new ArrayList<>())
+        );
         paperDetail.setTitle(paperDocument.getTitle());
         paperDetail.setYear(paperDocument.getYear());
         paperDetail.setDocId(paperDocument.getDoc_id());
 
-        String keywords = paperDocument.getKeywords().getKo();
-        paperDetail.setKeyword(Arrays.stream(keywords.split(";")).toList());
+        LanguageDTO keyword = paperDocument.getKeywords();
+        List<String> keywordList = new ArrayList<>();
+        if(keyword != null) {
+            String keywords = keyword.getKo();
+            if(keywords == null)
+                keywords = keyword.getEn();
+
+            keywordList = Optional.ofNullable(keywords)
+                    .map(k -> Arrays.stream(k.split(";")).toList())
+                    .orElseGet(ArrayList::new);
+        }
+
+        paperDetail.setKeyword(keywordList);
         paperDetail.setAbstractText(paperDocument.getAbstractText());
         paperDetail.setCnt(paper.getBookmarkCnt());
-        paperDetail.setCategory(paperDocument.getCategory());
 
-        List<Long> ids = paperDocument.getRelation().stream().map(RelationDTO::getId).toList();
+        paperDetail.setCategory(Integer.parseInt(paperDocument.getCategory().split("-")[0]));
+
+        List<Long> ids = Optional.ofNullable(paperDocument.getRelation())
+                .map(relations -> relations.stream().map(RelationDTO::getId).toList())
+                .orElseGet(ArrayList::new);
         paperDetail.setRelation(setPaperRelation(ids));
 
-//        if(bookmark != null)
-            paperDetail.setBookmark(true);
+        if(bookmark != null) paperDetail.setBookmark(true);
 
         return paperDetail;
     }
@@ -192,7 +213,7 @@ public class PaperService {
     public List<PaperSearchResponse> setPaperRelation(List<Long> ids) {
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
-        List<PaperSimpleDocument> paperSimpleDocumentList = paperESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
 
         for(PaperSimpleDocument paper : paperSimpleDocumentList) {
             PaperSearchResponse paperSearchResponse = new PaperSearchResponse();
@@ -201,7 +222,12 @@ public class PaperService {
             paperSearchResponse.setYear(paper.getYear());
 
             String authors = paper.getAuthors();
-            paperSearchResponse.setAuthor(Arrays.stream(authors.split(";")).toList());
+            paperSearchResponse.setAuthor(
+                    Optional.ofNullable(authors)
+                            .filter(a -> !a.isEmpty())
+                            .map(a -> Arrays.stream(a.split(";")).toList())
+                            .orElse(new ArrayList<>())
+            );
 
             paperSearchResponseList.add(paperSearchResponse);
         }

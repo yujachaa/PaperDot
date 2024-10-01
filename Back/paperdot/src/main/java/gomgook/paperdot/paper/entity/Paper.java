@@ -18,12 +18,10 @@ public class Paper {
     private Long id;
 
     @Column(nullable = false)
-    private String docId;
-
-    @Column(nullable = false)
     @ColumnDefault("0")
     private Long bookmarkCnt;
-
+    
+    private int category;
 
     public void addBookmark() {
         this.bookmarkCnt ++;

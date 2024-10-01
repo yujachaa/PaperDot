@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface PaperJpaRepository extends JpaRepository<Paper, Long> {
 
-    Optional<List<Paper>> findByDocIdIn(List<String> docIds);
+    Optional<List<Paper>> findByIdIn(List<Long> docIds);
 }

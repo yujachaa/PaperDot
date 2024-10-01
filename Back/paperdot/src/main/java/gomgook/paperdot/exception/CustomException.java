@@ -15,6 +15,7 @@ public enum CustomException {
     NOT_FOUND_MEMBER_EXCEPTION(400,"NotFoundMemberException","유저가 존재하지 않습니다."),
     NOT_FOUND_PAPER_EXCEPTION(400, "NotFoundPaperException", "논문이 존재하지 않습니다."),
     NOT_FOUND_RESULT_EXCEPTION(400, "NotFoundResultException", "결과가 없습니다."),
+    NOT_FOUND_PAPER_COUNT_EXCEPTION(400, "NotFoundBookmarkCountException", "논문 북마크 결과가 없습니다."),
     FAIL_SEND_NOTIFICATION_EXCEPTION(400, "FailSendNotificationException", "알림 전송에 실패했습니다."),
 
     //인증 에러 401

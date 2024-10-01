@@ -43,7 +43,7 @@ public class BookmarkController {
         return ResponseEntity.ok(bookmarkRelResponse);
     }
 
-    @GetMapping
+    @GetMapping("/toggle")
     public ResponseEntity<?> bookmarkToggle(@RequestHeader(value = "Authorization") String token, @RequestParam("paperId") Long paperId) {
         Map<String, String> response = new HashMap<>();
         Long memberId = null;
@@ -51,10 +51,9 @@ public class BookmarkController {
         if (token != null && !token.isEmpty()){
             memberId = jwtUtil.extractMemberId(token);
         }
-        System.out.println("!!!!!  " + memberId);
+
         bookmarkService.bookmarkToggle(memberId, paperId);
 
-        response.put("message", "북마크를 저장에 성공했습니다.");
         return ResponseEntity.ok(response);
     }
 

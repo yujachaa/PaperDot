@@ -44,8 +44,8 @@ public class PaperController {
         return ResponseEntity.ok(paperSearchResponseList);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("paperId") Long paperId) throws Exception {
+    @GetMapping("/detail")
+    public ResponseEntity<?> getSearchDetailPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("paperId") Long paperId) throws Exception {
         Long memberId = null;
 
         if (token != null && !token.isEmpty()){

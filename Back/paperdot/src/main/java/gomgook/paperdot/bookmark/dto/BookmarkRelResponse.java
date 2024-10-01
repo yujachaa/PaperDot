@@ -10,7 +10,7 @@ import java.util.List;
 public class BookmarkRelResponse {
     private Long id;
     private String title;
-    private List<String> author;
+    private List<String> authors;
     private String year;
     private List<PaperSearchResponse> relation;
 }
