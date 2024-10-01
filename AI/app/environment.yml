@@ -38,8 +38,8 @@ dependencies:
   - openssl=3.3.2
   - packaging=24.1
   - pip=24.2
-  - python=3.12.3
-  - python_abi=3.12
+  - python=3.11
+  - python_abi=3.11
   - readline=8.2
   - setuptools=75.1.0
   - tk=8.6.13
