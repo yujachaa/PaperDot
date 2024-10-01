@@ -42,9 +42,9 @@ dependencies:
   - setuptools=75.1.0=pyhd8ed1ab_0
   - tk=8.6.13=noxft_h4845f30_101
   - wheel=0.44.0=pyhd8ed1ab_0
-  - pytorch::pytorch=2.3.0
-  - pytorch::torchaudio=2.3.0
-  - pytorch::torchvision=0.18.1
+  - pytorch==2.3.0=cpu_py312h23d8403_1  # CPU 전용 PyTorch 설치
+  - torchaudio==2.3.0=cpu_py312hd9627ba_1  # CPU 전용 Torchaudio 설치
+  - torchvision==0.18.1=cpu_py312hc2f7413_0  # CPU 전용 Torchvision 설치
   - xz=5.2.6=h166bdaf_0
   - pip:
       - certifi==2024.8.30
