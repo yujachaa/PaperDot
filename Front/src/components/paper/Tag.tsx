@@ -25,7 +25,8 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
     fontSize: fontSize,
   };
 
-  const goSearch = (keyword: string) => {
+  const goSearch = (keyword: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 전파 방지
     navigation(`/search?q=${keyword}&p=1`);
     window.scrollTo(0, 0);
   };
@@ -34,8 +35,8 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
     <div
       className="font-bold cursor-pointer"
       style={tagStyle}
-      onClick={() => {
-        type === 'main' ? goSearch(keyword) : null;
+      onClick={(e) => {
+        goSearch(keyword, e);
       }}
     >
       # {keyword}

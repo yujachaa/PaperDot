@@ -75,7 +75,7 @@ const BestPaper: React.FC = () => {
         </div>
         <hr className="w-full mobile:min-w-[24rem]" />
       </div>
-      <ul className="flex flex-col items-start w-full gap-3 ml-1 mr-1">
+      <ul className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}>
         {papers[selectedCategory].map((paper, index) => (
           <li
             key={index}
