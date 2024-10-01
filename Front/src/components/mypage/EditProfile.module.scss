@@ -63,6 +63,11 @@
   background-color: #78a4d1;
 }
 
+.checkButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .genderGroup {
   display: flex;
   flex-direction: row;
@@ -114,6 +119,11 @@ input[type='radio']:checked {
 
 .submitButton:hover {
   background-color: #78a4d1;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .withdrawButton {
