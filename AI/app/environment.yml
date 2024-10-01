@@ -76,9 +76,9 @@ dependencies:
       - threadpoolctl==3.5.0
       - tiktoken==0.7.0
       - tokenizers==0.20.0
-      - torch==2.4.1+cu118
-      - torchaudio==2.4.1+cu118
-      - torchvision==0.19.1+cu118
+      - torch==2.4.0+cpu
+      - torchaudio==2.4.1+cpu
+      - torchvision==0.19.1+cpu
       - tqdm==4.66.5
       - transformers==4.45.1
       - triton==3.0.0
