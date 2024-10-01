@@ -6,7 +6,7 @@ dependencies:
   - _openmp_mutex=4.5=2_gnu
   - bzip2=1.0.8=h4bc722e_7
   - ca-certificates=2024.8.30=hbcca054_0
-  - faiss-cpu==1.8.0.post1
+  - faiss-cpu
   - ld_impl_linux-64=2.43=h712a8e2_1
   - libblas=3.9.0=24_linux64_openblas
   - libcblas=3.9.0=24_linux64_openblas
