@@ -19,6 +19,9 @@ COPY environment.yml /app/environment.yml
 # Conda 환경 생성
 RUN conda env create -f /app/environment.yml
 
+# pip 업그레이드
+RUN conda run -n doc2vec pip install --upgrade pip
+
 # Conda 환경 활성화 (bash 쉘에서 작동하도록 설정)
 SHELL ["conda", "run", "-n", "doc2vec", "/bin/bash", "-c"]
 

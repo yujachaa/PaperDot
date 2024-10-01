@@ -22,8 +22,8 @@ dependencies:
   - pytz=2023.3
   - pyyaml=6.0.1
   - typing-extensions=4.7.1
-  - mecab-python3=1.0.5  # conda를 통해 설치
   - pip:
+      - mecab-python3==1.0.5
       - tiktoken==0.7.0
       - tokenizers==0.13.3
       - transformers==4.31.0
