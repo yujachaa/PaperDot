@@ -24,6 +24,6 @@ public class PaperDocument {
     @Field(name = "abstract", type = FieldType.Text)
     private LanguageDTO abstractText;
     private LanguageDTO keywords;
-    private String category;
+    private int category;
     private List<RelationDTO> relation;
 }
