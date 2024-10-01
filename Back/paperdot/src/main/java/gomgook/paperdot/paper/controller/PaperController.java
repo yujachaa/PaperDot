@@ -3,8 +3,10 @@ package gomgook.paperdot.paper.controller;
 import gomgook.paperdot.config.auth.JwtUtil;
 import gomgook.paperdot.paper.dto.PaperDetailResponse;
 import gomgook.paperdot.paper.dto.PaperSearchResponse;
+import gomgook.paperdot.paper.dto.RankResponse;
 import gomgook.paperdot.paper.dto.TotalPageSearchResponse;
 import gomgook.paperdot.paper.service.PaperService;
+import gomgook.paperdot.paper.service.RankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ public class PaperController {
 
     private final JwtUtil jwtUtil;
     private final PaperService paperService;
+    private final RankService rankService;
 
     @GetMapping("/search")
     public ResponseEntity<?> getSearch(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("keyword") String keyword) throws Exception {
@@ -64,5 +67,12 @@ public class PaperController {
         String summary  = paperService.getPaperSummary(paperId);
 
         return ResponseEntity.ok(summary);
+    }
+
+    public ResponseEntity<?> getPaperRank(@RequestParam("category") int category ) throws Exception {
+
+        List<RankResponse> rank = rankService.getPaperRank(category);
+
+        return ResponseEntity.ok(rank);
     }
 }

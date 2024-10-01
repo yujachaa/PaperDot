@@ -13,4 +13,6 @@ public interface PapersimpleESRepository extends ElasticsearchRepository<PaperSi
 
     @Query("{\"terms\": {\"_id\": ?0}}")
     Optional<List<PaperSimpleDocument>> findAllByIdIn(List<Long> ids);
+
+
 }

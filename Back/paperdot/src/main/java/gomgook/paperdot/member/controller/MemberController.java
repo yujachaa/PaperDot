@@ -2,11 +2,13 @@ package gomgook.paperdot.member.controller;
 
 import gomgook.paperdot.config.auth.JwtUtil;
 import gomgook.paperdot.member.dto.LoginDto;
+import gomgook.paperdot.member.dto.MemberResponse;
 import gomgook.paperdot.member.dto.RegisterDto;
 import gomgook.paperdot.member.dto.UpdateDTO;
 import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.service.MemberService;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -169,6 +171,22 @@ public class MemberController {
                 response.put("message", "비밀번호가 틀립니다");
                 return ResponseEntity.ok().body(response);
             }
+        }
+        else {
+            return ResponseEntity.badRequest().body(response);
+        }
+
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getMemberInfo(@RequestHeader(value = "Authorization") String token) {
+        MemberResponse response = new MemberResponse();
+
+        if (token != null && !token.isEmpty()){
+            Long memberId = jwtUtil.extractMemberId(token);
+
+            response = memberService.getMemberInfo(memberId);
+            return ResponseEntity.ok().body(response);
         }
         else {
             return ResponseEntity.badRequest().body(response);

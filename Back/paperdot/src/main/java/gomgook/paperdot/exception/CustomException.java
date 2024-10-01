@@ -15,8 +15,10 @@ public enum CustomException {
     NOT_FOUND_MEMBER_EXCEPTION(400,"NotFoundMemberException","유저가 존재하지 않습니다."),
     NOT_FOUND_PAPER_EXCEPTION(400, "NotFoundPaperException", "논문이 존재하지 않습니다."),
     NOT_FOUND_RESULT_EXCEPTION(400, "NotFoundResultException", "결과가 없습니다."),
-    NOT_FOUND_PAPER_COUNT_EXCEPTION(400, "NotFoundBookmarkCountException", "논문 북마크 결과가 없습니다."),
+    NOT_FOUND_RANK_EXCEPTION(400, "NotFoundRankException", "논문 랭킹 결과가 없습니다."),
     FAIL_SEND_NOTIFICATION_EXCEPTION(400, "FailSendNotificationException", "알림 전송에 실패했습니다."),
+    FAIL_GET_TOP5_PAPER_EXCEPTION(400, "FailGetTop5PaperException", "북마크에 따른 논문을 가져올 수 없습니다."),
+    FAIL_GET_PAPER_ES_EXCEPTION(400, "FailGetPaperESException", "논문 정보를 가져올 수 없습니다."),
 
     //인증 에러 401
     EXPIRED_JWT_EXCEPTION(401,"ExpiredJwtException","토큰이 만료했습니다."),

@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface PaperJpaRepository extends JpaRepository<Paper, Long> {
 
     Optional<List<Paper>> findByIdIn(List<Long> docIds);
+
+    Optional<List<Paper>> findTop5ByCategoryOrderByBookmarkCntDesc(int category);
 }
