@@ -17,14 +17,14 @@ dependencies:
   - torchvision
   - torchaudio
   - transformers=4.45.1
-  - tiktoken=0.6.0
+  - tiktoken=0.20.0
   - tqdm=4.66.1
   - pillow=10.0.1
   - protobuf=4.24.4
   - python-dateutil=2.8.2
   - pytz=2023.3
   - pyyaml=6.0.1
-  - tokenizers=0.13.3
+  - tokenizers=0.20.0
   - typing-extensions=4.7.1
   - pip:
       - certifi==2023.7.22
