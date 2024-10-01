@@ -18,7 +18,7 @@ public class PaperDetailResponse {
     private Long cnt;
     private boolean bookmark;
     private int category;
-    private List<RelationDTO> relation;
+    private List<PaperSearchResponse> relation;
 
 }
 

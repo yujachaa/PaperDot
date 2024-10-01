@@ -44,8 +44,8 @@ public class PaperController {
         return ResponseEntity.ok(paperSearchResponseList);
     }
 
-    @GetMapping("/{paperId}")
-    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @PathVariable Long paperId) throws Exception {
+    @GetMapping("/detail")
+    public ResponseEntity<?> getSearchDetailPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("paperId") Long paperId) throws Exception {
         Long memberId = null;
 
         if (token != null && !token.isEmpty()){
@@ -56,8 +56,10 @@ public class PaperController {
         return ResponseEntity.ok(paperDetail);
     }
 
-    @GetMapping("/summary/{paperId}")
-    public ResponseEntity<?> getSearchPage(@PathVariable Long paperId) throws Exception {
+
+
+    @GetMapping("/summary")
+    public ResponseEntity<?> getSummary(@RequestParam("paperId") Long paperId) throws Exception {
 
         String summary  = paperService.getPaperSummary(paperId);
 
