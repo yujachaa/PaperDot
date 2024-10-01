@@ -21,7 +21,6 @@ const config = [
       '@typescript-eslint': typescriptPlugin,
     },
     rules: {
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'no-var': 'error',
       // "no-console": ["warn", { allow: ["warn", "error", "info"] }],
       eqeqeq: 'error',
