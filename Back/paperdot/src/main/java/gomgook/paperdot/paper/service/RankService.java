@@ -28,7 +28,7 @@ public class RankService {
 
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 33 21 * * ?")
     public void updatePopularPapers() {
         rankRepository.deleteAll();
         for (int category =1; category<=5; category++) {
@@ -36,7 +36,8 @@ public class RankService {
             List<Rank> ranks = new ArrayList<>();
             int rank = 1;
             for (Paper paper : papers) {
-                Rank paperRank = new Rank(paper.getId(), paper.getCategory(), rank);
+                Rank paperRank = new Rank();
+                paperRank.setRank(paper.getId(), paper.getCategory(), rank++);
 
                 ranks.add(paperRank);
             }
@@ -68,7 +69,7 @@ public class RankService {
             rankResponse.setPaperId(paperId);
 
             for(Rank rank: ranks) {
-                if(rank.getPaperId() == paperId) rankResponse.setRank(rank.getRank());
+                if(rank.getPaperId() == paperId) rankResponse.setRank(rank.getRanking());
             }
 
             String title = null;

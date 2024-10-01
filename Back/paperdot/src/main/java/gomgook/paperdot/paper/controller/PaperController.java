@@ -69,6 +69,7 @@ public class PaperController {
         return ResponseEntity.ok(summary);
     }
 
+    @GetMapping("/top")
     public ResponseEntity<?> getPaperRank(@RequestParam("category") int category ) throws Exception {
 
         List<RankResponse> rank = rankService.getPaperRank(category);

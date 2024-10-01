@@ -200,10 +200,10 @@ public class PaperService {
         paperDetail.setKeyword(keywordList);
         paperDetail.setAbstractText(paperDocument.getAbstractText());
 
-        Long bookmarkCnt = (paper!=null) ? paper.getBookmarkCnt():0;
+        Long bookmarkCnt = (paper!=null) ? paper.getBookmarkCnt() : 0;
         paperDetail.setCnt(bookmarkCnt);
 
-        paperDetail.setCategory(Integer.parseInt(paperDocument.getCategory().split("-")[0]));
+        paperDetail.setCategory(paperDocument.getCategory());
 
         List<Long> ids = Optional.ofNullable(paperDocument.getRelation())
                 .map(relations -> relations.stream().map(RelationDTO::getId).toList())
