@@ -4,7 +4,7 @@ import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../apis/user';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login: React.FC = () => {
@@ -87,7 +87,6 @@ const Login: React.FC = () => {
           </div>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 };

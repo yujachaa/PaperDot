@@ -38,6 +38,10 @@
   z-index: -1;
 }
 
+.tabButton.active.darks::before {
+  background-color: #8bafc9;
+}
+
 @media (max-width: 768px) {
   .mypageContainer {
     max-width: 335px;
@@ -52,6 +56,7 @@
   .dark {
     border-bottom: 2px solid #fafafa;
   }
+
   .tabButton {
     padding: 0.5rem;
     font-size: 1.5rem;
