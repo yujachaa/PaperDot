@@ -27,6 +27,7 @@ dependencies:
       - tiktoken==0.7.0
       - tokenizers==0.13.3
       - transformers==4.31.0
+      - regex>=2020.11.13,<2024.0.0  # 버전 범위로 수정
       - certifi==2023.7.22
       - charset-normalizer==3.3.0
       - elastic-transport==8.4.0
@@ -46,7 +47,6 @@ dependencies:
       - mpmath==1.3.0
       - networkx==3.1
       - python-dotenv==1.0.0
-      - regex==2023.10.31
       - requests==2.31.0
       - safetensors==0.3.3
       - six==1.16.0
