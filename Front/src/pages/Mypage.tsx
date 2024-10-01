@@ -15,13 +15,13 @@ const Mypage: React.FC = () => {
       <div className={styles.mypageContainer}>
         <div className={`${styles.tabMenu} ${isDarkMode ? `${styles.dark}` : ''}`}>
           <button
-            className={`${styles.tabButton} ${activeTab === 'profile' ? styles.active : ''}`}
+            className={`${styles.tabButton} ${activeTab === 'profile' ? styles.active : ''} ${isDarkMode ? styles.darks : ''}`}
             onClick={() => setActiveTab('profile')}
           >
             회원 정보 수정
           </button>
           <button
-            className={`${styles.tabButton} ${activeTab === 'password' ? styles.active : ''}`}
+            className={`${styles.tabButton} ${activeTab === 'password' ? styles.active : ''} ${isDarkMode ? styles.darks : ''}`}
             onClick={() => setActiveTab('password')}
           >
             비밀 번호 수정
