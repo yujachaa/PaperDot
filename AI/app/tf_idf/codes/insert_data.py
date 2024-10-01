@@ -84,19 +84,11 @@ def insert_paper_to_mysql(connection, category, index):
     """
     try:
         cursor = connection.cursor()
-
-        # category의 첫 글자만 추출하여 정수로 변환
-        if isinstance(category, str):
-            # 첫 글자가 숫자인지 확인 후 변환
-            category_number = int(re.match(r'\d+', category).group())
-        else:
-            category_number = 0  # 만약 문자열이 아니면 기본값 0을 사용하거나 다른 로직 적용
-
-        print(f"Inserting paper with id: {index}, category: {category_number}")  # 로그로 id와 category 값 출력
+        print(f"Inserting paper with id: {index}, category: {category}")  # 로그로 id와 category 값 출력
         query = "INSERT INTO paper (id, bookmark_cnt, category) VALUES (%s, %s, %s)"
-        cursor.execute(query, (index, 0, category_number))  # id를 포함하여 bookmark_cnt와 category 삽입
+        cursor.execute(query, (index, 0, category))  # id를 포함하여 bookmark_cnt와 category 삽입
         connection.commit()
-        print(f"paper 테이블에 값 삽입 완료: (id={index}, bookmark_cnt=0, category={category_number})")
+        print(f"paper 테이블에 값 삽입 완료: (id={index}, bookmark_cnt=0, category={category})")
     except Error as e:
         print(f"paper 테이블에 데이터 삽입 중 오류 발생: {e}")
     except AttributeError:
@@ -223,6 +215,12 @@ def generate_actions(data, index_name, mysql_connection):
             continue  # doc_id가 없는 경우 건너뜁니다.
 
         category = record.get('category', '')
+        # category의 첫 글자만 추출하여 정수로 변환
+        if isinstance(category, str):
+            # 첫 글자가 숫자인지 확인 후 변환
+            category = int(re.match(r'\d+', category).group())
+        else:
+            category = 0  # 만약 문자열이 아니면 기본값 0을 사용하거나 다른 로직 적용
 
         # similar_papers, papers_above_threshold 필드를 딕셔너리에서 배열로 변환
         similar_papers_dict = record.get('similar_papers', {})
@@ -240,7 +238,7 @@ def generate_actions(data, index_name, mysql_connection):
             "_id": index,  # Auto Increment Version
             "_source": {
                 "doc_id": record.get('doc_id'),
-                "category": record.get('doc_id'),
+                "category": category,
                 "original_json": record.get('original_json', {}),
                 "content": record.get('content', ''),
                 "similar_papers": similar_papers,  # 배열로 저장된 유사 논문
@@ -254,7 +252,6 @@ def generate_actions(data, index_name, mysql_connection):
         insert_paper_to_mysql(mysql_connection, category, index)
         yield action
         index += 1
-        break
 
 def bulk_insert(es, actions, chunk_size=500):
     """
