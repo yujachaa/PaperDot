@@ -17,7 +17,6 @@ const Login: React.FC = () => {
     try {
       const response = await login(userId, password);
       if (response?.status === 200) {
-        // toast.success('로그인이 완료되었습니다.');
         const token = response.data.token;
         sessionStorage.setItem('token', token);
         setTimeout(() => {
