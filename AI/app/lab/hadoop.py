@@ -1,9 +1,22 @@
+import os
 from collections import defaultdict
 from hdfs import InsecureClient
 import numpy as np
+from dotenv import load_dotenv
+
+env_path = '../config/.env'
+
+# .env 파일 로드
+load_dotenv(dotenv_path=env_path)
+
+HDFS_PATH = os.getenv('HDFS_PATH')
+HDFS_HOST = os.getenv('HDFS_HOST')
+HDFS_PORT = os.getenv('HDFS_PORT')
+HDFS_USER = os.getenv('HDFS_USER')
+
 
 def extract_tfidf_from_hdfs(hdfs_path):
-    client = InsecureClient('http://localhost:9870', user='hadoop')
+    client = InsecureClient(f'http://{HDFS_HOST}:{HDFS_PORT}', user=HDFS_USER)
     tfidf_results = []
 
     with client.read(hdfs_path) as reader:
@@ -51,7 +64,7 @@ def calculate_cosine_similarity(tfidf_results):
     return doc_ids, similarity_matrix
 
 def main():
-    hdfs_path = "/user/hadoop/output/tfidf_results/part-00000"
+    hdfs_path = HDFS_PATH
     tfidf_results = extract_tfidf_from_hdfs(hdfs_path)
     doc_ids, similarity_matrix = calculate_cosine_similarity(tfidf_results)
 
