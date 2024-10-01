@@ -45,7 +45,7 @@ MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 
 # 피클 파일 경로
 
-PICKLE_FILE = os.path.join(current_dir, "../models/paper_similarities_keywords.pkl")
+PICKLE_FILE = os.path.join(current_dir, "../models/paper_similarities_partial.pkl")
 
 index = 1
 
@@ -78,19 +78,29 @@ def create_mysql_connection():
         print(f"MySQL 연결 중 오류 발생: {e}")
         return None
 
-def insert_paper_to_mysql(connection, category):
+def insert_paper_to_mysql(connection, category, index):
     """
-    paper 테이블에 (bookmark_cnt, category) 값을 삽입합니다.
+    paper 테이블에 (id, bookmark_cnt, category) 값을 삽입합니다.
     """
     try:
         cursor = connection.cursor()
-        query = "INSERT INTO paper (bookmark_cnt, category) VALUES (%s, %s)"
-        cursor.execute(query, (0, category))  # bookmark_cnt는 0으로 설정
+
+        # category의 첫 글자만 추출하여 정수로 변환
+        if isinstance(category, str):
+            # 첫 글자가 숫자인지 확인 후 변환
+            category_number = int(re.match(r'\d+', category).group())
+        else:
+            category_number = 0  # 만약 문자열이 아니면 기본값 0을 사용하거나 다른 로직 적용
+
+        print(f"Inserting paper with id: {index}, category: {category_number}")  # 로그로 id와 category 값 출력
+        query = "INSERT INTO paper (id, bookmark_cnt, category) VALUES (%s, %s, %s)"
+        cursor.execute(query, (index, 0, category_number))  # id를 포함하여 bookmark_cnt와 category 삽입
         connection.commit()
-        print(f"paper 테이블에 값 삽입 완료: (bookmark_cnt=0, category={category})")
+        print(f"paper 테이블에 값 삽입 완료: (id={index}, bookmark_cnt=0, category={category_number})")
     except Error as e:
         print(f"paper 테이블에 데이터 삽입 중 오류 발생: {e}")
-
+    except AttributeError:
+        print(f"category 값에서 숫자를 추출할 수 없습니다: {category}")
 
     
 # Elasticsearch 클라이언트 생성
@@ -193,10 +203,7 @@ def create_index(es, index_name):
                         "score": {"type": "float"}
                     }
                 },
-                "top_keywords": {
-                    "type": "text",  # text 타입으로 변경
-                    "analyzer": "ngram_analyzer"  # ngram 분석기 적용
-                }
+                "top_keywords": {"type": "text"}
             }
         }
     }
@@ -244,7 +251,7 @@ def generate_actions(data, index_name, mysql_connection):
         }
 
         # MySQL에 (bookmark_cnt=0, category) 삽입
-        insert_paper_to_mysql(mysql_connection, category)
+        insert_paper_to_mysql(mysql_connection, category, index)
         yield action
         index += 1
         break
