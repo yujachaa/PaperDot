@@ -2,6 +2,19 @@
 # FROM continuumio/miniconda3
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
+RUN apt-get update && apt-get install -y \
+    wget \
+    bzip2 \
+    ca-certificates \
+    curl \
+    git \
+    build-essential \
+    swig \
+    libmecab-dev \
+    mecab \
+    mecab-ipadic-utf8 \
+    && rm -rf /var/lib/apt/lists/*
+    
 # Conda 설치
 RUN apt-get update && apt-get install -y wget && \
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -20,7 +33,7 @@ COPY environment.yml /app/environment.yml
 RUN conda env create -f /app/environment.yml
 
 # pip 업그레이드
-RUN conda run -n doc2vec pip install --upgrade pip
+RUN conda run -n doc2vec pip install --upgrade pip setuptools wheel
 
 # Conda 환경 활성화 (bash 쉘에서 작동하도록 설정)
 SHELL ["conda", "run", "-n", "doc2vec", "/bin/bash", "-c"]
