@@ -2,7 +2,6 @@ name: doc2vec
 channels:
   - conda-forge
   - defaults
-  - pytorch  # PyTorch 채널 추가
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
@@ -43,9 +42,6 @@ dependencies:
   - setuptools=75.1.0=pyhd8ed1ab_0
   - tk=8.6.13=noxft_h4845f30_101
   - wheel=0.44.0=pyhd8ed1ab_0
-  - pytorch==2.3.0=py312_cpu  # CPU 전용 PyTorch
-  - torchaudio==2.3.0=py312_cpu  # CPU 전용 Torchaudio
-  - torchvision==0.18.1=py312_cpu  # CPU 전용 Torchvision
   - xz=5.2.6=h166bdaf_0
   - pip:
       - certifi==2024.8.30
@@ -90,4 +86,7 @@ dependencies:
       - wrapt==1.16.0
       - python-dotenv==1.0.1
       - mysql-connector-python
+      - torch==2.3.0+cpu  # pip 설치
+      - torchaudio==2.3.0+cpu  # pip 설치
+      - torchvision==0.18.1+cpu  # pip 설치
 prefix: /home/j-j11b208/.conda/envs/doc2vec
