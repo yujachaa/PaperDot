@@ -8,8 +8,9 @@ interface TagProps {
 
 const Tag: React.FC<TagProps> = ({ keyword, type }) => {
   const navigation = useNavigate();
-  const bgColor = type === 'main' ? '#8CAFCE' : '#FFF';
+  const bgColor = type === 'main' ? '#8CAFCE' : 'none';
   const textColor = type === 'main' ? '#fafafa' : '#5A9BD8';
+  const fontSize = type === 'main' ? '1rem' : '0.875rem';
 
   // 스타일 객체 정의 시 카멜 케이스를 사용해야 함
   const tagStyle = {
@@ -21,9 +22,11 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
     backgroundColor: bgColor,
     color: textColor,
     borderRadius: '2.5rem',
+    fontSize: fontSize,
   };
 
-  const goSearch = (keyword: string) => {
+  const goSearch = (keyword: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 전파 방지
     navigation(`/search?q=${keyword}&p=1`);
     window.scrollTo(0, 0);
   };
@@ -32,8 +35,8 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
     <div
       className="font-bold cursor-pointer"
       style={tagStyle}
-      onClick={() => {
-        type === 'main' ? goSearch(keyword) : null;
+      onClick={(e) => {
+        goSearch(keyword, e);
       }}
     >
       # {keyword}

@@ -8,6 +8,7 @@ import PaperInfo from '../components/paper/PaperInfo';
 import Summary from '../components/paper/Summary';
 import Relation from '../components/paper/Relation';
 import Statistics from '../components/paper/Statistics';
+import useTheme from '../zustand/theme';
 
 const paperData = {
   id: 1,
@@ -59,6 +60,7 @@ const paperData = {
 };
 
 const PaperDetail: React.FC = () => {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   // useParams 훅을 사용하여 id 값을 가져옵니다.
   // const { id } = useParams<{ id: string }>();
   // const [paperData, setPaperData] = useState<any>(null); // 서버로부터 받은 데이터를 저장할 상태 변수
@@ -87,7 +89,7 @@ const PaperDetail: React.FC = () => {
       <Header />
       {/* 데이터를 받아왔다면 화면에 출력 */}
       {paperData ? (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${isDarkMode ? styles.darkLine : ''}`}>
           <div></div>
           <div className={styles.titleArea}>
             <div className={styles.title}>
