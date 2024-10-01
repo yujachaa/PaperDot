@@ -6,6 +6,7 @@ import gomgook.paperdot.config.auth.CustomUserDetailsService;
 import gomgook.paperdot.config.auth.JwtUtil;
 import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
+import gomgook.paperdot.member.dto.MemberResponse;
 import gomgook.paperdot.member.dto.RegisterDto;
 import gomgook.paperdot.member.dto.LoginDto;
 import gomgook.paperdot.member.dto.UpdateDTO;
@@ -132,5 +133,18 @@ public class MemberService {
 
         memberRepository.save(member);
 
+    }
+
+    public MemberResponse getMemberInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+
+        MemberResponse memberResponse = new MemberResponse();
+        memberResponse.setUserId(member.getUserId());
+        memberResponse.setNickname(member.getNickname());
+        memberResponse.setBirthyear(member.getAge());
+        memberResponse.setGender(member.getGender().toString());
+        memberResponse.setDegree(member.getDegree().toString());
+
+        return memberResponse;
     }
 }

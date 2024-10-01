@@ -53,7 +53,13 @@ public class PaperService {
         TotalPageSearchResponse response = new TotalPageSearchResponse();
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+
+        Member member = null;
+        if(memberId != null) {
+            memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+
+        }
+
         // bookmarkInfo from MySQL
         List<Paper> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
         List<Bookmark> bookmarks = (memberId != null)
@@ -148,9 +154,11 @@ public class PaperService {
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
 
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
-        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_COUNT_EXCEPTION));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
-
+        Paper paper = paperJpaRepository.findById(paperId).orElse(null);
+        Member member = null;
+        if(memberId != null) {
+            member=memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+        }
         Bookmark bookmark = (member != null)
                 ? bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null)
                 : null;
@@ -191,7 +199,9 @@ public class PaperService {
 
         paperDetail.setKeyword(keywordList);
         paperDetail.setAbstractText(paperDocument.getAbstractText());
-        paperDetail.setCnt(paper.getBookmarkCnt());
+
+        Long bookmarkCnt = (paper!=null) ? paper.getBookmarkCnt():0;
+        paperDetail.setCnt(bookmarkCnt);
 
         paperDetail.setCategory(Integer.parseInt(paperDocument.getCategory().split("-")[0]));
 
