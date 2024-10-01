@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { api, Authapi } from './core';
+import { getMemberIdFromToken } from '../utills/tokenParser';
 
 // 회원가입
 export async function signup(
@@ -138,5 +139,58 @@ export async function updatePassword(newPassword: string) {
         return err.response;
       }
     }
+  }
+}
+
+// 회원 수정
+export async function updateUserProfile(
+  userId: string,
+  nickname: string,
+  birthyear: string,
+  gender: string,
+  degree: string,
+) {
+  try {
+    const memberId = getMemberIdFromToken();
+    if (!memberId) {
+      throw new Error('memberId를 찾을 수 없습니다.');
+    }
+
+    const response = await Authapi.patch('/api/members', {
+      id: memberId,
+      userId,
+      nickname,
+      birthyear,
+      gender,
+      degree,
+    });
+
+    return response;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      console.error('회원 수정 중 오류 발생:', err.response?.data || err.message);
+      return err.response;
+    }
+    console.error('회원 수정 중 알 수 없는 오류 발생:', err);
+    throw err;
+  }
+}
+
+// 유저 프로필 조회
+export async function getUserProfile() {
+  try {
+    const response = await Authapi.get('/api/members');
+    return response.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      if (!err.response) {
+        return undefined;
+      } else {
+        console.error('유저 프로필 조회 중 오류 발생:', err.response?.data || err.message);
+        return err.response;
+      }
+    }
+    console.error('유저 프로필 조회 중 알 수 없는 오류 발생:', err);
+    throw err;
   }
 }
