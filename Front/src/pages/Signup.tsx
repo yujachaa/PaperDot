@@ -4,7 +4,7 @@ import styles from './Signup.module.scss';
 import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
 import { signup, checkUserId, checkNickname } from '../apis/user';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Signup: React.FC = () => {
@@ -231,8 +231,6 @@ const Signup: React.FC = () => {
           </button>
         </form>
       </div>
-
-      <ToastContainer />
     </div>
   );
 };

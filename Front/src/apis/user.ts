@@ -102,3 +102,41 @@ export async function withdrawUser() {
     }
   }
 }
+
+// 비밀번호 확인
+export async function checkPassword(password: string) {
+  try {
+    const response = await Authapi.put('/api/members/check-password', {
+      password,
+    });
+    return response;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      if (!err.response) {
+        return undefined;
+      } else {
+        console.log(err.response);
+        return err.response;
+      }
+    }
+  }
+}
+
+// 비밀번호 수정
+export async function updatePassword(newPassword: string) {
+  try {
+    const response = await Authapi.put('/api/members/password', {
+      password: newPassword,
+    });
+    return response;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      if (!err.response) {
+        return undefined;
+      } else {
+        console.log(err.response);
+        return err.response;
+      }
+    }
+  }
+}
