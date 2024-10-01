@@ -20,4 +20,4 @@ COPY . /app
 EXPOSE 8000
 
 # 컨테이너 시작 시 FastAPI 서버 실행
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "doc2vec", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "doc2vec", "uvicorn", "vector_search.codes.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
