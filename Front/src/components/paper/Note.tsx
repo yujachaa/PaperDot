@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import copyIcon from '../../assets/images/copy.svg';
 import copiedIcon from '../../assets/images/copied.svg';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import NoteSkeleton from './NoteSkeleton';
 
 interface NoteProps {
   paperId: number;
@@ -81,10 +82,27 @@ const summaryText = `
 `;
 
 const Note: React.FC<NoteProps> = ({ paperId }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const getCopy = () => {
+  useEffect(() => {
+    if (!isLoaded) {
+      //요약노트 로딩하기
+      setTimeout(() => {
+        console.log('3초후');
+        setIsLoaded(true);
+      }, 2000);
+    }
+  }, []);
+
+  const getCopy = async () => {
     //클립보드에 md파일 text 복사하기
+    try {
+      await navigator.clipboard.writeText(summaryText);
+      console.log('요약노트가 클립보드에 복사되었습니다!');
+    } catch (error) {
+      console.error('요약노트 복사 실패:', error);
+    }
     setIsCopied(true);
   };
 
@@ -94,7 +112,8 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
   };
 
   getNote();
-  return (
+
+  return isLoaded ? (
     <>
       {isCopied ? (
         <div
@@ -123,6 +142,8 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
       )}
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{summaryText}</ReactMarkdown>
     </>
+  ) : (
+    <NoteSkeleton />
   );
 };
 
