@@ -26,7 +26,7 @@ class LargeScaleKoreanPaperEmbedding:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained("snunlp/KR-SBERT-V40K-klueNLI-augSTS")
         self.model = AutoModel.from_pretrained("snunlp/KR-SBERT-V40K-klueNLI-augSTS").to(self.device)
-        dic_path = get_mecabrc_path()
+        dic_path = get_mecab_dicpath()
         self.mecab = Mecab(dicpath=dic_path)
         self.data_dir = data_dir
         self.embeddings = None
