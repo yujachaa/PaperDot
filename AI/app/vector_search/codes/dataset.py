@@ -1,26 +1,45 @@
 # dataset.py
+#version 1->2시작
 
 import os
 import json
 import glob
 import re
+import pickle
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
 from konlpy.tag import Mecab
 
+
 class PaperDataset(Dataset):
     def __init__(self, data_dir, tokenizer, mecab):
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        pickle_file = os.path.join(current_dir, "../models/ordering_mapping.pkl")
         self.data_dir = data_dir
-        # 하위 디렉토리의 모든 JSON 파일 찾기
-        self.file_list = glob.glob(os.path.join(data_dir, '**', '*.json'), recursive=True)
+        self.pickle_file = pickle_file
         self.tokenizer = tokenizer
         self.mecab = mecab
 
+        # 피클 파일이 존재하면 file_list를 불러오기, 없으면 파일 목록을 생성하고 피클로 저장
+        if os.path.exists(self.pickle_file):
+            print(f"Loading file list from {self.pickle_file}")
+            with open(self.pickle_file, 'rb') as f:
+                self.file_list = pickle.load(f)
+        else:
+            print(f"Creating file list and saving to {self.pickle_file}")
+            self.file_list = glob.glob(os.path.join(self.data_dir, '**', '*.json'), recursive=True)
+            with open(self.pickle_file, 'wb') as f:
+                pickle.dump(self.file_list, f)
+
     def __len__(self):
-        return len(self.file_list)
+        return len(self.ordering_mapping)
 
     def __getitem__(self, idx):
-        with open(self.file_list[idx], 'r', encoding='utf-8') as f:
+        # 인덱스를 통해 doc_id를 가져오고, doc_id로 파일 경로를 찾기
+        doc_id = list(self.ordering_mapping.keys())[idx]
+        file_path = self.ordering_mapping[doc_id]
+
+        with open(file_path, 'r', encoding='utf-8') as f:
             row = json.load(f)
         
         # 데이터에서 필요한 정보 추출
@@ -53,8 +72,29 @@ class PaperDataset(Dataset):
         
         return {key: val.squeeze(0) for key, val in inputs.items()}
 
+    def _create_ordering_mapping(self, file_list):
+        """파일 목록에서 doc_id와 파일 경로를 매핑하여 딕셔너리 생성"""
+        ordering_mapping = {}
+        for file_path in file_list:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                row = json.load(f)
+                doc_id = row['doc_id']
+                ordering_mapping[doc_id] = file_path
+        return ordering_mapping
+
     def _preprocess_text(self, text):
         # 텍스트 정제(특수 문자 제거 등) 추가
         text = re.sub(r'[^가-힣0-9a-zA-Z\s]', '', text)  # 한글, 숫자, 영문 및 공백만 남기기
         tokens = self.mecab.morphs(text)
         return ' '.join(tokens)
+
+def main():
+    data_dir = 'path/to/data'  # 데이터 디렉토리 경로 설정
+    tokenizer = AutoTokenizer.from_pretrained('bert-base-multilingual-cased')  # 예시 토크나이저
+    mecab = Mecab()
+
+    # PaperDataset 클래스 초기화 (ordering_mapping 추출 및 피클 저장)
+    dataset = PaperDataset(data_dir, tokenizer, mecab)
+
+if __name__ == "__main__":
+    main()
