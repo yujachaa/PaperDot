@@ -53,3 +53,4 @@ dependencies:
       - sympy==1.12
       - threadpoolctl==3.2.0
       - wrapt==1.14.1
+      - uvicorn==0.18.3
