@@ -12,6 +12,7 @@ import {
   isValidPassword,
   isValidBirthYear,
 } from '../utills/userValidation';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
 const Signup: React.FC = () => {
   const [userID, setUserID] = useState('');
@@ -26,7 +27,17 @@ const Signup: React.FC = () => {
   const [isUserIdAvailable, setIsUserIdAvailable] = useState<boolean | null>(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
   const [isBothChecked, setIsBothChecked] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordCheck, setShowPasswordCheck] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const togglePasswordCheckVisibility = () => {
+    setShowPasswordCheck(!showPasswordCheck);
+  };
 
   // 회원가입
   const handleSignup = async (e: React.FormEvent) => {
@@ -135,7 +146,7 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     checkBothConditions();
-  }, [isUserIdAvailable, isNicknameAvailable, password, passwordCheck, birthyear]);
+  }, [isUserIdAvailable, isNicknameAvailable, password, passwordCheck, birthyear, birthyearError]);
 
   return (
     <div className={styles.signupContainer}>
@@ -202,23 +213,39 @@ const Signup: React.FC = () => {
 
           <div className={styles.formGroup}>
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
+            <div className={styles.inputWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+              <span
+                className={styles.passwordIcon}
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </span>
+            </div>
             {passwordError && <p className={styles.errorText}>{passwordError}</p>}
           </div>
 
           <div className={styles.formGroup}>
             <label>Password Check</label>
-            <input
-              type="password"
-              placeholder="Password Check"
-              value={passwordCheck}
-              onChange={(e) => setPasswordCheck(e.target.value)}
-            />
+            <div className={styles.inputWrapper}>
+              <input
+                type={showPasswordCheck ? 'text' : 'password'}
+                placeholder="Password Check"
+                value={passwordCheck}
+                onChange={(e) => setPasswordCheck(e.target.value)}
+              />
+              <span
+                className={styles.passwordIcon}
+                onClick={togglePasswordCheckVisibility}
+              >
+                {showPasswordCheck ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </span>
+            </div>
           </div>
 
           <div className={styles.formGroup}>
