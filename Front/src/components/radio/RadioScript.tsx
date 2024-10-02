@@ -1,11 +1,16 @@
 import styles from './RadioScript.module.scss';
-
+import backGround from '../../assets/images/background.jpg';
 type RadioScriptProps = {
   className?: string;
 };
 
 const RadioScript = ({ className }: RadioScriptProps) => {
-  return <div className={`${styles.box} ${className}`}></div>;
+  return (
+    <img
+      className={`${styles.box} ${className}`}
+      src={backGround}
+    />
+  );
 };
 
 export default RadioScript;
