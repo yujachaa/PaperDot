@@ -1,0 +1,32 @@
+.notice {
+  width: 100%;
+  position: absolute;
+  background-color: #ebebeb;
+  border-radius: 20px;
+  top: 60px;
+  z-index: 60;
+  font-size: 1.25rem;
+}
+
+.dark {
+  background-color: grey;
+}
+.content {
+  width: 85%;
+  margin: 0 auto;
+  padding: 10px;
+  height: 100%;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+}
+
+.command {
+  color: #78a4d1;
+}
+
+.bold {
+  font-weight: 700; // 진한색 (명령어)
+}
