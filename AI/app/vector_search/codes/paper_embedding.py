@@ -78,10 +78,10 @@ class LargeScaleKoreanPaperEmbedding:
     
         results = []
         for idx in top_indices:
-            file_path = self.dataset.file_list[idx]
-            with open(file_path, 'r', encoding='utf-8') as f:
-                paper = json.load(f)
-            results.append({'doc_id': paper.get('doc_id', idx), 'similarity': similarities[idx]})
+            # file_path = self.dataset.file_list[idx]
+            # with open(file_path, 'r', encoding='utf-8') as f:
+            #     paper = json.load(f)
+            results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': similarities[idx]})
     
         return results
 

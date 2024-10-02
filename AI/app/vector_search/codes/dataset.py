@@ -20,16 +20,17 @@ class PaperDataset(Dataset):
         self.tokenizer = tokenizer
         self.mecab = mecab
 
-        # 피클 파일이 존재하면 file_list를 불러오기, 없으면 파일 목록을 생성하고 피클로 저장
+        # 피클 파일이 존재하면 ordering_mapping을 불러오기, 없으면 생성하여 피클로 저장
         if os.path.exists(self.pickle_file):
-            print(f"Loading file list from {self.pickle_file}")
+            print(f"Loading ordering_mapping from {self.pickle_file}")
             with open(self.pickle_file, 'rb') as f:
-                self.file_list = pickle.load(f)
+                self.ordering_mapping = pickle.load(f)
         else:
-            print(f"Creating file list and saving to {self.pickle_file}")
-            self.file_list = glob.glob(os.path.join(self.data_dir, '**', '*.json'), recursive=True)
+            print(f"Creating ordering_mapping and saving to {self.pickle_file}")
+            file_list = glob.glob(os.path.join(self.data_dir, '**', '*.json'), recursive=True)
+            self.ordering_mapping = self._create_ordering_mapping(file_list)
             with open(self.pickle_file, 'wb') as f:
-                pickle.dump(self.file_list, f)
+                pickle.dump(self.ordering_mapping, f)
 
     def __len__(self):
         return len(self.ordering_mapping)
@@ -87,14 +88,3 @@ class PaperDataset(Dataset):
         text = re.sub(r'[^가-힣0-9a-zA-Z\s]', '', text)  # 한글, 숫자, 영문 및 공백만 남기기
         tokens = self.mecab.morphs(text)
         return ' '.join(tokens)
-
-def main():
-    data_dir = 'path/to/data'  # 데이터 디렉토리 경로 설정
-    tokenizer = AutoTokenizer.from_pretrained('bert-base-multilingual-cased')  # 예시 토크나이저
-    mecab = Mecab()
-
-    # PaperDataset 클래스 초기화 (ordering_mapping 추출 및 피클 저장)
-    dataset = PaperDataset(data_dir, tokenizer, mecab)
-
-if __name__ == "__main__":
-    main()
