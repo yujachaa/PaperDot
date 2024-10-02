@@ -79,6 +79,10 @@ const RadioChannelList: React.FC = () => {
   const dragStart = useRef(0); // 드래그가 시작된 X 좌표
   const navigate = useNavigate();
 
+  const channelStyle = {
+    width: '300px',
+  };
+
   const handleRadioChannleMove = (index: number) => {
     if (!isDragging.current) {
       navigate(`/radio/${index + 1}`);
@@ -105,19 +109,20 @@ const RadioChannelList: React.FC = () => {
   const settings = {
     infinite: true,
     speed: 500,
-    slidesToShow: 3.2,
+    initialSlide: 0,
+    slidesToShow: 3,
     slidesToScroll: 1,
     swipeToSlide: true,
     arrows: true,
-    initialSlide: -0.2,
+    variableWidth: true,
     nextArrow: <RightArrow />,
     prevArrow: <LeftArrow />,
     responsive: [
       {
         breakpoint: 1377,
         settings: {
-          initialSlide: -0.2,
-          slidesToShow: 2.2,
+          initialSlide: 0,
+          slidesToShow: 2,
           slidesToScroll: 1,
           swipeToSlide: true,
           infinite: true,
@@ -149,12 +154,16 @@ const RadioChannelList: React.FC = () => {
     <div className={styles.radioList}>
       <div className="text-xl font-bold ml-3">라디오 채널</div>
       <div className="text-base ml-3 mb-1">관심분야의 논문 라디오를 들어보세요.</div>
-      <div className={styles.channelList}>
+      <div
+        className={styles.channelList}
+        id="channelList"
+      >
         <Slider {...settings}>
           {channels.map((channel, index) => (
             <div
               key={index}
               className={styles.imgContainer}
+              style={channelStyle}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               onFocus={() => setHoveredIndex(index)}
