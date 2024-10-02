@@ -6,13 +6,21 @@ import imgLogin from '../assets/images/ImgLogin.jpg';
 import { signup, checkUserId, checkNickname } from '../apis/user';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  isValidUserId,
+  isValidNickname,
+  isValidPassword,
+  isValidBirthYear,
+} from '../utills/userValidation';
 
 const Signup: React.FC = () => {
   const [userID, setUserID] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [nickname, setNickname] = useState('');
   const [birthyear, setBirthyear] = useState('');
+  const [birthyearError, setBirthyearError] = useState('');
   const [gender, setGender] = useState('');
   const [degree, setDegree] = useState('UNDERUNIV');
   const [isUserIdAvailable, setIsUserIdAvailable] = useState<boolean | null>(null);
@@ -40,6 +48,10 @@ const Signup: React.FC = () => {
 
   // 아이디 중복 체크
   const handleCheckUserId = async () => {
+    if (!isValidUserId(userID)) {
+      toast.error('ID는 영문과 숫자로 이루어진 4~16자이어야 합니다.');
+      return;
+    }
     if (!userID) {
       toast.error('아이디를 입력해주세요.');
       return;
@@ -59,6 +71,10 @@ const Signup: React.FC = () => {
 
   // 닉네임 중복 체크
   const handleCheckNickname = async () => {
+    if (!isValidNickname(nickname)) {
+      toast.error('닉네임은 한글, 영문, 숫자로 이루어진 4~10자이어야 합니다.');
+      return;
+    }
     if (!nickname) {
       toast.error('닉네임을 입력해주세요.');
       return;
@@ -78,16 +94,48 @@ const Signup: React.FC = () => {
 
   // 가입 버튼 활성화 조건 확인
   const checkBothConditions = () => {
-    if (isUserIdAvailable === true && isNicknameAvailable === true) {
+    if (
+      isUserIdAvailable === true &&
+      isNicknameAvailable === true &&
+      !passwordError &&
+      !birthyearError &&
+      password === passwordCheck
+    ) {
       setIsBothChecked(true);
     } else {
       setIsBothChecked(false);
     }
   };
 
+  // 비밀번호 검증
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    if (!isValidPassword(newPassword)) {
+      setPasswordError('비밀번호는 영문, 숫자, 특수문자를 포함한 8~15자여야 합니다.');
+    } else {
+      setPasswordError('');
+    }
+    checkBothConditions();
+  };
+
+  // 생년 검증
+  const handleBirthyearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newBirthyear = e.target.value;
+    setBirthyear(newBirthyear);
+
+    if (!isValidBirthYear(newBirthyear)) {
+      setBirthyearError('생년은 숫자 4자리여야 합니다.');
+    } else {
+      setBirthyearError('');
+    }
+    checkBothConditions();
+  };
+
   useEffect(() => {
     checkBothConditions();
-  }, [isUserIdAvailable, isNicknameAvailable]);
+  }, [isUserIdAvailable, isNicknameAvailable, password, passwordCheck, birthyear]);
 
   return (
     <div className={styles.signupContainer}>
@@ -158,8 +206,9 @@ const Signup: React.FC = () => {
               type="password"
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
             />
+            {passwordError && <p className={styles.errorText}>{passwordError}</p>}
           </div>
 
           <div className={styles.formGroup}>
@@ -178,8 +227,9 @@ const Signup: React.FC = () => {
               type="text"
               placeholder="YYYY"
               value={birthyear}
-              onChange={(e) => setBirthyear(e.target.value)}
+              onChange={handleBirthyearChange}
             />
+            {birthyearError && <p className={styles.errorText}>{birthyearError}</p>}
           </div>
 
           <div className={styles.formGroup}>

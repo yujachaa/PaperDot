@@ -5,7 +5,7 @@ import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import useTheme from '../../zustand/theme';
 import { checkPassword, updatePassword } from '../../apis/user';
 import { toast } from 'react-toastify';
-
+import { isValidPassword } from '../../utills/userValidation';
 const ChangePassword: React.FC = () => {
   const [hide, setHide] = useState([true, true, true]);
 
@@ -17,19 +17,27 @@ const ChangePassword: React.FC = () => {
 
   const [isPasswordVerified, setIsPasswordVerified] = useState(false);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true); // 비밀번호 일치 상태 추가
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [passwordError, setPasswordError] = useState('');
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const navigate = useNavigate();
 
   // 새 비밀번호와 새 비밀번호 확인 값이 같을 때만 수정 버튼 활성화
   useEffect(() => {
     const { newPassword, confirmPassword } = passwords;
-    if (newPassword && confirmPassword && newPassword === confirmPassword && isPasswordVerified) {
+    const isValid = isValidPassword(newPassword);
+    if (
+      newPassword &&
+      confirmPassword &&
+      newPassword === confirmPassword &&
+      isPasswordVerified &&
+      isValid
+    ) {
       setIsSubmitEnabled(true);
-      setPasswordsMatch(true); // 비밀번호가 일치하면 true
+      setPasswordsMatch(true);
     } else {
       setIsSubmitEnabled(false);
-      setPasswordsMatch(newPassword === confirmPassword); // 일치 여부에 따라 상태 업데이트
+      setPasswordsMatch(newPassword === confirmPassword);
     }
   }, [passwords, isPasswordVerified]);
 
@@ -45,6 +53,14 @@ const ChangePassword: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswords((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'newPassword') {
+      if (!isValidPassword(value)) {
+        setPasswordError('영문, 숫자, 특수문자를 포함한 8~15자여야 합니다.');
+      } else {
+        setPasswordError('');
+      }
+    }
   };
 
   // 현재 비밀번호 확인
@@ -152,6 +168,7 @@ const ChangePassword: React.FC = () => {
               />
             )}
           </div>
+          {passwordError && <p className={styles.errorMessage}>{passwordError}</p>}
         </div>
 
         <div className={styles.formGroup}>
