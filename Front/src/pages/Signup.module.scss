@@ -43,6 +43,17 @@
   align-items: center;
 }
 
+.inputWrapper {
+  position: relative;
+}
+
+.passwordIcon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
 .formGroup input {
   box-sizing: border-box;
   flex: 1;
