@@ -138,6 +138,12 @@ input[type='radio']:checked {
   cursor: not-allowed;
 }
 
+.errorText {
+  color: red;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .signupContainer {
     flex-direction: column;
@@ -184,5 +190,10 @@ input[type='radio']:checked {
     height: 35px;
     margin-left: 70px;
     padding: 0 0.5rem;
+  }
+
+  .errorText {
+    font-size: 0.5rem;
+    font-weight: 700;
   }
 }
