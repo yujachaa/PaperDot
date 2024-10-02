@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './Tag.module.scss'; // SCSS 모듈 import
 
 interface TagProps {
   keyword: string;
@@ -8,21 +9,26 @@ interface TagProps {
 
 const Tag: React.FC<TagProps> = ({ keyword, type }) => {
   const navigation = useNavigate();
-  const bgColor = type === 'main' ? '#8CAFCE' : 'none';
-  const textColor = type === 'main' ? '#fafafa' : '#5A9BD8';
-  const fontSize = type === 'main' ? '1rem' : '0.875rem';
+  const tagClass = type === 'main' ? styles.main : styles.relation;
 
-  // 스타일 객체 정의 시 카멜 케이스를 사용해야 함
-  const tagStyle = {
-    display: 'flex',
-    padding: '0.625rem',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '0.625rem',
-    backgroundColor: bgColor,
-    color: textColor,
-    borderRadius: '2.5rem',
-    fontSize: fontSize,
+  const isDragging = useRef(false); // 드래그 여부를 저장할 ref
+  const dragStartX = useRef(0); // 드래그 시작 X 좌표를 저장할 ref
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    dragStartX.current = e.clientX; // 드래그 시작 시점의 X 좌표 저장
+    isDragging.current = false; // 드래그 여부 초기화
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (Math.abs(e.clientX - dragStartX.current) > 5) {
+      isDragging.current = true; // 5px 이상 움직이면 드래그로 판단
+    }
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging.current) {
+      goSearch(keyword, e); // 드래그가 아닌 경우에만 검색 함수 호출
+    }
   };
 
   const goSearch = (keyword: string, e: React.MouseEvent) => {
@@ -33,11 +39,10 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
 
   return (
     <div
-      className="font-bold cursor-pointer"
-      style={tagStyle}
-      onClick={(e) => {
-        goSearch(keyword, e);
-      }}
+      className={`${styles.tag} ${tagClass}`} // SCSS 모듈 클래스 적용
+      onMouseDown={handleMouseDown} // 마우스 누름 이벤트
+      onMouseMove={handleMouseMove} // 마우스 이동 이벤트
+      onMouseUp={handleMouseUp} // 마우스 뗌 이벤트
     >
       # {keyword}
     </div>
