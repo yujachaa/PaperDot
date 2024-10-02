@@ -1,0 +1,26 @@
+.recordDropdown {
+  width: 50vw;
+  padding: 0.625rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 1.875rem;
+  border: 1px solid #2e2e2e;
+  background: #fff;
+  margin-top: 0.5rem;
+  z-index: 1;
+
+  & {
+    @media (max-width: 768px) {
+      width: 80vw;
+    }
+  }
+}
+
+.recordItem {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #2e2e2e;
+  margin: 0 0 0.15rem 0;
+  cursor: pointer;
+}
