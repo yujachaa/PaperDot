@@ -3,7 +3,7 @@ import torch
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from embedding import LargeScaleKoreanPaperEmbedding  # embedding.py에서 가져옴
+from paper_embedding import LargeScaleKoreanPaperEmbedding  # embedding.py에서 가져옴
 from contextlib import asynccontextmanager
 import uvicorn
 
