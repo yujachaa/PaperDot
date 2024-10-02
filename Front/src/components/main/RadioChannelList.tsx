@@ -80,7 +80,7 @@ const RadioChannelList: React.FC = () => {
   const navigate = useNavigate();
 
   const handleRadioChannleMove = (index: number) => {
-    navigate(`/radio/${index}`);
+    navigate(`/radio/${index + 1}`);
   };
 
   const settings = {
