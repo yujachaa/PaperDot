@@ -16,6 +16,7 @@ export const Authapi = axios.create(config);
 Authapi.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('token');
+    console.log(token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
