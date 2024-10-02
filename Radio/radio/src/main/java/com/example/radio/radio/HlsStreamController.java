@@ -27,12 +27,12 @@ public class HlsStreamController {
     private HlsStreamService hlsStreamService;
 
     private static final long SEGMENT_LIFETIME = 600000; // 10분 (밀리초 단위)
-    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/radio/src/main/resources/music/";
-    private static final String INPUT_MP3 = "C:/Users/SSAFY/Desktop/radio/src/main/resources/music/test2.mp3";
-
+    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
 
     // M3U8 파일 제공
+
     //playlist_라디오번호.m3u8
+
     @GetMapping("/playlist_{radioId}.m3u8")
     public ResponseEntity<Resource> getM3u8File(@PathVariable int radioId) {
         // 절대 경로에서 M3U8 파일 로드
@@ -58,7 +58,7 @@ public class HlsStreamController {
     public void TransferAPI() throws IOException {
 
         for(int i=1;i<=5;i++) {
-            hlsStreamService.convertMp3ToM3u8(INPUT_MP3, SEGMENT_DIRECTORY, i);
+            hlsStreamService.convertMp3ToM3u8(SEGMENT_DIRECTORY +"radio" + i + ".mp3", SEGMENT_DIRECTORY, i);
         }
     }
 }
