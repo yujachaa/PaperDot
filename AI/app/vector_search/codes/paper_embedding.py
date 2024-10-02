@@ -81,8 +81,11 @@ class LargeScaleKoreanPaperEmbedding:
             # file_path = self.dataset.file_list[idx]
             # with open(file_path, 'r', encoding='utf-8') as f:
             #     paper = json.load(f)
-            print(f'{self.dataset.ordering_mapping[idx]}   {similarities[idx]}')
-            results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': similarities[idx]})
+            sim_score = similarities[idx]
+            if isinstance(sim_score, np.float32):
+                sim_score = float(sim_score)
+            print(f'{self.dataset.ordering_mapping[idx]}   {sim_score}')
+            results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': sim_score})
     
         return results
 
