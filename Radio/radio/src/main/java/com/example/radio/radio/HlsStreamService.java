@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
@@ -18,17 +19,34 @@ public class HlsStreamService {
     public void convertMp3ToM3u8(String inputPath, String outputPath, int radioNumber) throws IOException {
         System.out.println("변환 시작");
 
-        // 세그먼트 파일 이름 형식을 위한 템플릿
-        String segmentFilenameTemplate = outputPath + "/media-ulsusdkv7_b" + radioNumber + "_%d.ts";
+        // 변환 전에 기존 M3U8 및 TS 파일 삭제
+        File m3u8File = new File(outputPath + "playlist_" + radioNumber + ".m3u8");
+        if (m3u8File.exists()) {
+            m3u8File.delete();
+            System.out.println("기존 M3U8 파일 삭제: " + m3u8File.getName());
+        }
 
+        // 세그먼트 파일 삭제
+        File segmentDir = new File(outputPath);
+        File[] segmentFiles = segmentDir.listFiles((dir, name) -> name.matches("media-ulsusdkv7_b" + radioNumber + "_\\d+\\.ts"));
+        if (segmentFiles != null) {
+            for (File segmentFile : segmentFiles) {
+                segmentFile.delete();
+                System.out.println("기존 세그먼트 파일 삭제: " + segmentFile.getName());
+            }
+        }
+
+        // 세그먼트 파일 이름 형식을 위한 템플릿
+        String segmentFilenameTemplate = outputPath + "media-ulsusdkv7_b" + radioNumber + "_%d.ts";
+        System.out.println("url : " + inputPath);
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "ffmpeg", "-i", inputPath,
+                "ffmpeg","-i", inputPath,
                 "-codec:a", "aac", "-b:a", "128k",
                 "-hls_time", "4",
                 "-hls_list_size", "0",
                 "-hls_playlist_type", "vod",
                 "-hls_segment_filename", segmentFilenameTemplate,
-                outputPath + "/playlist_"+ radioNumber +".m3u8"
+                outputPath + "playlist_"+ radioNumber +".m3u8"
         );
 
         processBuilder.redirectErrorStream(true);
@@ -53,6 +71,7 @@ public class HlsStreamService {
         }
         System.out.println("종료");
     }
+
     double getMp3Duration(String inputPath) throws IOException {
         try {
             Mp3File mp3File = new Mp3File(inputPath);
