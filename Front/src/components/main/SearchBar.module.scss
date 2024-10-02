@@ -1,0 +1,93 @@
+.searchBar {
+  display: flex;
+  width: 50vw;
+  height: 3.5rem;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  gap: 0.8125rem;
+  border-radius: 3.75rem;
+  border: 1px solid #2e2e2e;
+  background: #fff;
+
+  & {
+    @media (max-width: 768px) {
+      height: 3rem;
+      width: 80vw;
+    }
+  }
+
+  .input {
+    flex: 1 0 0;
+    min-width: 100px;
+
+    color: #2e2e2e;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1rem; /* 110% */
+    border: none;
+
+    &::placeholder {
+      color: #71717a;
+      font-size: 0.7rem;
+      font-weight: 400;
+      line-height: 1.375rem; /* 157.143% */
+    }
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    .icon {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      fill: #ccc;
+    }
+  }
+
+  .button {
+    display: flex;
+    width: 9rem;
+    height: 2.5rem;
+    padding: 1rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3.75rem;
+    border: none;
+    box-sizing: border-box;
+    background: #a7c7e7;
+    color: #2e2e2e;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.375rem; /* 137.5% */
+    letter-spacing: 0.1875rem;
+
+    &:hover {
+      background-color: #78a4d1;
+    }
+
+    & {
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  }
+
+  .dark {
+    background: #8bafc9; //다크모드 버튼색상
+    color: #fafafa;
+
+    &:hover {
+      background-color: #7295b0; //다크모드 호버색상
+    }
+  }
+}
+
+.dropdown {
+  width: 50vw;
+}
