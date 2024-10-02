@@ -13,7 +13,7 @@ import re
 import json
 import subprocess
 
-from dataset import PaperDataset  # dataset.py에서 가져옴
+from vector_search.codes.dataset import PaperDataset  # dataset.py에서 가져옴
 
 def get_mecabrc_path():
     try:
