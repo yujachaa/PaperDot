@@ -15,13 +15,11 @@ import subprocess
 
 from vector_search.codes.dataset import PaperDataset  # dataset.py에서 가져옴
 
-def get_mecabrc_path():
-    try:
-        sysconfdir = subprocess.check_output(['mecab-config', '--sysconfdir']).decode('utf-8').strip()
-        mecabrc_path = f"{sysconfdir}/mecabrc"
-        return mecabrc_path
-    except subprocess.CalledProcessError:
-        raise FileNotFoundError("mecabrc 경로를 찾을 수 없습니다. Mecab이 제대로 설치되었는지 확인하세요.")
+def get_mecab_dicpath():
+    mecab_dic_path = "/usr/local/lib/mecab/dic/mecab-ko-dic"
+    if not os.path.exists(mecab_dic_path):
+        raise FileNotFoundError(f"MeCab 사전을 찾을 수 없습니다: {mecab_dic_path}")
+    return mecab_dic_path
 
 class LargeScaleKoreanPaperEmbedding:
     def __init__(self, data_dir):
