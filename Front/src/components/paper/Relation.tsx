@@ -6,7 +6,7 @@ import Tag from './Tag';
 import useTheme from '../../zustand/theme';
 
 interface RelationPaperProps {
-  relation?: {
+  relation: {
     id: number;
     title: string;
     author: string[];
@@ -108,7 +108,7 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
         className={`${styles.list} text-light-text`}
         id="relationList"
       >
-        {relation ? (
+        {relation?.length > 0 ? (
           <Slider {...settings}>
             {relation.map((item, index) => (
               <div

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Tag.module.scss'; // SCSS 모듈 import
+import { getSearchHistory, setSearchHistory } from '../../utills/sessionStorage';
 
 interface TagProps {
   keyword: string;
@@ -33,6 +34,15 @@ const Tag: React.FC<TagProps> = ({ keyword, type }) => {
 
   const goSearch = (keyword: string, e: React.MouseEvent) => {
     e.stopPropagation(); // 이벤트 전파 방지
+    //검색 기록 업데이트
+    // 세션 스토리지에서 검색 기록 불러오기
+    let history = JSON.parse(getSearchHistory() || '[]');
+    // 중복된 검색어가 있으면 삭제하고 최신으로 추가
+    history = history.filter((item: string) => item !== keyword);
+    // 최대 5개 기록 유지
+    const updatedHistory = [keyword, ...history].slice(0, 5);
+    // 세션 스토리지에 저장
+    setSearchHistory(JSON.stringify(updatedHistory));
     navigation(`/search?q=${keyword}&p=1`);
     window.scrollTo(0, 0);
   };
