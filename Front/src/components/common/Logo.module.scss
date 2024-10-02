@@ -1,0 +1,13 @@
+.logo {
+  width: 207px;
+  height: auto;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo {
+    width: 133px;
+  }
+}
