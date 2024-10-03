@@ -18,16 +18,18 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/api/stream")
+@RequestMapping("/radio")
 public class HlsStreamController {
 
     @Autowired
     private HlsStreamService hlsStreamService;
 
     private static final long SEGMENT_LIFETIME = 600000; // 10분 (밀리초 단위)
-    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
+    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
 
     // M3U8 파일 제공
 
@@ -36,7 +38,7 @@ public class HlsStreamController {
     @GetMapping("/playlist_{radioId}.m3u8")
     public ResponseEntity<Resource> getM3u8File(@PathVariable int radioId) {
         // 절대 경로에서 M3U8 파일 로드
-        File resourceFile = new File(SEGMENT_DIRECTORY + "playlist_" +radioId + ".m3u8");
+        File resourceFile = new File(SEGMENT_DIRECTORY + radioId + '/'  + "playlist_" +radioId + ".m3u8");
         FileSystemResource resource = new FileSystemResource(resourceFile);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "application/vnd.apple.mpegurl")
@@ -46,8 +48,20 @@ public class HlsStreamController {
     // TS 세그먼트 파일 제공
     @GetMapping("/{segmentName}.ts")
     public ResponseEntity<Resource> getSegmentFile(@PathVariable String segmentName) {
+
+        Pattern pattern = Pattern.compile("_b(\\d+)_");
+        Matcher matcher = pattern.matcher(segmentName);
+        String number="";
+        //라디오 번호 추출
+        if (matcher.find()) {
+            number = matcher.group(1); // 'b' 뒤의 숫자를 추출
+            System.out.println("Extracted number: " + number);
+        } else {
+            System.out.println("No match found.");
+        }
+
         // 절대 경로에서 TS 파일 로드
-        File resourceFile = new File(SEGMENT_DIRECTORY + segmentName + ".ts");
+        File resourceFile = new File(SEGMENT_DIRECTORY + number + '/' + segmentName + ".ts");
         FileSystemResource resource = new FileSystemResource(resourceFile);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "video/mp2t")
@@ -58,7 +72,7 @@ public class HlsStreamController {
     public void TransferAPI() throws IOException {
 
         for(int i=1;i<=5;i++) {
-            hlsStreamService.convertMp3ToM3u8(SEGMENT_DIRECTORY +"radio" + i + ".mp3", SEGMENT_DIRECTORY, i);
+            hlsStreamService.convertMp3ToM3u8(SEGMENT_DIRECTORY +i + '/' +"radio" + i + ".mp3", SEGMENT_DIRECTORY +i + '/', i);
         }
     }
 }

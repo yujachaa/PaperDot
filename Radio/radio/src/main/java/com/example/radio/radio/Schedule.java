@@ -46,8 +46,8 @@ public class Schedule {
         LocalDateTime endTime = LocalDateTime.now();
 
         for (int i = 1; i <= 5; i++) {
-            System.out.println(hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + "radio" + i + ".mp3"));
-            Mp3Durations[i - 1] = hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + "radio" + i + ".mp3");
+            System.out.println(hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3"));
+            Mp3Durations[i - 1] = hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3");
             EndTimes[i - 1] = endTime.plus(Duration.ofSeconds((long) (double) Mp3Durations[i - 1]));
             System.out.println(Arrays.toString(EndTimes));
         }
@@ -157,7 +157,7 @@ public class Schedule {
 
         for (int i = 0; i < 5; i++) {
             String segmentFileName = "media-ulsusdkv7_b" + radioNumber + "_" + (sequence + i) + ".ts";
-            File segmentFile = new File(SEGMENT_DIRECTORY + segmentFileName);
+            File segmentFile = new File(SEGMENT_DIRECTORY+ radioNumber + "/" + segmentFileName);
             if (segmentFile.exists()) {
                 m3u8Content.append("#EXTINF:4.0,\n").append(segmentFileName).append("\n");
             } else {
@@ -170,7 +170,7 @@ public class Schedule {
             m3u8Content.append("#EXT-X-ENDLIST\n");
         }
 
-        String outputPath = SEGMENT_DIRECTORY + "playlist_" + radioNumber + ".m3u8";
+        String outputPath = SEGMENT_DIRECTORY + radioNumber + '/' + "playlist_" + radioNumber + ".m3u8";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
             writer.write(m3u8Content.toString());
         }
