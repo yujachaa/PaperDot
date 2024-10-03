@@ -29,7 +29,8 @@ public class HlsStreamController {
     private HlsStreamService hlsStreamService;
 
     private static final long SEGMENT_LIFETIME = 600000; // 10분 (밀리초 단위)
-    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
+    //    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
+    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";;
 
     // M3U8 파일 제공
 
