@@ -17,6 +17,6 @@ public class OriginalJson {
     private LanguageDTO abstractText;
 
     private LanguageDTO title;
-    private List<String> authors;
+    private String authors;
     private String year;
 }

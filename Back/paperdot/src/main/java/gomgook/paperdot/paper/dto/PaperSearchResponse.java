@@ -10,10 +10,11 @@ public class PaperSearchResponse {
     private Long id;
 
 
-    private OriginalJson originalJson;
-    //private String title;
-    //private List<String> author;
-    //private String year;
+    private LanguageDTO abstractText;
+
+    private LanguageDTO title;
+    private List<String> authors;
+    private String year;
     private Long cnt;
     private boolean bookmark = false;
 }

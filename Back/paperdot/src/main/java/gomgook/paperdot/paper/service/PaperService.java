@@ -1,6 +1,8 @@
 package gomgook.paperdot.paper.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gomgook.paperdot.bookmark.entity.Bookmark;
 import gomgook.paperdot.bookmark.repository.BookmarkRepository;
 import gomgook.paperdot.exception.CustomException;
@@ -8,7 +10,7 @@ import gomgook.paperdot.exception.ExceptionResponse;
 import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.repository.MemberRepository;
 import gomgook.paperdot.paper.dto.*;
-import gomgook.paperdot.paper.entity.Paper;
+import gomgook.paperdot.paper.entity.PaperEntity;
 import gomgook.paperdot.paper.entity.PaperDocument;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
@@ -17,6 +19,7 @@ import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.redis.core.RedisTemplate;
 //import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,49 +47,47 @@ public class PaperService {
 
     @Autowired
     private MemberRepository memberRepository;
-    private final WebClient webClient;
-//
-//    @Autowired
-//    private RedisTemplate<String, List<PythonPaper>> redisTemplate;
 
-    public PaperService(WebClient.Builder webClientBuilder ) {
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    private final WebClient webClient;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public PaperService(WebClient.Builder webClientBuilder, RedisTemplate<String, Object> redisTemplate ) {
         this.webClient = webClientBuilder.baseUrl("http://j11b208.p.ssafy.io:8000").build();
+        this.redisTemplate = redisTemplate;
     }
 
     // controller로 세팅한 데이터 반환
     public TotalPageSearchResponse getSearchKeyword(String keyword, Long memberId) {
 
         // python 서버 요청(응답 데이터 flux 형식)
-        Mono<List<String>> docIdMono  = sendRequest(keyword);
+        Mono<List<Long>> docIdMono  = sendRequest(keyword);
 
-        List<String> docIds = docIdMono.block();
-        System.out.println(docIds);
-        List<Long> ids = new ArrayList<>();
-        for(String id : docIds) {
-            ids.add(Long.parseLong(id));
-        }
+        List<Long> stringIds = docIdMono.block();
 
+
+        if(stringIds==null || stringIds.isEmpty()) stringIds = new ArrayList<>();
 
 
         // ES에서 LIST 가져오기
-        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(stringIds).orElse(new ArrayList<>());
 
-        System.out.println(paperSimpleDocumentList);
+
 //        // paperSearchResponseList caching
-//        String redisKey = "searchData::"+keyword;
-//        saveToRedis(redisKey, pythonSearchList);
+        String redisKey = "searchData::"+keyword;
+        saveToRedis(redisKey, paperSimpleDocumentList);
 
         // 총 검색 리스트 갯수
-        Long totalCount = (docIds==null || docIds.isEmpty()) ? 0 : (long)docIds.size();
-//        List<Long> ids = paperSimpleDocumentList.stream()
-//                .map(PaperSimpleDocument::getId)
-//                .filter(Objects::nonNull)         // null 값은 필터링
-//                .toList();
-//        System.out.println(ids);
+        Long totalCount = (stringIds==null || stringIds.isEmpty()) ? 0 : (long)stringIds.size();
+
         // pagination
 
         // 20개 검색된 논문리스트 DTO 구성
-        List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponse(memberId, ids, paperSimpleDocumentList);
+        List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, paperSimpleDocumentList);
 
 //
 //        // 총 논문 수 + 1페이지 논문 데이터
@@ -100,7 +101,7 @@ public class PaperService {
 
 
     // 사용자 북마크 정보, 북마크 횟수 추가
-    public List<PaperSearchResponse> setPaperSearchResponse(Long memberId, List<Long> ids, List<PaperSimpleDocument> paperSimpleDocumentList) {
+    public List<PaperSearchResponse> setPaperSearchResponses(Long memberId, List<Long> ids, List<PaperSimpleDocument> paperSimpleDocumentList) {
 
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
@@ -113,7 +114,7 @@ public class PaperService {
 
 
         // 논문 북마크 횟수
-        List<Paper> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
+        List<PaperEntity> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
 
         // 사용자 북마크
         List<Bookmark> bookmarks = (member != null)
@@ -126,7 +127,7 @@ public class PaperService {
             //  정확하게 하려면 id 값으로 매 id 마다 조회해야 함
             //  성능 차이..? 20개 뿐이니까.. 근데 5만개 돌아야하는데
             PaperSimpleDocument paperSimpleDocument = paperSimpleDocumentList.get(i);
-            Paper sqlPaper = sqlPaperList.get(i);
+            PaperEntity sqlPaper = (sqlPaperList.isEmpty()) ? new PaperEntity() : sqlPaperList.get(i);
 
             PaperSearchResponse paperSearchResponse = setPaperSearchResponse(paperSimpleDocument, sqlPaper);
 
@@ -146,8 +147,8 @@ public class PaperService {
 
 
     // python 서버에 paper 데이터 요청
-    public Mono<List<String>> sendRequest(String keyword) {
-        String jsonBody = String.format("{\"query\": \"%s\", \"top_k\": %d}", keyword, 10) ;
+    public Mono<List<Long>> sendRequest(String keyword) {
+        String jsonBody = String.format("{\"query\": \"%s\", \"top_k\": %d}", keyword, 50) ;
         // 파이썬으로 요청
         return webClient.post()
                 .uri("/search")
@@ -156,8 +157,8 @@ public class PaperService {
                 .retrieve()
                 .bodyToMono(PythonPaperResponse.class)
                 .flatMap(response -> {
-                    List<String> docIds = response.getResults().stream()
-                            .map(PythonPaper::getDoc_id)
+                    List<Long> docIds = response.getResults().stream()
+                            .map(PythonPaper::getId)
                             .collect(Collectors.toList());
 
                     return Mono.just(docIds);
@@ -167,85 +168,116 @@ public class PaperService {
     // TODO: (코드 리펙토링) 캐싱 알고리즘 재구성 필요. (저장 삭제 규칙)
     //   - keyword마다 캐싱 데이터 저장?-같은 키로 저장될 수 있을 것 같음.
     //   - 사용자도 키로 저장?-데이터 너무 많이 저장될 것 같음.
-//    public void saveToRedis(String key, List<PythonPaper> data) {
-//        redisTemplate.opsForValue().set(key, data);
-////        redisTemplate.expire(key, 5000000, TimeUnit.DAYS);
-//    }
+    public void saveToRedis(String key, List<PaperSimpleDocument> data) {
+
+        try {
+            String jsonString = objectMapper.writeValueAsString(data);
+            redisTemplate.opsForValue().set(key, jsonString);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
+//        redisTemplate.expire(key, 5000000, TimeUnit.DAYS);
+    }
 
     // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
-    private static PaperSearchResponse setPaperSearchResponse(PaperSimpleDocument python, Paper sql) {
+    private static PaperSearchResponse setPaperSearchResponse(PaperSimpleDocument python, PaperEntity sql) {
         PaperSearchResponse response = new PaperSearchResponse();
-/* TODO : originalJson 형식으로 바꾸기
+
         response.setId(python.getId());
-        response.setYear(python.getYear());
-        response.setCnt(sql.getBookmarkCnt());
-        String s = python.getAuthors();
+
+        OriginalJson originalJson = new OriginalJson();
+        OriginalJson originalJsonFrom = python.getOriginalJson();
+
+
+        LanguageDTO abstractText = (originalJsonFrom.getAbstractText() != null) ? new LanguageDTO(originalJsonFrom.getAbstractText().getKo(), originalJsonFrom.getAbstractText().getEn()) : null;
+        LanguageDTO title = (originalJsonFrom.getTitle() != null) ? new LanguageDTO(originalJsonFrom.getTitle().getKo(), originalJsonFrom.getTitle().getEn()) : null;
+
+        String author = originalJsonFrom.getAuthors();
         List<String> authors = new ArrayList<>();
-        if(s!=null && !s.isEmpty()) authors = Arrays.stream(s.split(";")).toList();
-        response.setAuthor(authors);
-        response.setTitle(python.getTitle().getKo());
+        if(author!=null && !author.isEmpty()) authors = Arrays.stream(author.split(";")).toList();
+
+        response.setId(python.getId());
+
+        response.setAbstractText(abstractText);
+        response.setTitle(title);
+        response.setAuthors(authors);
+        response.setCnt(sql.getBookmarkCnt());
+        response.setYear(originalJsonFrom.getYear());
+
         response.setBookmark(false);
-*/
+
         return response;
     }
 
 
 
-//    // page
-//    public List<PaperSearchResponse> getSearchPage(String keyword, int pageNo, Long memberId) {
-//
-//        int pageSize = 20;
-//        int start, end;
-//        String redisKey = "searchData:: "+keyword;
-//        List<PythonPaper> cachedResults = redisTemplate.opsForValue().get(redisKey);
-//        List<PythonPaper> paginatedResults = new ArrayList<>();
-//        if (cachedResults != null) {
-//            start = pageNo * pageSize;
-//            end = Math.min(start + pageSize, cachedResults.size());
-//            paginatedResults = cachedResults.subList(start, end);
-//
-//            // Return paginatedResults to the client
-//
-//        } else {
-//            // Handle the case where the cache doesn't exist or has expired
-//            Flux<PythonPaper> pythonSearchResponseFlux = sendRequest(keyword);
-//
-//            List<Long> ids = pythonSearchResponseFlux
-//                    .map(PythonPaper::getId)
-//                    .collectList()
-//                    .block();
-//
-//            List<PythonPaper> pythonSearchList = pythonSearchResponseFlux.collectList().block();
-//
-//            start = pageNo * pageSize;
-//            if (pythonSearchList != null && !pythonSearchList.isEmpty()) {
-//                if (start >= pythonSearchList.size()) {
-//                    // Return an empty list if the start index is out of bounds
-//                    paginatedResults = Collections.emptyList();
-//                } else {
-//                    end = Math.min(start + pageSize, pythonSearchList.size());
-//                    paginatedResults = pythonSearchList.subList(start, end);
-//                }
-//            }
-//            else {
-//                paginatedResults = Collections.emptyList();
-//            }
-//
-//        }
-//
-//
-//        return setResponse(memberId, ids, paginatedResults);
-//
-//    }
+////    // page
+    public List<PaperSearchResponse> getSearchPage(String keyword, int pageNo, Long memberId) throws JsonProcessingException {
+
+        int pageSize = 20;
+        int start, end;
+        String redisKey = "searchData::"+keyword;
+        Object cachedResults = redisTemplate.opsForValue().get(redisKey);
+
+        List<PaperSimpleDocument> redisDataList = new ArrayList<>();
+        if (cachedResults instanceof String jsonString) {
+
+            // JSON 문자열을 List<PaperSimpleDocument>로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            redisDataList= objectMapper.readValue(jsonString,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, PaperSimpleDocument.class));
+
+            System.out.println("!!!!!!!!!!!!!!!!");
+
+        }
+
+        List<Long> paginatedIds = new ArrayList<>();
+        List<PaperSimpleDocument> paginatedResults = new ArrayList<>();
+        List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
+
+
+        if (cachedResults != null) {
+
+            start = (pageNo-1) * pageSize;
+            end = Math.min(start + pageSize, redisDataList.size());
+
+             paginatedResults = redisDataList.subList(start, end);
+             paginatedIds = paginatedResults.stream().map(PaperSimpleDocument::getId).toList();
+             paperSearchResponseList = setPaperSearchResponses(memberId, paginatedIds, paginatedResults);
+            // Return paginatedResults to the client
+
+            System.out.println("!!!!!!!!!!!!!!!!");
+            System.out.println(paginatedResults.size());
+
+        } else {
+            // Handle the case where the cache doesn't exist or has expired
+
+
+
+             TotalPageSearchResponse totalPageSearchResponse = getSearchKeyword(keyword, memberId);
+
+            start = (pageNo-1) * pageSize;
+            end = Math.min(start + pageSize, totalPageSearchResponse.getPaperSearchResponseList().size());
+             paperSearchResponseList = totalPageSearchResponse.getPaperSearchResponseList().subList(start, end);
+             
+        }
+
+
+        return paperSearchResponseList;
+
+    }
 
 
 
     //
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
-        System.out.println("paperId "+paperId);
+
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
-        Paper paper = paperJpaRepository.findById(paperId).orElse(null);
-        System.out.println(paper);
+        PaperEntity paper = paperJpaRepository.findById(paperId).orElse(null);
+
         Member member = null;
         if(memberId != null) {
             member=memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
@@ -256,33 +288,31 @@ public class PaperService {
 
         return setPaperDetail(paperDocument, paper, bookmark);
     }
-//    private  () {
-//
-//    }
 
-    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, Paper paper, Bookmark bookmark) {
+
+    private PaperDetailResponse setPaperDetail(PaperDocument paperDocument, PaperEntity paper, Bookmark bookmark) {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
-        paperDetail.setOriginalJson(new OriginalJson());
-        String authors = paperDocument.getOriginalJson().getAuthors().toString();
+        paperDetail.setDocId(paperDocument.getDoc_id());
+        paperDetail.setYear(paperDocument.getOriginalJson().getYear());
+        paperDetail.setTitle(paperDocument.getOriginalJson().getTitle());
+        paperDetail.setAbstractText(paperDocument.getOriginalJson().getAbstractText());
 
-        paperDetail.getOriginalJson().setAuthors(
+        String authors = paperDocument.getOriginalJson().getAuthors();
+        paperDetail.setAuthors(
                 Optional.ofNullable(authors)
                         .filter(a -> !a.isEmpty())
                         .map(a -> Arrays.stream(a.split(";")).toList())
                         .orElse(new ArrayList<>())
         );
 
-        paperDetail.getOriginalJson().setTitle(paperDocument.getOriginalJson().getTitle());
-        paperDetail.getOriginalJson().setYear(paperDocument.getOriginalJson().getYear());
 
-        paperDetail.setDocId(paperDocument.getDoc_id());
 
         List<String> keywordList = paperDocument.getKeywords();
 
         paperDetail.setKeyword(keywordList);
-        paperDetail.getOriginalJson().setAbstractText(paperDocument.getOriginalJson().getAbstractText());
+
 
         Long bookmarkCnt = (paper!=null) ? paper.getBookmarkCnt() : 0;
         paperDetail.setCnt(bookmarkCnt);
@@ -313,12 +343,12 @@ public class PaperService {
             PaperSearchResponse paperSearchResponse = new PaperSearchResponse();
             paperSearchResponse.setId(paper.getId());
 
-            paperSearchResponse.getOriginalJson().getTitle().setKo(paper.getOriginalJson().getTitle().getKo());
+            paperSearchResponse.setTitle(paper.getOriginalJson().getTitle());
 
-            paperSearchResponse.getOriginalJson().setYear(paper.getOriginalJson().getYear());
+            paperSearchResponse.setYear(paper.getOriginalJson().getYear());
 
-            String authors = paper.getOriginalJson().getAuthors().toString();
-            paperSearchResponse.getOriginalJson().setAuthors(
+            String authors = paper.getOriginalJson().getAuthors();
+            paperSearchResponse.setAuthors(
                     Optional.ofNullable(authors)
                             .filter(a -> !a.isEmpty())
                             .map(a -> Arrays.stream(a.split(";")).toList())
