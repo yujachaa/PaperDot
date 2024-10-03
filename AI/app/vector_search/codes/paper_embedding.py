@@ -84,8 +84,9 @@ class LargeScaleKoreanPaperEmbedding:
             sim_score = similarities[idx]
             if isinstance(sim_score, np.float32):
                 sim_score = float(sim_score)
-            print(f'{self.dataset.ordering_mapping[idx]}   {sim_score}')
-            results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': sim_score})
+            print(f'{idx}: {self.dataset.ordering_mapping[idx]}   {sim_score}')
+            # results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': sim_score})
+            results.append({'doc_id': idx, 'similarity': sim_score})
     
         return results
 
