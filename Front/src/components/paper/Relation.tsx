@@ -105,7 +105,7 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
       </div>
 
       <div
-        className={`${styles.list} text-light-text`}
+        className={styles.list}
         id="relationList"
       >
         {relation?.length > 0 ? (
@@ -113,7 +113,7 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
             {relation.map((item, index) => (
               <div
                 key={index}
-                className={styles.card}
+                className={`${styles.card} ${isDarkMode ? styles.dark : ''}`}
                 style={cardStyle}
                 onClick={() => goDetail(item.id)}
               >
