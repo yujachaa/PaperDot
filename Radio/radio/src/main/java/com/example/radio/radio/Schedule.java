@@ -23,7 +23,7 @@ public class Schedule {
     private static int sequence3 = 0;
     private static int sequence4 = 0;
     private static int sequence5 = 0;
-    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
+    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
 
     private static Boolean[] isLiveStreaming = {true, true, true, true, true};
     private static LocalDateTime[] EndTimes = new LocalDateTime[5];
@@ -43,14 +43,14 @@ public class Schedule {
 
     @PostConstruct
     public void init() throws IOException {
-        LocalDateTime endTime = LocalDateTime.now();
-
-        for (int i = 1; i <= 5; i++) {
-            System.out.println(hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3"));
-            Mp3Durations[i - 1] = hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3");
-            EndTimes[i - 1] = endTime.plus(Duration.ofSeconds((long) (double) Mp3Durations[i - 1]));
-            System.out.println(Arrays.toString(EndTimes));
-        }
+//        LocalDateTime endTime = LocalDateTime.now();
+//
+//        for (int i = 1; i <= 5; i++) {
+//            System.out.println(hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3"));
+//            Mp3Durations[i - 1] = hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3");
+//            EndTimes[i - 1] = endTime.plus(Duration.ofSeconds((long) (double) Mp3Durations[i - 1]));
+//            System.out.println(Arrays.toString(EndTimes));
+//        }
         startTasks();
     }
 
@@ -130,16 +130,16 @@ public class Schedule {
 
     // 공통 체크 및 실행 로직
     private void checkAndExecuteTask(int taskIndex, int sequence, int radioNumber) throws IOException {
-        if(!isLiveStreaming[taskIndex]){
-            System.out.println(taskIndex + "라이브 스트리밍이 종료되었습니다.");
-            stopTask(taskIndex + 1);
-            return;
-        }
+//        if(!isLiveStreaming[taskIndex]){
+//            System.out.println(taskIndex + "라이브 스트리밍이 종료되었습니다.");
+//            stopTask(taskIndex + 1);
+//            return;
+//        }
 
-        if (LocalDateTime.now().isAfter(EndTimes[taskIndex]) || LocalDateTime.now().isEqual(EndTimes[taskIndex])) {
-            System.out.println("MP3 파일의 끝에 도달했습니다. 라이브 스트리밍 종료.");
-            isLiveStreaming[taskIndex]=false;
-        }
+//        if (LocalDateTime.now().isAfter(EndTimes[taskIndex]) || LocalDateTime.now().isEqual(EndTimes[taskIndex])) {
+//            System.out.println("MP3 파일의 끝에 도달했습니다. 라이브 스트리밍 종료.");
+//            isLiveStreaming[taskIndex]=false;
+//        }
 
         System.out.println(radioNumber + "번 라디오 타이머");
         makem3u8(sequence, radioNumber,taskIndex);
@@ -162,13 +162,28 @@ public class Schedule {
                 m3u8Content.append("#EXTINF:4.0,\n").append(segmentFileName).append("\n");
             } else {
                 System.out.println(segmentFileName + " 파일이 존재하지 않습니다. 추가하지 않음.");
+                if(radioNumber ==1){
+                    sequence1=0;
+                }
+                else if(radioNumber ==2){
+                    sequence2=0;
+                }
+                else if(radioNumber ==3){
+                    sequence3=0;
+                }
+                else if(radioNumber ==4){
+                    sequence4=0;
+                }
+                else if(radioNumber ==5){
+                    sequence5=0;
+                }
             }
         }
 
-        if (!isLiveStreaming[taskIndex]) {
-            System.out.println("종료태그 추가");
-            m3u8Content.append("#EXT-X-ENDLIST\n");
-        }
+//        if (!isLiveStreaming[taskIndex]) {
+//            System.out.println("종료태그 추가");
+//            m3u8Content.append("#EXT-X-ENDLIST\n");
+//        }
 
         String outputPath = SEGMENT_DIRECTORY + radioNumber + '/' + "playlist_" + radioNumber + ".m3u8";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
