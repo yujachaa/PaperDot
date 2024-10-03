@@ -16,12 +16,16 @@ import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PaperService {
@@ -41,35 +45,92 @@ public class PaperService {
     @Autowired
     private MemberRepository memberRepository;
     private final WebClient webClient;
-
+//
 //    @Autowired
-//    private RedisTemplate<String, Object> redisTemplate;
+//    private RedisTemplate<String, List<PythonPaper>> redisTemplate;
 
     public PaperService(WebClient.Builder webClientBuilder ) {
-        this.webClient = webClientBuilder.baseUrl("http://j11b208.p.ssafy.io:9870/webhdfs").build();
+        this.webClient = webClientBuilder.baseUrl("http://j11b208.p.ssafy.io:8000").build();
     }
 
-    public TotalPageSearchResponse setResponse(Long memberId, List<Long> ids, List<PythonPaper> pythonSearchList) {
-        TotalPageSearchResponse response = new TotalPageSearchResponse();
+    // controller로 세팅한 데이터 반환
+    public TotalPageSearchResponse getSearchKeyword(String keyword, Long memberId) {
+
+        // python 서버 요청(응답 데이터 flux 형식)
+        Mono<List<String>> docIdMono  = sendRequest(keyword);
+
+        List<String> docIds = docIdMono.block();
+        System.out.println(docIds);
+        List<Long> ids = new ArrayList<>();
+        for(String id : docIds) {
+            ids.add(Long.parseLong(id));
+        }
+
+
+
+        // ES에서 LIST 가져오기
+        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+
+        System.out.println(paperSimpleDocumentList);
+//        // paperSearchResponseList caching
+//        String redisKey = "searchData::"+keyword;
+//        saveToRedis(redisKey, pythonSearchList);
+
+        // 총 검색 리스트 갯수
+        Long totalCount = (docIds==null || docIds.isEmpty()) ? 0 : (long)docIds.size();
+//        List<Long> ids = paperSimpleDocumentList.stream()
+//                .map(PaperSimpleDocument::getId)
+//                .filter(Objects::nonNull)         // null 값은 필터링
+//                .toList();
+//        System.out.println(ids);
+        // pagination
+
+        // 20개 검색된 논문리스트 DTO 구성
+        List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponse(memberId, ids, paperSimpleDocumentList);
+
+//
+//        // 총 논문 수 + 1페이지 논문 데이터
+        TotalPageSearchResponse totalPageSearchResponse = new TotalPageSearchResponse();
+        totalPageSearchResponse.setPaperSearchResponseList(paperSearchResponseList);
+        totalPageSearchResponse.setTotal(totalCount);
+
+
+        return totalPageSearchResponse;
+    }
+
+
+    // 사용자 북마크 정보, 북마크 횟수 추가
+    public List<PaperSearchResponse> setPaperSearchResponse(Long memberId, List<Long> ids, List<PaperSimpleDocument> paperSimpleDocumentList) {
+
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
 
         Member member = null;
         if(memberId != null) {
-            memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+            member = memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
 
         }
 
-        // bookmarkInfo from MySQL
+
+        // 논문 북마크 횟수
         List<Paper> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
-        List<Bookmark> bookmarks = (memberId != null)
+
+        // 사용자 북마크
+        List<Bookmark> bookmarks = (member != null)
                 ? bookmarkRepository.findAllByMember(member).orElseGet(ArrayList::new)
                 : Collections.emptyList();
 
 
-        for(int i=0; i< pythonSearchList.size(); i++) {
-            PaperSearchResponse paperSearchResponse = getPaperSearchResponse(sqlPaperList, i, pythonSearchList);
+        for(int i=0; i< paperSimpleDocumentList.size(); i++) {
+            // TODO: 파이썬에서 가져온 리스트랑 그 아이디들로 SQL에서 in으로 가져온 리스트 순서가 같을지 확신 가능???????
+            //  정확하게 하려면 id 값으로 매 id 마다 조회해야 함
+            //  성능 차이..? 20개 뿐이니까.. 근데 5만개 돌아야하는데
+            PaperSimpleDocument paperSimpleDocument = paperSimpleDocumentList.get(i);
+            Paper sqlPaper = sqlPaperList.get(i);
 
+            PaperSearchResponse paperSearchResponse = setPaperSearchResponse(paperSimpleDocument, sqlPaper);
+
+            // 사용자 북마크정보 저장
             for (Bookmark bookmark : bookmarks) {
                 if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
                     paperSearchResponse.setBookmark(true);
@@ -79,76 +140,105 @@ public class PaperService {
             paperSearchResponseList.add(paperSearchResponse);
         }
 
-        response.setTotal(pythonSearchList.size());
-        response.setPaperSearchResponseList(paperSearchResponseList);
-
-        return response;
+        return paperSearchResponseList;
     }
-    // python 서버에서 받아온 데이터 변환
-    public TotalPageSearchResponse getSearch(String keyword, Long memberId) {
 
-        Flux<PythonPaper> pythonSearchResponseFlux  = sendRequest(keyword);
 
-        // docIds from EX (flux -> long)
-        List<Long> ids = pythonSearchResponseFlux
-                .map(PythonPaper::getId)
-                .collectList()
-                .block();
-
-        // paperinfoList from EX (flux -> dto)
-        List<PythonPaper> pythonSearchList = pythonSearchResponseFlux.collectList().block();
-
-//         TODO: 논문 데이터 RDB 로 가지고 있을지 고민
-//         TODO: 파이썬에서 논문 데이터 어떤 형태로 올지
-
-//         TODO: (Redis) paperSearchResponseList caching
-//        String redisKey = "searchData::"+keyword;
-//        saveToRedis(redisKey, paperSearchResponseList);
-
-        return setResponse(memberId, ids, pythonSearchList);
-    }
 
     // python 서버에 paper 데이터 요청
-    public Flux<PythonPaper> sendRequest(String keyword) {
+    public Mono<List<String>> sendRequest(String keyword) {
+        String jsonBody = String.format("{\"query\": \"%s\", \"top_k\": %d}", keyword, 10) ;
         // 파이썬으로 요청
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/v1/")
-                        .queryParam("op", "LISTSTATUS")
-                        .build())
+        return webClient.post()
+                .uri("/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(jsonBody)
                 .retrieve()
-                .bodyToFlux(PythonPaper.class);
+                .bodyToMono(PythonPaperResponse.class)
+                .flatMap(response -> {
+                    List<String> docIds = response.getResults().stream()
+                            .map(PythonPaper::getDoc_id)
+                            .collect(Collectors.toList());
+
+                    return Mono.just(docIds);
+                });
     }
 
-
-    public List<PaperSearchResponse> getSearchPage(String keyword, int pageNo, Long memberId) {
-        List<PaperSearchResponse> list = new ArrayList<>();
-
-
-
-        return list;
-
-    }
-
-    public void saveToRedis(String key, Object data) {
+    // TODO: (코드 리펙토링) 캐싱 알고리즘 재구성 필요. (저장 삭제 규칙)
+    //   - keyword마다 캐싱 데이터 저장?-같은 키로 저장될 수 있을 것 같음.
+    //   - 사용자도 키로 저장?-데이터 너무 많이 저장될 것 같음.
+//    public void saveToRedis(String key, List<PythonPaper> data) {
 //        redisTemplate.opsForValue().set(key, data);
-//        redisTemplate.expire(key, 5000000, TimeUnit.DAYS);
-    }
+////        redisTemplate.expire(key, 5000000, TimeUnit.DAYS);
+//    }
 
-    // client 응답 DTO 세팅
-    private static PaperSearchResponse getPaperSearchResponse(List<Paper> sqlPaperList, int i, List<PythonPaper> pythonSearchList) {
+    // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
+    private static PaperSearchResponse setPaperSearchResponse(PaperSimpleDocument python, Paper sql) {
         PaperSearchResponse response = new PaperSearchResponse();
-        Paper sqlPaper = sqlPaperList.get(i);
-        PythonPaper pythonPaper = pythonSearchList.get(i);
 
-        response.setId(sqlPaper.getId());
-        response.setYear(pythonPaper.getYear());
-        response.setCnt(sqlPaper.getBookmarkCnt());
-        response.setAuthor(pythonPaper.getAuthor());
-        response.setTitle(pythonPaper.getTitle().getKo());
+        response.setId(python.getId());
+        response.setYear(python.getYear());
+        response.setCnt(sql.getBookmarkCnt());
+        String s = python.getAuthors();
+        List<String> authors = new ArrayList<>();
+        if(s!=null && !s.isEmpty()) authors = Arrays.stream(s.split(";")).toList();
+        response.setAuthor(authors);
+        response.setTitle(python.getTitle().getKo());
         response.setBookmark(false);
+
         return response;
     }
+
+
+
+//    // page
+//    public List<PaperSearchResponse> getSearchPage(String keyword, int pageNo, Long memberId) {
+//
+//        int pageSize = 20;
+//        int start, end;
+//        String redisKey = "searchData:: "+keyword;
+//        List<PythonPaper> cachedResults = redisTemplate.opsForValue().get(redisKey);
+//        List<PythonPaper> paginatedResults = new ArrayList<>();
+//        if (cachedResults != null) {
+//            start = pageNo * pageSize;
+//            end = Math.min(start + pageSize, cachedResults.size());
+//            paginatedResults = cachedResults.subList(start, end);
+//
+//            // Return paginatedResults to the client
+//
+//        } else {
+//            // Handle the case where the cache doesn't exist or has expired
+//            Flux<PythonPaper> pythonSearchResponseFlux = sendRequest(keyword);
+//
+//            List<Long> ids = pythonSearchResponseFlux
+//                    .map(PythonPaper::getId)
+//                    .collectList()
+//                    .block();
+//
+//            List<PythonPaper> pythonSearchList = pythonSearchResponseFlux.collectList().block();
+//
+//            start = pageNo * pageSize;
+//            if (pythonSearchList != null && !pythonSearchList.isEmpty()) {
+//                if (start >= pythonSearchList.size()) {
+//                    // Return an empty list if the start index is out of bounds
+//                    paginatedResults = Collections.emptyList();
+//                } else {
+//                    end = Math.min(start + pageSize, pythonSearchList.size());
+//                    paginatedResults = pythonSearchList.subList(start, end);
+//                }
+//            }
+//            else {
+//                paginatedResults = Collections.emptyList();
+//            }
+//
+//        }
+//
+//
+//        return setResponse(memberId, ids, paginatedResults);
+//
+//    }
+
+
 
     //
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
