@@ -12,6 +12,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 임베딩 시스템 초기화
 embedding_system = None
 embedding_file_path = os.path.join(current_dir, "../models/paper_embeddings.npy")
+random_access_file_path = os.path.join(current_dir, "../models/random_access_list.pkl")
 
 # FastAPI 모델 정의
 class QueryModel(BaseModel):
@@ -24,7 +25,7 @@ async def lifespan(app: FastAPI):
     global embedding_system
     # 애플리케이션 시작 시 실행될 초기화 로직
     print("Initializing embedding system...")
-    embedding_system = LargeScaleKoreanPaperEmbedding(os.path.join(current_dir, "../datas/"))
+    embedding_system = LargeScaleKoreanPaperEmbedding(os.path.join(current_dir, "../datas/"), random_access_file_path)
     if os.path.exists(embedding_file_path):
         embedding_system.load_embeddings(embedding_file_path)
     else:

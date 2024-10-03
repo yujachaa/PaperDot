@@ -12,6 +12,7 @@ from tqdm import tqdm
 import re
 import json
 import subprocess
+import pickle
 
 from vector_search.codes.dataset import PaperDataset  # dataset.py에서 가져옴
 
@@ -22,7 +23,7 @@ def get_mecab_dicpath():
     return mecab_dic_path
 
 class LargeScaleKoreanPaperEmbedding:
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, mapping_file_path):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained("snunlp/KR-SBERT-V40K-klueNLI-augSTS")
         self.model = AutoModel.from_pretrained("snunlp/KR-SBERT-V40K-klueNLI-augSTS").to(self.device)
@@ -31,9 +32,21 @@ class LargeScaleKoreanPaperEmbedding:
         self.data_dir = data_dir
         self.embeddings = None
 
+        # Random Access List: doc_id -> id
+        self.ids = self.load_id_mapping(mapping_file_path)
+
         # PaperDataset 인스턴스 생성
         self.dataset = PaperDataset(self.data_dir, self.tokenizer, self.mecab)
 
+    def load_id_mapping(self, mapping_file_path):
+        """
+        doc_id를 id로 매핑한 리스트를 로드합니다.
+        """
+        with open(mapping_file_path, 'rb') as f:
+            ids = pickle.load(f)
+        print(f"Loaded ID mapping from {mapping_file_path}")
+        return ids
+    
     def create_embeddings(self, batch_size=32):
         dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=False, num_workers=4)
 
@@ -84,9 +97,9 @@ class LargeScaleKoreanPaperEmbedding:
             sim_score = similarities[idx]
             if isinstance(sim_score, np.float32):
                 sim_score = float(sim_score)
-            print(f'{idx}: {self.dataset.ordering_mapping[idx]}   {sim_score}')
-            # results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': sim_score})
-            results.append({'doc_id': str(idx), 'similarity': sim_score})
+            print(f'{idx}->{self.ids[idx]}: {self.dataset.ordering_mapping[idx]}   {sim_score}')
+            results.append({'doc_id': self.ids[idx], 'similarity': sim_score})
+            # results.append({'doc_id': str(idx), 'similarity': sim_score})
     
         return results
 
