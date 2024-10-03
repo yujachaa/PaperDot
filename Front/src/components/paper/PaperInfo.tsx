@@ -1,33 +1,11 @@
 import React from 'react';
 import styles from './PaperInfo.module.scss';
 import Tag from './Tag';
+import { PaperDetailData } from '../../interface/paper';
 
 // PaperInfo 컴포넌트에서 사용할 props의 타입 정의
 interface PaperInfoProps {
-  paperData: {
-    id: number;
-    title: {
-      ko: string;
-      en: string;
-    };
-    author: string[];
-    year: number;
-    docId: string;
-    abstractText: {
-      ko: string;
-      en: string;
-    };
-    keyword: string[];
-    cnt: number;
-    bookmark: boolean;
-    relation: {
-      id: number;
-      title: string;
-      author: string[];
-      year: number;
-      keyword: string[];
-    }[];
-  };
+  paperData: PaperDetailData;
 }
 
 // PaperInfo 컴포넌트에서 props를 받아서 사용
@@ -35,7 +13,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
   const paperLink =
     'https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn=' + paperData.docId;
 
-  // ko가 빈 문자열이면 en을 사용하고, 그렇지 않으면 ko를 사용
+  // ko가 null이면 en을 사용하고, 그렇지 않으면 ko를 사용
   const abstract = paperData.abstractText.ko || paperData.abstractText.en;
 
   return (
