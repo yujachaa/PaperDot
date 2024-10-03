@@ -19,7 +19,7 @@ const Radio = () => {
   useEffect(() => {
     if (Hls.isSupported() && audioRef.current) {
       const hls = new Hls();
-      const m3u8Url = `http://localhost:8080/api/stream/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
+      const m3u8Url = `http://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
 
       hls.loadSource(m3u8Url);
       hls.attachMedia(audioRef.current);
