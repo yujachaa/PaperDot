@@ -33,7 +33,7 @@ class LargeScaleKoreanPaperEmbedding:
         self.embeddings = None
 
         # Random Access List: doc_id -> id
-        self.ids = self.load_id_mapping(mapping_file_path)
+        self.ids = list(map(int, self.load_id_mapping(mapping_file_path)))
 
         # PaperDataset 인스턴스 생성
         self.dataset = PaperDataset(self.data_dir, self.tokenizer, self.mecab)
