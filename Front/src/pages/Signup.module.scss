@@ -43,6 +43,17 @@
   align-items: center;
 }
 
+.inputWrapper {
+  position: relative;
+}
+
+.passwordIcon {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
 .formGroup input {
   box-sizing: border-box;
   flex: 1;
@@ -138,6 +149,12 @@ input[type='radio']:checked {
   cursor: not-allowed;
 }
 
+.errorText {
+  color: red;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .signupContainer {
     flex-direction: column;
@@ -184,5 +201,10 @@ input[type='radio']:checked {
     height: 35px;
     margin-left: 70px;
     padding: 0 0.5rem;
+  }
+
+  .errorText {
+    font-size: 0.5rem;
+    font-weight: 700;
   }
 }
