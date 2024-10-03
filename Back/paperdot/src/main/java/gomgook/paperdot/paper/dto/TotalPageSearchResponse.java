@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter @Setter
 public class TotalPageSearchResponse {
-    private int total;
+    private Long total;
     private List<PaperSearchResponse> paperSearchResponseList;
 }

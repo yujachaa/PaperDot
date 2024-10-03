@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.List;
 
-@Document(indexName = "test")
+@Document(indexName = "papers")
 @Getter
 public class PaperDocument {
 

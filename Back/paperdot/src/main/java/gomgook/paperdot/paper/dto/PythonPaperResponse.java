@@ -5,11 +5,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-
-
-@Getter @Setter
-public class PythonPaper {
-
-    private String doc_id;
-    private double similarity;
+@Getter
+@Setter
+public class PythonPaperResponse {
+    private List<PythonPaper> results;
 }
