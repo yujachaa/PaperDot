@@ -34,6 +34,12 @@ body {
   }
 }
 
+#channelList {
+  .slick-slide {
+    padding-right: 10px;
+  }
+}
+
 //슬라이드 내용 크기만큼 width 설정
 .slick-track {
   width: max-content;

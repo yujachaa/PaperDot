@@ -189,7 +189,9 @@ const SearchResult: React.FC = () => {
 
   useEffect(() => {
     setPageInput(currentPage.toString()); // 페이지 변경 시 input 값도 업데이트
-  }, [currentPage]);
+    //검색어 변경 시
+    console.log('주소창 값 변경!!' + searchTerm);
+  }, [currentPage, searchTerm]);
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 입력되도록 제한
