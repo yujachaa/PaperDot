@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ChatRoom from '../components/chat/ChatRoom';
 import Header from '../components/common/Header';
@@ -6,16 +6,21 @@ import PlayList from '../components/radio/PlayList';
 import RadioScript from '../components/radio/RadioScript';
 import styles from './Radio.module.scss';
 import Hls from 'hls.js';
+import Modal from '../components/radio/Modal';
 const Radio = () => {
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams();
-  // const [isMuted, setIsMuted] = useState(false);
   const handleReplayMove = () => {
     navigate(`/replay/${Number(id)}`);
   };
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const onClose = () => {
+    setIsModalOpen(false);
+    audioRef.current?.play();
+  };
   useEffect(() => {
     if (Hls.isSupported() && audioRef.current) {
       const hls = new Hls();
@@ -61,6 +66,7 @@ const Radio = () => {
         controls
         style={{ width: 0, height: 0 }}
       />
+      {isModalOpen && <Modal onClose={onClose} />}
     </>
   );
 };
