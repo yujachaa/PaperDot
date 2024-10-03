@@ -9,6 +9,10 @@
   font-size: 1rem;
 }
 
+.dropdown ul li {
+  list-style: none !important;
+}
+
 .dropdownDark {
   background-color: #2e2e2e;
   box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.3);

@@ -53,7 +53,7 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
           key={item.id}
           className="flex w-full"
         >
-          <div className="w-[95%] mobile:w-[90%]">
+          <div className="w-[90%]">
             <p
               className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] font-bold cursor-pointer mobile:text-sm"
               onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
