@@ -46,10 +46,22 @@ MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
 # 피클 파일 경로
 
 PICKLE_FILE = os.path.join(current_dir, "../models/paper_similarities_partial.pkl")
+MAPPING_PICKLE_FILE = os.path.join(current_dir, "../../vector_search/models/doc_id_index_mapping.pkl")
 
 index = 1
 
 def load_pickle_data(pickle_file):
+    """
+    피클 파일에서 데이터를 로드합니다.
+    """
+    if not os.path.exists(pickle_file):
+        raise FileNotFoundError(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
+    
+    with open(pickle_file, 'rb') as f:
+        data = pickle.load(f)
+    return data
+
+def load_mapping_pickle_data(pickle_file):
     """
     피클 파일에서 데이터를 로드합니다.
     """
@@ -204,7 +216,7 @@ def create_index(es, index_name):
     print(f"인덱스 '{index_name}'가 매핑과 함께 생성되었습니다.")
 
 
-def generate_actions(data, index_name, mysql_connection):
+def generate_actions(data, index_name, mysql_connection, mapper):
     """
     Elasticsearch에 삽입할 액션을 생성하고, MySQL의 paper 테이블에 (bookmark_cnt, category)를 삽입합니다.
     """
@@ -224,10 +236,10 @@ def generate_actions(data, index_name, mysql_connection):
 
         # similar_papers, papers_above_threshold 필드를 딕셔너리에서 배열로 변환
         similar_papers_dict = record.get('similar_papers', {})
-        similar_papers = [{'doc_id': k, 'score': v} for k, v in similar_papers_dict.items()]  # 배열로 변환
+        similar_papers = [{'id': str(mapper[k]), 'score': v} for k, v in similar_papers_dict.items()]  # 배열로 변환
 
         papers_above_threshold_dict = record.get('papers_above_threshold', {})
-        papers_above_threshold = [{'doc_id': k, 'score': v} for k, v in papers_above_threshold_dict.items()]  # 배열로 변환
+        papers_above_threshold = [{'id': str(mapper[k]), 'score': v} for k, v in papers_above_threshold_dict.items()]  # 배열로 변환
 
         # top_keywords는 이미 리스트 형식이므로 그대로 사용
         top_keywords = record.get('top_keywords', [])
@@ -264,6 +276,7 @@ def main():
     # 피클 파일에서 데이터 로드
     print("피클 파일에서 데이터를 로드하는 중...")
     data = load_pickle_data(PICKLE_FILE)
+    mapper = load_mapping_pickle_data(MAPPING_PICKLE_FILE)
     print(f"총 {len(data)}개의 논문 데이터를 로드했습니다.")
     
     # Elasticsearch 연결
@@ -282,7 +295,7 @@ def main():
     create_index(es, INDEX_NAME)
     
     # 액션 생성기 준비
-    actions = generate_actions(data, INDEX_NAME, mysql_connection)
+    actions = generate_actions(data, INDEX_NAME, mysql_connection, mapper)
     
     # 데이터 삽입
     print("Elasticsearch에 데이터를 삽입하는 중...")
