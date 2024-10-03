@@ -60,6 +60,7 @@ public class HlsStreamController {
             System.out.println("No match found.");
         }
 
+
         // 절대 경로에서 TS 파일 로드
         File resourceFile = new File(SEGMENT_DIRECTORY + number + '/' + segmentName + ".ts");
         FileSystemResource resource = new FileSystemResource(resourceFile);
