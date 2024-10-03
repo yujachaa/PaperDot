@@ -23,8 +23,8 @@ public class Schedule {
     private static int sequence3 = 0;
     private static int sequence4 = 0;
     private static int sequence5 = 0;
-//    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
-    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
+    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
+    //private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
 
     private static Boolean[] isLiveStreaming = {true, true, true, true, true};
     private static LocalDateTime[] EndTimes = new LocalDateTime[5];
