@@ -16,28 +16,36 @@ const Radio = () => {
   };
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hlsRef = useRef<Hls | null>(null);
+  const handlePlayHls = () => {
+    if (Hls.isSupported() && audioRef.current) {
+      if (!hlsRef.current) {
+        hlsRef.current = new Hls(); // HLS 인스턴스 생성
+      }
+      const m3u8Url = `http://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
+
+      hlsRef.current.loadSource(m3u8Url);
+      hlsRef.current.attachMedia(audioRef.current);
+
+      // 플레이리스트가 파싱되면 오디오 재생
+      hlsRef.current.on(Hls.Events.MANIFEST_PARSED, () => {
+        audioRef.current?.play();
+      });
+    }
+  };
 
   const onClose = () => {
     setIsModalOpen(false);
-    audioRef.current?.play();
+    handlePlayHls(); // 모달 닫히면 HLS 재생 시작
   };
+
   useEffect(() => {
-    if (Hls.isSupported() && audioRef.current) {
-      const hls = new Hls();
-      const m3u8Url = `http://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
-
-      hls.loadSource(m3u8Url);
-      hls.attachMedia(audioRef.current);
-
-      // 플레이리스트가 파싱되면 오디오 재생
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        audioRef.current?.play();
-      });
-
-      return () => {
-        hls.destroy();
-      };
-    }
+    return () => {
+      // 컴포넌트 언마운트 시 HLS 리소스 정리
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+      }
+    };
   }, []);
   return (
     <>
