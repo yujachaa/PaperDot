@@ -86,7 +86,7 @@ class LargeScaleKoreanPaperEmbedding:
                 sim_score = float(sim_score)
             print(f'{idx}: {self.dataset.ordering_mapping[idx]}   {sim_score}')
             # results.append({'doc_id': self.dataset.ordering_mapping[idx], 'similarity': sim_score})
-            results.append({'doc_id': idx, 'similarity': sim_score})
+            results.append({'doc_id': str(idx), 'similarity': sim_score})
     
         return results
 
