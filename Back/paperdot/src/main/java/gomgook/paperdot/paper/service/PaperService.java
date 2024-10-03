@@ -16,7 +16,7 @@ import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
+//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -175,7 +175,7 @@ public class PaperService {
     // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
     private static PaperSearchResponse setPaperSearchResponse(PaperSimpleDocument python, Paper sql) {
         PaperSearchResponse response = new PaperSearchResponse();
-
+/* TODO : originalJson 형식으로 바꾸기
         response.setId(python.getId());
         response.setYear(python.getYear());
         response.setCnt(sql.getBookmarkCnt());
@@ -185,7 +185,7 @@ public class PaperService {
         response.setAuthor(authors);
         response.setTitle(python.getTitle().getKo());
         response.setBookmark(false);
-
+*/
         return response;
     }
 
@@ -242,9 +242,10 @@ public class PaperService {
 
     //
     public PaperDetailResponse getPaperDetail(Long paperId, Long memberId) {
-
+        System.out.println("paperId "+paperId);
         PaperDocument paperDocument = paperESRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
         Paper paper = paperJpaRepository.findById(paperId).orElse(null);
+        System.out.println(paper);
         Member member = null;
         if(memberId != null) {
             member=memberRepository.findById(memberId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
@@ -263,32 +264,25 @@ public class PaperService {
 
         PaperDetailResponse paperDetail = new PaperDetailResponse();
         paperDetail.setId(paperDocument.getId());
+        paperDetail.setOriginalJson(new OriginalJson());
+        String authors = paperDocument.getOriginalJson().getAuthors().toString();
 
-        String authors = paperDocument.getAuthors();
-        paperDetail.setAuthor(
+        paperDetail.getOriginalJson().setAuthors(
                 Optional.ofNullable(authors)
                         .filter(a -> !a.isEmpty())
                         .map(a -> Arrays.stream(a.split(";")).toList())
                         .orElse(new ArrayList<>())
         );
-        paperDetail.setTitle(paperDocument.getTitle());
-        paperDetail.setYear(paperDocument.getYear());
+
+        paperDetail.getOriginalJson().setTitle(paperDocument.getOriginalJson().getTitle());
+        paperDetail.getOriginalJson().setYear(paperDocument.getOriginalJson().getYear());
+
         paperDetail.setDocId(paperDocument.getDoc_id());
 
-        LanguageDTO keyword = paperDocument.getKeywords();
-        List<String> keywordList = new ArrayList<>();
-        if(keyword != null) {
-            String keywords = keyword.getKo();
-            if(keywords == null)
-                keywords = keyword.getEn();
-
-            keywordList = Optional.ofNullable(keywords)
-                    .map(k -> Arrays.stream(k.split(";")).toList())
-                    .orElseGet(ArrayList::new);
-        }
+        List<String> keywordList = paperDocument.getKeywords();
 
         paperDetail.setKeyword(keywordList);
-        paperDetail.setAbstractText(paperDocument.getAbstractText());
+        paperDetail.getOriginalJson().setAbstractText(paperDocument.getOriginalJson().getAbstractText());
 
         Long bookmarkCnt = (paper!=null) ? paper.getBookmarkCnt() : 0;
         paperDetail.setCnt(bookmarkCnt);
@@ -318,11 +312,13 @@ public class PaperService {
         for(PaperSimpleDocument paper : paperSimpleDocumentList) {
             PaperSearchResponse paperSearchResponse = new PaperSearchResponse();
             paperSearchResponse.setId(paper.getId());
-            paperSearchResponse.setTitle(paper.getTitle().getKo());
-            paperSearchResponse.setYear(paper.getYear());
 
-            String authors = paper.getAuthors();
-            paperSearchResponse.setAuthor(
+            paperSearchResponse.getOriginalJson().getTitle().setKo(paper.getOriginalJson().getTitle().getKo());
+
+            paperSearchResponse.getOriginalJson().setYear(paper.getOriginalJson().getYear());
+
+            String authors = paper.getOriginalJson().getAuthors().toString();
+            paperSearchResponse.getOriginalJson().setAuthors(
                     Optional.ofNullable(authors)
                             .filter(a -> !a.isEmpty())
                             .map(a -> Arrays.stream(a.split(";")).toList())

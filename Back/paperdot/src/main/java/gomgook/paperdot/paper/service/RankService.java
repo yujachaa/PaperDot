@@ -73,7 +73,7 @@ public class RankService {
             }
 
             String title = null;
-            title = (paperSimpleDocument.getTitle().getKo() != null) ? paperSimpleDocument.getTitle().getKo() : paperSimpleDocument.getTitle().getEn();
+            title = (paperSimpleDocument.getOriginalJson().getTitle().getKo() != null) ? paperSimpleDocument.getOriginalJson().getTitle().getKo() : paperSimpleDocument.getOriginalJson().getTitle().getEn();
             rankResponse.setTitle(title);
 
             rankResponses.add(rankResponse);

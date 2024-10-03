@@ -58,7 +58,7 @@ public class BookmarkService {
     private static List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
 
         List<NodeDTO> nodes = new ArrayList<>();
-
+/* TODO: 고쳐야함
         for(PaperSimpleDocument paper : papers) {
             NodeDTO node = new NodeDTO();
             node.setId(paper.getId());
@@ -73,7 +73,7 @@ public class BookmarkService {
 
             nodes.add(node);
         }
-
+*/
         return nodes;
     }
     private static List<EdgeDTO> setEdges(List<PaperSimpleDocument> papers) {
@@ -111,7 +111,7 @@ public class BookmarkService {
                 .map(RelationDTO::getId)
                 .toList();
         List<PaperSearchResponse> paperSearchResponseList = paperService.setPaperRelation(ids);
-
+/* TODO: 고쳐야함
         bookmarkRelResponse.setId(paperSimpleDocument.getId());
         bookmarkRelResponse.setTitle(paperSimpleDocument.getTitle().getKo());
         bookmarkRelResponse.setYear(paperSimpleDocument.getYear());
@@ -121,7 +121,7 @@ public class BookmarkService {
                 authors != null ? Arrays.stream(authors.split(";")).toList() : Collections.emptyList()
         );
         bookmarkRelResponse.setRelation(paperSearchResponseList);
-
+*/
         return bookmarkRelResponse;
     }
 
