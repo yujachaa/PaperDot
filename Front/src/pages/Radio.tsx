@@ -7,8 +7,10 @@ import RadioScript from '../components/radio/RadioScript';
 import styles from './Radio.module.scss';
 import Hls from 'hls.js';
 import Modal from '../components/radio/Modal';
+import ReplayModal from '../components/radio/ReplayModal';
 const Radio = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isReplayModalOpen, setIsReplayModalOpen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const handleReplayMove = () => {
@@ -17,6 +19,7 @@ const Radio = () => {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
+
   const handlePlayHls = () => {
     if (Hls.isSupported() && audioRef.current) {
       if (!hlsRef.current) {
@@ -27,15 +30,37 @@ const Radio = () => {
       hlsRef.current.loadSource(m3u8Url);
       hlsRef.current.attachMedia(audioRef.current);
 
+      const onEnded = () => {
+        console.log('테스트');
+        setIsReplayModalOpen(true); // 다시재생할 모달 열기
+        if (hlsRef.current) {
+          hlsRef.current.destroy();
+        }
+      };
+
+      audioRef.current.addEventListener('ended', onEnded);
+      hlsRef.current.on(Hls.Events.BUFFER_FLUSHED, () => {
+        console.log('버퍼가 비워졌습니다.'); // 디버깅용 로그
+        // 필요한 추가 로직을 여기서 수행
+      });
       // 플레이리스트가 파싱되면 오디오 재생
       hlsRef.current.on(Hls.Events.MANIFEST_PARSED, () => {
         audioRef.current?.play();
       });
+
+      return () => {
+        audioRef.current?.removeEventListener('ended', onEnded);
+      };
     }
   };
 
   const onClose = () => {
     setIsModalOpen(false);
+    handlePlayHls(); // 모달 닫히면 HLS 재생 시작
+  };
+
+  const ReplayModalonClose = () => {
+    setIsReplayModalOpen(false);
     handlePlayHls(); // 모달 닫히면 HLS 재생 시작
   };
 
@@ -72,9 +97,10 @@ const Radio = () => {
       <audio
         ref={audioRef}
         controls
-        style={{ width: 0, height: 0 }}
+        // style={{ width: 0, height: 0 }}
       />
       {isModalOpen && <Modal onClose={onClose} />}
+      {isReplayModalOpen && <ReplayModal onClose={ReplayModalonClose} />}
     </>
   );
 };
