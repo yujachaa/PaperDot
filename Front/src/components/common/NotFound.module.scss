@@ -1,4 +1,4 @@
-.container {
+.notFoundContainer {
   text-align: center;
   padding: 50px;
   background-color: #f0f0f0;
@@ -9,20 +9,20 @@
   align-items: center;
 }
 
-h1 {
-  font-size: 2rem !important;
+.notFoundTitle {
+  font-size: 2rem;
   color: #d9534f;
-  margin-bottom: 1rem !important;
+  margin-bottom: 1rem;
 }
 
-p {
-  font-size: 1rem !important;
+.notFoundText {
+  font-size: 1rem;
   color: #333;
-  margin-bottom: 1rem !important;
+  margin-bottom: 1rem;
 }
 
 .backButton {
-  padding: 1rem 2rem;
+  padding: 0.7rem 2rem;
   background-color: #d9534f;
   color: #fff;
   border: none;

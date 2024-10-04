@@ -2,31 +2,35 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import BookMark from '../common/BookMark';
+import { getBookmarks, toggleBookmark } from '../../apis/bookmark';
 
 const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // 노드 데이터(제목, 저자, 연도)
-  const [nodesData, setNodesData] = useState<any[]>([
-    { id: '썸타기와 어장관리에...', group: 1, author: '최성호', year: 2020 },
-    { id: '도파민 터지는 세상', group: 2, author: '장래혁', year: 2024 },
-    { id: '누적된 생애 트라우마', group: 1, author: '김혜윤', year: 2022 },
-    { id: '서브3', group: 2, author: '저자4', year: 2021 },
-    { id: '서브4', group: 3, author: '저자5', year: 2022 },
-  ]);
-
+  const [nodesData, setNodesData] = useState<any[]>([]);
   // 링크 데이터
-  const [linksData, setLinksData] = useState<any[]>([
-    { source: '썸타기와 어장관리에...', target: '서브3' },
-    { source: '서브3', target: '서브4' },
-    { source: '서브4', target: '도파민 터지는 세상' },
-    { source: '서브4', target: '누적된 생애 트라우마' },
-  ]);
-
+  const [linksData, setLinksData] = useState<any[]>([]);
   // 클릭된 노드 관리
   const [selectedNode, setSelectedNode] = useState<any>(null);
   // 클릭된 노드와 링크된 목록 관리
   const [linkedNodes, setLinkedNodes] = useState<any[]>([]);
+
+  // 북마크 데이터를 가져와서 state에 설정하는 함수
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 북마크 데이터를 가져와서 nodes와 links로 설정
+        const { nodes, edges } = await getBookmarks();
+        setNodesData(nodes);
+        setLinksData(edges);
+      } catch (error) {
+        console.error('Error fetching bookmarks:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -99,7 +103,6 @@ const Favorites = () => {
       // 노드 테두리 색상
       .attr('stroke', '#fff')
       // 노드 테두리 두께
-      // .attr('stroke-width', 0.5)
       .selectAll('polygon')
       // 노드 데이터 바인딩
       .data(nodesData)
@@ -131,7 +134,7 @@ const Favorites = () => {
       .attr('x', 8)
       .attr('y', 3)
       // 텍스트는 노드 제목
-      .text((d: any) => d.id)
+      .text((d: any) => d.title)
       .style('font-size', '12px')
       // 텍스트 색상
       .style('fill', '#fff');
@@ -187,8 +190,20 @@ const Favorites = () => {
     // nodesData와 linksData가 변경될 때마다 useEffect 실행
   }, [nodesData, linksData]);
 
+  // 북마크 토글 함수
+  const handleBookmarkToggle = async (paperId: number) => {
+    try {
+      await toggleBookmark(paperId);
+      console.log(`Toggled bookmark for paperId: ${paperId}`);
+      // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
+      removeNode(paperId);
+    } catch (error) {
+      console.error(`Error toggling bookmark for paperId: ${paperId}`, error);
+    }
+  };
+
   // 노드 삭제 함수
-  const removeNode = (id: string) => {
+  const removeNode = (id: string | number) => {
     // 해당 ID 가진 노드 삭제
     const newNodes = nodesData.filter((node) => node.id !== id);
     // 해당 노드와 연결된 링크 삭제
@@ -219,15 +234,19 @@ const Favorites = () => {
           <ul className={styles.nodeList}>
             {linkedNodes.map((node, index) => (
               <li key={index}>
-                <p>제목: {node.id}</p>
-                <p>저자: {node.author}</p>
-                <p>년도: {node.year}</p>
+                <p className={styles.nodeTitle}>{node.title}</p>
+                <p>
+                  <span>저자</span> {node.author}
+                </p>
+                <p>
+                  <span>발행 연도</span> {node.year}
+                </p>
                 <button
                   className={styles.bookmarkButton}
-                  onClick={() => removeNode(node.id)}
+                  onClick={() => handleBookmarkToggle(node.id)}
                 >
                   <BookMark
-                    paperId={0}
+                    paperId={node.id}
                     bookmark={true}
                   />
                 </button>
@@ -242,6 +261,7 @@ const Favorites = () => {
 
 export default Favorites;
 
+// 별 모양을 그리는 함수
 function createStarPoints(
   cx: number,
   cy: number,
@@ -250,19 +270,12 @@ function createStarPoints(
   numPoints: number,
 ) {
   let points = '';
-  // 별의 각도 계산
   const angle = Math.PI / numPoints;
-
   for (let i = 0; i < 2 * numPoints; i++) {
-    // 바깥과 안쪽 반지름을 번갈아 사용
     const r = i % 2 === 0 ? outerRadius : innerRadius;
-    // x 좌표 계산
     const x = cx + r * Math.cos(i * angle);
-    // y 좌표 계산
     const y = cy + r * Math.sin(i * angle);
     points += `${x},${y} `;
   }
-
-  // 최종 좌표 반환
   return points.trim();
 }
