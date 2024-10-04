@@ -1,13 +1,13 @@
 .relation {
   display: flex;
-  padding: 0rem 9.375rem 3.5rem 9.375rem;
+  padding: 0 9.375rem 3.5rem 9.375rem;
   flex-direction: column;
   align-items: center;
   gap: 0.625rem;
   align-self: stretch;
 
   @media (max-width: 768px) {
-    padding: 0rem 1.25rem 3.5rem 1.25rem;
+    padding: 0 1.25rem 3.5rem 1.25rem;
   }
 }
 
@@ -34,7 +34,7 @@
   justify-content: space-between;
   border-radius: 0.8125rem;
   background: #fff;
-  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
 
   position: relative;
 
@@ -59,4 +59,8 @@
 
 .darkLine {
   border-bottom: 1px solid #626262;
+}
+
+.dark {
+  background-color: #626262;
 }

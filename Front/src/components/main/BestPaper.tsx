@@ -1,59 +1,208 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './BestPaper.module.scss';
 import useTheme from '../../zustand/theme';
+import { Rank } from '../../interface/paper';
+import { getBest } from '../../apis/paper';
+import { useNavigate } from 'react-router-dom';
 
-type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능' | '전체';
+type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능';
 
-const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능', '전체'];
+const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
 
-const papers: Record<Category, string[]> = {
-  '인문/사회': [
-    '인공 지능에서 인공 감정으로',
-    '썸타기와 어장관리에 대한 철학적 고찰',
-    '훈민정음 창제와 백성들의 언어생활 변화',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가',
-    '안락사 사례로 보는 생명과 권리의 문제',
-  ],
-  공학: [
-    '인공 지능에서 인공 감정으로2',
-    '썸타기와 어장관리에 대한 철학적 고찰2',
-    '훈민정음 창제와 백성들의 언어생활 변화2',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가2',
-    '안락사 사례로 보는 생명과 권리의 문제2',
-  ],
-  자연과학: [
-    '인공 지능에서 인공 감정으로3',
-    '썸타기와 어장관리에 대한 철학적 고찰3',
-    '훈민정음 창제와 백성들의 언어생활 변화3',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가3',
-    '안락사 사례로 보는 생명과 권리의 문제3',
-  ],
-  의약학: [
-    '인공 지능에서 인공 감정으로4',
-    '썸타기와 어장관리에 대한 철학적 고찰4',
-    '훈민정음 창제와 백성들의 언어생활 변화4',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가4',
-    '안락사 사례로 보는 생명과 권리의 문제4',
-  ],
-  예체능: [
-    '인공 지능에서 인공 감정으로5',
-    '썸타기와 어장관리에 대한 철학적 고찰5',
-    '훈민정음 창제와 백성들의 언어생활 변화5',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가5',
-    '안락사 사례로 보는 생명과 권리의 문제5',
-  ],
-  전체: [
-    '인공 지능에서 인공 감정으로6',
-    '썸타기와 어장관리에 대한 철학적 고찰6',
-    '훈민정음 창제와 백성들의 언어생활 변화6',
-    '한국의 초저출산: 무엇이 원인이고 무엇이 해법인가6',
-    '안락사 사례로 보는 생명과 권리의 문제6',
-  ],
+// 카테고리 번호 매핑 객체
+const categoryMap: Record<Category, number> = {
+  '인문/사회': 1,
+  공학: 2,
+  자연과학: 3,
+  의약학: 4,
+  예체능: 5,
 };
+
+// const categoryData: Record<Category, Rank[]> = {
+//   '인문/사회': [
+//     {
+//       paperId: 12,
+//       title: '인공 지능에서 인공 감정으로',
+//       rank: 1,
+//     },
+//     {
+//       paperId: 13,
+//       title: '인공 지능에서 인공 감정으로1',
+//       rank: 2,
+//     },
+//     {
+//       paperId: 14,
+//       title: '인공 지능에서 인공 감정으로2',
+//       rank: 3,
+//     },
+//     {
+//       paperId: 15,
+//       title: '인공 지능에서 인공 감정으로3',
+//       rank: 4,
+//     },
+//     {
+//       paperId: 16,
+//       title: '인공 지능에서 인공 감정으로4',
+//       rank: 5,
+//     },
+//   ],
+//   공학: [
+//     {
+//       paperId: 12,
+//       title: '인공 지능에서 인공 감정으로',
+//       rank: 1,
+//     },
+//     {
+//       paperId: 13,
+//       title: '인공 지능에서 인공 감정으로1',
+//       rank: 2,
+//     },
+//     {
+//       paperId: 14,
+//       title: '인공 지능에서 인공 감정으로2',
+//       rank: 3,
+//     },
+//     {
+//       paperId: 15,
+//       title: '인공 지능에서 인공 감정으로3',
+//       rank: 4,
+//     },
+//     {
+//       paperId: 16,
+//       title: '인공 지능에서 인공 감정으로4',
+//       rank: 5,
+//     },
+//   ],
+//   자연과학: [
+//     {
+//       paperId: 12,
+//       title: '인공 지능에서 인공 감정으로',
+//       rank: 1,
+//     },
+//     {
+//       paperId: 13,
+//       title: '인공 지능에서 인공 감정으로1',
+//       rank: 2,
+//     },
+//     {
+//       paperId: 14,
+//       title: '인공 지능에서 인공 감정으로2',
+//       rank: 3,
+//     },
+//     {
+//       paperId: 15,
+//       title: '인공 지능에서 인공 감정으로3',
+//       rank: 4,
+//     },
+//     {
+//       paperId: 16,
+//       title: '인공 지능에서 인공 감정으로4',
+//       rank: 5,
+//     },
+//   ],
+//   의약학: [
+//     {
+//       paperId: 12,
+//       title: '인공 지능에서 인공 감정으로',
+//       rank: 1,
+//     },
+//     {
+//       paperId: 13,
+//       title: '인공 지능에서 인공 감정으로1',
+//       rank: 2,
+//     },
+//     {
+//       paperId: 14,
+//       title: '인공 지능에서 인공 감정으로2',
+//       rank: 3,
+//     },
+//     {
+//       paperId: 15,
+//       title: '인공 지능에서 인공 감정으로3',
+//       rank: 4,
+//     },
+//     {
+//       paperId: 16,
+//       title: '인공 지능에서 인공 감정으로4',
+//       rank: 5,
+//     },
+//   ],
+//   예체능: [
+//     {
+//       paperId: 12,
+//       title: '인공 지능에서 인공 감정으로',
+//       rank: 1,
+//     },
+//     {
+//       paperId: 13,
+//       title: '인공 지능에서 인공 감정으로1',
+//       rank: 2,
+//     },
+//     {
+//       paperId: 14,
+//       title: '인공 지능에서 인공 감정으로2',
+//       rank: 3,
+//     },
+//     {
+//       paperId: 15,
+//       title: '인공 지능에서 인공 감정으로3',
+//       rank: 4,
+//     },
+//     {
+//       paperId: 16,
+//       title: '인공 지능에서 인공 감정으로4',
+//       rank: 5,
+//     },
+//   ],
+// };
 
 const BestPaper: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState<Category>('인문/사회');
+  const [categoryData, setCategoryData] = useState<Record<Category, Rank[]>>(
+    {} as Record<Category, Rank[]>,
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // API 요청 함수
+  const fetchBestData = async (category: Category) => {
+    const categoryNumber = categoryMap[category]; // 카테고리 이름을 번호로 변환
+    setLoading(true); // 데이터 로딩 상태 시작
+    try {
+      const response = await getBest(categoryNumber); // 숫자 매개변수로 API 호출
+      setCategoryData((prevData) => ({
+        ...prevData,
+        [category]: response, // 받아온 데이터를 상태에 저장
+      }));
+    } catch (error) {
+      console.error('데이터 요청 실패:', error);
+    } finally {
+      setLoading(false); // 데이터 로딩 상태 종료
+    }
+  };
+
+  // 첫 렌더링 시 '인문/사회' 데이터를 fetch
+  useEffect(() => {
+    fetchBestData('인문/사회');
+    fetchBestData('공학');
+    fetchBestData('자연과학');
+    fetchBestData('의약학');
+    fetchBestData('예체능');
+  }, []);
+
+  // 카테고리 클릭 시 데이터가 없으면 fetch
+  const handleCategoryClick = (category: Category) => {
+    setSelectedCategory(category);
+    if (!categoryData[category]) {
+      fetchBestData(category);
+    }
+  };
+
+  const navigate = useNavigate();
+  const goDetail = (id: number) => {
+    console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/paper/${id}`);
+  };
 
   return (
     <div className={styles.bestPaper}>
@@ -67,7 +216,7 @@ const BestPaper: React.FC = () => {
               className={`cursor-pointer ${styles.tab} ${
                 selectedCategory === category ? styles.activeTab : ''
               } ${selectedCategory === category && isDarkMode ? styles.dark : ''}`}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryClick(category)} // 카테고리 클릭 시 함수 호출
             >
               {category}
             </div>
@@ -75,16 +224,23 @@ const BestPaper: React.FC = () => {
         </div>
         <hr className="w-full mobile:min-w-[24rem]" />
       </div>
-      <ul className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}>
-        {papers[selectedCategory].map((paper, index) => (
-          <li
-            key={index}
-            className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
-          >
-            <span className="mr-1">0{index + 1}</span> {paper}
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <p>Loading...</p> // 로딩 중일 때 표시
+      ) : (
+        <ul className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}>
+          {categoryData[selectedCategory]?.map((paper, index) => (
+            <li
+              key={paper.paperId}
+              className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
+              onClick={() => {
+                goDetail(paper.paperId);
+              }}
+            >
+              <span className="mr-1">0{index + 1}</span> {paper.title}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

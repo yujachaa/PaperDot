@@ -29,7 +29,15 @@ const Radio = () => {
         audioRef.current?.play();
       });
 
+      const handleEnded = () => {
+        console.log('Audio playback has ended.');
+      };
+
+      audioRef.current.addEventListener('ended', handleEnded);
+
+      // Cleanup function to remove event listener and destroy HLS instance
       return () => {
+        audioRef.current?.removeEventListener('ended', handleEnded);
         hls.destroy();
       };
     }
@@ -59,7 +67,7 @@ const Radio = () => {
       <audio
         ref={audioRef}
         controls
-        style={{ width: 0, height: 0 }}
+        // style={{ width: 0, height: 0 }}
       />
     </>
   );
