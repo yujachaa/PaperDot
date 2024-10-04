@@ -17,13 +17,10 @@ import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.redis.core.RedisTemplate;
-//import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -61,12 +58,31 @@ public class PaperService {
         this.redisTemplate = redisTemplate;
     }
 
+    public void nullCheck(List<PaperSimpleDocument> paperSimpleDocumentList) {
+        if(paperSimpleDocumentList.isEmpty()) return;
+
+        Iterator<PaperSimpleDocument> iterator = paperSimpleDocumentList.iterator();
+
+        while (iterator.hasNext()) {
+            PaperSimpleDocument paperSimpleDocument = iterator.next();
+            OriginalJson originalJson = paperSimpleDocument.getOriginalJson();
+            if(originalJson.getTitle().getKo() == null || originalJson.getTitle().getEn() == null)
+                iterator.remove();
+
+            if(originalJson.getAuthors() == null || originalJson.getAuthors().isEmpty())
+                iterator.remove();
+
+            if(originalJson.getYear() == null)
+                iterator.remove();
+        }
+
+    }
+
     // controller로 세팅한 데이터 반환
     public TotalPageSearchResponse getSearchKeyword(String keyword, Long memberId) {
 
         // python 서버 요청(응답 데이터 flux 형식)
         Mono<List<Long>> docIdMono  = sendRequest(keyword);
-
         List<Long> stringIds = docIdMono.block();
 
 
@@ -76,16 +92,19 @@ public class PaperService {
         // ES에서 LIST 가져오기
         List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(stringIds).orElse(new ArrayList<>());
 
+        nullCheck(paperSimpleDocumentList);
 
 //        // paperSearchResponseList caching
         String redisKey = "searchData::"+keyword;
         saveToRedis(redisKey, paperSimpleDocumentList);
 
         // 총 검색 리스트 갯수
-        Long totalCount = (stringIds==null || stringIds.isEmpty()) ? 0 : (long)stringIds.size();
+        Long totalCount = (stringIds.isEmpty()) ? 0 : (long)paperSimpleDocumentList.size();
 
         // pagination
-
+        int pageSize = 20;
+        int end = Math.min(pageSize, paperSimpleDocumentList.size());
+        paperSimpleDocumentList.subList(0, end);
         // 20개 검색된 논문리스트 DTO 구성
         List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, paperSimpleDocumentList);
 
@@ -112,7 +131,6 @@ public class PaperService {
 
         }
 
-
         // 논문 북마크 횟수
         List<PaperEntity> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
 
@@ -123,9 +141,6 @@ public class PaperService {
 
 
         for(int i=0; i< paperSimpleDocumentList.size(); i++) {
-            // TODO: 파이썬에서 가져온 리스트랑 그 아이디들로 SQL에서 in으로 가져온 리스트 순서가 같을지 확신 가능???????
-            //  정확하게 하려면 id 값으로 매 id 마다 조회해야 함
-            //  성능 차이..? 20개 뿐이니까.. 근데 5만개 돌아야하는데
             PaperSimpleDocument paperSimpleDocument = paperSimpleDocumentList.get(i);
             PaperEntity sqlPaper = (sqlPaperList.isEmpty()) ? new PaperEntity() : sqlPaperList.get(i);
 
@@ -165,9 +180,6 @@ public class PaperService {
                 });
     }
 
-    // TODO: (코드 리펙토링) 캐싱 알고리즘 재구성 필요. (저장 삭제 규칙)
-    //   - keyword마다 캐싱 데이터 저장?-같은 키로 저장될 수 있을 것 같음.
-    //   - 사용자도 키로 저장?-데이터 너무 많이 저장될 것 같음.
     public void saveToRedis(String key, List<PaperSimpleDocument> data) {
 
         try {
@@ -188,7 +200,6 @@ public class PaperService {
 
         response.setId(python.getId());
 
-        OriginalJson originalJson = new OriginalJson();
         OriginalJson originalJsonFrom = python.getOriginalJson();
 
 
@@ -230,7 +241,6 @@ public class PaperService {
             redisDataList= objectMapper.readValue(jsonString,
                     objectMapper.getTypeFactory().constructCollectionType(List.class, PaperSimpleDocument.class));
 
-            System.out.println("!!!!!!!!!!!!!!!!");
 
         }
 
@@ -249,12 +259,8 @@ public class PaperService {
              paperSearchResponseList = setPaperSearchResponses(memberId, paginatedIds, paginatedResults);
             // Return paginatedResults to the client
 
-            System.out.println("!!!!!!!!!!!!!!!!");
-            System.out.println(paginatedResults.size());
 
         } else {
-            // Handle the case where the cache doesn't exist or has expired
-
 
 
              TotalPageSearchResponse totalPageSearchResponse = getSearchKeyword(keyword, memberId);
@@ -262,7 +268,7 @@ public class PaperService {
             start = (pageNo-1) * pageSize;
             end = Math.min(start + pageSize, totalPageSearchResponse.getPaperSearchResponseList().size());
              paperSearchResponseList = totalPageSearchResponse.getPaperSearchResponseList().subList(start, end);
-             
+
         }
 
 
