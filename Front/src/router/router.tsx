@@ -17,9 +17,9 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      // <ErrorBoundary>
+      <App />
+      // </ErrorBoundary>
     ),
     children: [
       {
@@ -69,9 +69,9 @@ export const router = createBrowserRouter([
       {
         path: '/star',
         element: (
-          <ErrorBoundary>
-            <Star />
-          </ErrorBoundary>
+          // <ErrorBoundary>
+          <Star />
+          // </ErrorBoundary>
         ),
       },
       {
