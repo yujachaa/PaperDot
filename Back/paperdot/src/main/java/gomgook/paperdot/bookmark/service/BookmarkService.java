@@ -11,8 +11,8 @@ import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
 import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.repository.MemberRepository;
-import gomgook.paperdot.paper.dto.PaperSearchResponse;
 import gomgook.paperdot.paper.dto.RelationDTO;
+import gomgook.paperdot.paper.dto.RelationResponse;
 import gomgook.paperdot.paper.entity.PaperEntity;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
@@ -108,7 +108,7 @@ public class BookmarkService {
                 .stream()
                 .map(RelationDTO::getId)
                 .toList();
-        List<PaperSearchResponse> paperSearchResponseList = paperService.setPaperRelation(ids);
+        List<RelationResponse> paperSearchResponseList = paperService.setPaperRelation(ids);
 /* TODO: 고쳐야함
         bookmarkRelResponse.setId(paperSimpleDocument.getId());
         bookmarkRelResponse.setTitle(paperSimpleDocument.getTitle().getKo());

@@ -316,7 +316,6 @@ public class PaperService {
 
 
         List<String> keywordList = paperDocument.getKeywords();
-
         paperDetail.setKeyword(keywordList);
 
 
@@ -340,28 +339,51 @@ public class PaperService {
         return summary;
     }
 
-    public List<PaperSearchResponse> setPaperRelation(List<Long> ids) {
-        List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
-        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+    public void relationNullCheck(List<PaperDocument> paperSimpleDocumentList) {
+        if(paperSimpleDocumentList.isEmpty()) return;
 
-        for(PaperSimpleDocument paper : paperSimpleDocumentList) {
-            PaperSearchResponse paperSearchResponse = new PaperSearchResponse();
-            paperSearchResponse.setId(paper.getId());
+        Iterator<PaperDocument> iterator = paperSimpleDocumentList.iterator();
 
-            paperSearchResponse.setTitle(paper.getOriginalJson().getTitle());
+        while (iterator.hasNext()) {
+            PaperDocument paperSimpleDocument = iterator.next();
+            OriginalJson originalJson = paperSimpleDocument.getOriginalJson();
+            if(originalJson.getTitle().getKo() == null || originalJson.getTitle().getEn() == null)
+                iterator.remove();
 
-            paperSearchResponse.setYear(paper.getOriginalJson().getYear());
+            if(originalJson.getAuthors() == null || originalJson.getAuthors().isEmpty())
+                iterator.remove();
+
+            if(originalJson.getYear() == null)
+                iterator.remove();
+        }
+
+    }
+    public List<RelationResponse> setPaperRelation(List<Long> ids) {
+        List<RelationResponse> paperSearchResponseList = new ArrayList<>();
+
+        List<PaperDocument> paperDocumentList = paperESRepository.findAllByIdIn(ids).orElse(new ArrayList<>());
+
+        relationNullCheck(paperDocumentList);
+
+        for(PaperDocument paper : paperDocumentList) {
+            RelationResponse relationResponse = new RelationResponse();
+            relationResponse.setId(paper.getId());
+
+
+            relationResponse.setTitle(paper.getOriginalJson().getTitle().getKo());
+            relationResponse.setYear(paper.getOriginalJson().getYear());
 
             String authors = paper.getOriginalJson().getAuthors();
-            paperSearchResponse.setAuthors(
+            relationResponse.setAuthors(
                     Optional.ofNullable(authors)
                             .filter(a -> !a.isEmpty())
                             .map(a -> Arrays.stream(a.split(";")).toList())
                             .orElse(new ArrayList<>())
             );
+            relationResponse.setKeywords(paper.getKeywords());
 
-            paperSearchResponseList.add(paperSearchResponse);
+            paperSearchResponseList.add(relationResponse);
         }
 
         return paperSearchResponseList;
