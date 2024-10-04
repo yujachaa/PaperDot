@@ -1,10 +1,10 @@
 export interface PaperDetailData {
   id: number;
   title: {
-    ko: string | null;
+    ko: string;
     en: string | null;
   };
-  author: string[];
+  authors: string[];
   year: string;
   docId: string;
   abstractText: {
@@ -15,13 +15,17 @@ export interface PaperDetailData {
   cnt: number;
   bookmark: boolean;
   category: number;
-  relation: {
-    id: number;
-    title: string;
-    author: string[];
-    year: number;
-    keyword: string[];
-  }[];
+  relation: RelationData[];
+}
+
+export interface RelationData {
+  id: number;
+  title: string;
+  authors: string[];
+  year: number;
+  keywords: string[];
+  cnt: number | null;
+  bookmark: boolean;
 }
 
 export interface Rank {
