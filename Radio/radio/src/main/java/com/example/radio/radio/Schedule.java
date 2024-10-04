@@ -17,7 +17,7 @@ import java.util.concurrent.ScheduledFuture;
 @Service
 public class Schedule {
 
-    private static int sequence1 = 0;
+    private static int sequence1 = 100;
     private static int sequence2 = 0;
     private static int sequence3 = 0;
     private static int sequence4 = 0;
@@ -168,10 +168,10 @@ public class Schedule {
             }
         }
 
-//        if (!isLiveStreaming[taskIndex]) {
-//            System.out.println("종료태그 추가");
-//            m3u8Content.append("#EXT-X-ENDLIST\n");
-//        }
+        if (!isLiveStreaming[taskIndex]) {
+            System.out.println("종료태그 추가");
+            m3u8Content.append("#EXT-X-ENDLIST\n");
+        }
 
         String outputPath = SEGMENT_DIRECTORY + radioNumber + '/' + "playlist_" + radioNumber + ".m3u8";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
