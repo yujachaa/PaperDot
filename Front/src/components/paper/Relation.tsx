@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styles from './Relation.module.scss';
 import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import Tag from './Tag';
 import useTheme from '../../zustand/theme';
 
 interface RelationPaperProps {
-  relation?: {
+  relation: {
     id: number;
     title: string;
     author: string[];
@@ -23,6 +23,8 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
     width: '500px',
     padding: '50px 0',
   });
+
+  const isDragging = useRef(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -81,10 +83,19 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
         },
       },
     ],
+    beforeChange: () => {
+      isDragging.current = true;
+    },
+    afterChange: () => {
+      isDragging.current = false;
+    },
   };
 
   const goDetail = (paperId: number) => {
-    navigate(`/paper/${paperId}`);
+    if (!isDragging.current) {
+      navigate(`/paper/${paperId}`);
+      window.scrollTo(0, 0);
+    }
   };
 
   return (
@@ -94,19 +105,17 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
       </div>
 
       <div
-        className={`${styles.list} text-light-text`}
+        className={styles.list}
         id="relationList"
       >
-        {relation ? (
+        {relation?.length > 0 ? (
           <Slider {...settings}>
             {relation.map((item, index) => (
               <div
                 key={index}
-                className={styles.card}
+                className={`${styles.card} ${isDarkMode ? styles.dark : ''}`}
                 style={cardStyle}
-                onClick={() => {
-                  goDetail(item.id);
-                }}
+                onClick={() => goDetail(item.id)}
               >
                 <p className="font-bold text-lg overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base">
                   {item.title}

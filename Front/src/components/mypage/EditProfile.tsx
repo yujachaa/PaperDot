@@ -5,6 +5,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 import { withdrawUser, checkNickname, updateUserProfile, getUserProfile } from '../../apis/user';
 import { toast } from 'react-toastify';
+import { isValidNickname, isValidBirthYear } from '../../utills/userValidation';
 
 const EditProfile: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -12,6 +13,7 @@ const EditProfile: React.FC = () => {
   const [nickname, setNickname] = useState('');
   const [initialNickname, setInitialNickname] = useState('');
   const [birthyear, setBirthyear] = useState('');
+  const [birthyearError, setBirthyearError] = useState('');
   const [gender, setGender] = useState('');
   const [degree, setDegree] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
@@ -66,6 +68,10 @@ const EditProfile: React.FC = () => {
 
   // 닉네임 중복 체크
   const handleCheckNickname = async () => {
+    if (!isValidNickname(nickname)) {
+      toast.error('닉네임은 한글, 영문, 숫자로 이루어진 4~10자이어야 합니다.');
+      return;
+    }
     if (!nickname) {
       toast.error('닉네임을 입력해주세요.');
       return;
@@ -83,9 +89,13 @@ const EditProfile: React.FC = () => {
     checkBothConditions();
   };
 
-  // 닉네임과 중복 체크 상태를 확인
+  // 닉네임과 생년 상태 확인
   const checkBothConditions = () => {
-    if (nickname === initialNickname || isNicknameAvailable === true) {
+    if (
+      (nickname === initialNickname || isNicknameAvailable === true) &&
+      !birthyearError && // 생년 오류가 없을 때
+      isValidBirthYear(birthyear) // 생년이 유효할 때
+    ) {
       setIsBothChecked(true);
     } else {
       setIsBothChecked(false);
@@ -94,7 +104,7 @@ const EditProfile: React.FC = () => {
 
   useEffect(() => {
     checkBothConditions();
-  }, [isNicknameAvailable, nickname]);
+  }, [isNicknameAvailable, nickname, birthyear, birthyearError]);
 
   // 회원 수정
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -111,6 +121,18 @@ const EditProfile: React.FC = () => {
     } catch (error) {
       toast.error('회원 정보 수정 중 오류가 발생했습니다.');
       console.error('회원 정보 수정 중 오류 발생:', error);
+    }
+  };
+
+  // 생년 입력 처리 및 유효성 검사
+  const handleBirthyearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newBirthyear = e.target.value;
+    setBirthyear(newBirthyear);
+
+    if (!isValidBirthYear(newBirthyear)) {
+      setBirthyearError('생년은 숫자 4자리여야 합니다.');
+    } else {
+      setBirthyearError('');
     }
   };
 
@@ -158,8 +180,9 @@ const EditProfile: React.FC = () => {
           <input
             type="text"
             value={birthyear}
-            onChange={(e) => setBirthyear(e.target.value)}
+            onChange={handleBirthyearChange}
           />
+          {birthyearError && <p className={styles.errorMessage}>{birthyearError}</p>}
         </div>
 
         <div className={styles.formGroup}>
