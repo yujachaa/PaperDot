@@ -11,6 +11,7 @@ import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
 import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.repository.MemberRepository;
+import gomgook.paperdot.paper.dto.OriginalJson;
 import gomgook.paperdot.paper.dto.RelationDTO;
 import gomgook.paperdot.paper.dto.RelationResponse;
 import gomgook.paperdot.paper.entity.PaperEntity;
@@ -42,52 +43,57 @@ public class BookmarkService {
         List<BookmarkPaperIdProjection> paperIds = Optional.ofNullable(bookmarkRepository.findAllPaperIdByMemberId(memberId))
                 .orElseGet(Collections::emptyList);
 
-        List<Long> paperIdList = paperIds.stream()
+        List<Long> bookmarkPaperIdList = paperIds.stream()
                 .map(BookmarkPaperIdProjection::getPaperId)
                 .toList();
-        System.out.println(paperIdList);
-        List<PaperSimpleDocument> papers = papersimpleESRepository.findAllByIdIn(paperIdList).orElse(new ArrayList<>());
+        System.out.println(bookmarkPaperIdList);
+        List<PaperSimpleDocument> papers = papersimpleESRepository.findAllByIdIn(bookmarkPaperIdList).orElse(new ArrayList<>());
 
 
         bookmarkResponse.setNodes(setNodes(papers));
-        bookmarkResponse.setEdges(setEdges(papers));
+        bookmarkResponse.setEdges(setEdges(papers, bookmarkPaperIdList));
         return bookmarkResponse;
     }
-    private static List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
+    private List<NodeDTO> setNodes(List<PaperSimpleDocument> papers) {
 
         List<NodeDTO> nodes = new ArrayList<>();
-/* TODO: 고쳐야함
-        for(PaperSimpleDocument paper : papers) {
+
+        paperService.nullCheck(papers);
+
+        for (PaperSimpleDocument paper : papers) {
+
+            OriginalJson originalJson = paper.getOriginalJson();
             NodeDTO node = new NodeDTO();
             node.setId(paper.getId());
-            node.setTitle(paper.getTitle().getKo());
+            node.setTitle(originalJson.getTitle().getKo());
 
 
-            String authors = paper.getAuthors();
+            String authors = originalJson.getAuthors();
             node.setAuthors(
                     authors != null ? Arrays.stream(authors.split(";")).toList() : Collections.emptyList()
             );
-            node.setYear(paper.getYear());
+            node.setYear(originalJson.getYear());
 
             nodes.add(node);
         }
-*/
         return nodes;
     }
-    private static List<EdgeDTO> setEdges(List<PaperSimpleDocument> papers) {
+    private static List<EdgeDTO> setEdges(List<PaperSimpleDocument> papers, List<Long> bookmarkPaperIdList) {
 
         List<EdgeDTO> edges = new ArrayList<>();
 
         for (PaperSimpleDocument paper: papers) {
             if (paper.getRelation() != null) {
                 for (RelationDTO relation : paper.getRelation()) {
+
                     if (relation != null && relation.getId() != null && paper.getId() != null) {
+                        if(!bookmarkPaperIdList.contains(relation.getId()) ) continue;
                         if (paper.getId() < relation.getId()) {
                             EdgeDTO edge = new EdgeDTO();
                             edge.setSource(paper.getId());
                             edge.setTarget(relation.getId());
 
-                            edge.setWeight(relation.getWeight());
+                            edge.setWeight(relation.getScore());
 
                             edges.add(edge);
                         }
