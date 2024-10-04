@@ -2,6 +2,10 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   width: 100%;
   height: 100vh;
@@ -76,4 +80,11 @@ ol > li {
 
 li > ul {
   text-indent: 1rem;
+}
+
+// 통계차트 폰트 적용
+g text {
+  font-family: 'Pretendard' !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.1px;
 }

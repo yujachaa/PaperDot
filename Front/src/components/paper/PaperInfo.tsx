@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './PaperInfo.module.scss';
 import Tag from './Tag';
 import { PaperDetailData } from '../../interface/paper';
+import useTheme from '../../zustand/theme';
 
 // PaperInfo 컴포넌트에서 사용할 props의 타입 정의
 interface PaperInfoProps {
@@ -10,6 +11,7 @@ interface PaperInfoProps {
 
 // PaperInfo 컴포넌트에서 props를 받아서 사용
 const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
+  const isDarkMode = useTheme((state) => state.isDarkMode);
   const paperLink =
     'https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn=' + paperData.docId;
 
@@ -17,7 +19,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
   const abstract = paperData.abstractText.ko || paperData.abstractText.en;
 
   return (
-    <div className={`${styles.info} text-light-text`}>
+    <div className={`${styles.info} ${isDarkMode ? styles.dark : ''}`}>
       <div className={styles.infoText}>
         <p>
           <strong>저자</strong>

@@ -23,3 +23,9 @@ export interface PaperDetailData {
     keyword: string[];
   }[];
 }
+
+export interface Rank {
+  paperId: number;
+  title: string;
+  rank: number;
+}
