@@ -9,5 +9,5 @@ public class RelationDTO {
 
 
     private Long id;
-    private double weight;
+    private double score;
 }
