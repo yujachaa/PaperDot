@@ -23,7 +23,7 @@ public class PaperDetailResponse {
     private String year;
 
     private List<String> keyword;
-    private List<PaperSearchResponse> relation;
+    private List<RelationResponse> relation;
 
 }
 
