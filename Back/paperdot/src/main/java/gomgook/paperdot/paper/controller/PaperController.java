@@ -35,17 +35,17 @@ public class PaperController {
         return ResponseEntity.ok(totalPageSearchResponse);
     }
 
-//    @GetMapping("/search-page")
-//    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("keyword") String keyword, @RequestParam("pageNo") int pageNo) throws Exception {
-//        Long memberId = null;
-//
-//        if (token != null && !token.isEmpty()){
-//            memberId = jwtUtil.extractMemberId(token);
-//        }
-//        List<PaperSearchResponse> paperSearchResponseList = paperService.getSearchPage(keyword, pageNo, memberId);
-//
-//        return ResponseEntity.ok(paperSearchResponseList);
-//    }
+    @GetMapping("/search-page")
+    public ResponseEntity<?> getSearchPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("keyword") String keyword, @RequestParam("pageNo") int pageNo) throws Exception {
+        Long memberId = null;
+
+        if (token != null && !token.isEmpty()){
+            memberId = jwtUtil.extractMemberId(token);
+        }
+        List<PaperSearchResponse> paperSearchResponseList = paperService.getSearchPage(keyword, pageNo, memberId);
+
+        return ResponseEntity.ok(paperSearchResponseList);
+    }
 
     @GetMapping("/detail")
     public ResponseEntity<?> getSearchDetailPage(@RequestHeader(value = "Authorization", required = false) String token, @RequestParam("paperId") Long paperId) throws Exception {

@@ -1,7 +1,7 @@
 package gomgook.paperdot.bookmark.entity;
 
 import gomgook.paperdot.member.entity.Member;
-import gomgook.paperdot.paper.entity.Paper;
+import gomgook.paperdot.paper.entity.PaperEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,9 +25,9 @@ public class Bookmark {
 
     @ManyToOne
     @JoinColumn(name = "paper_id", nullable = false)
-    private Paper paper;
+    private PaperEntity paper;
 
-    public void setBookmark(Member member, Paper paper) {
+    public void setBookmark(Member member, PaperEntity paper) {
         this.member = member;
         this.paper = paper;
     }

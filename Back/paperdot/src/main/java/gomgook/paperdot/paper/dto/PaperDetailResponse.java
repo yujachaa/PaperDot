@@ -16,7 +16,12 @@ public class PaperDetailResponse {
     private Long cnt;
     private boolean bookmark;
     private int category;
-    private OriginalJson originalJson;
+    private LanguageDTO abstractText;
+
+    private LanguageDTO title;
+    private List<String> authors;
+    private String year;
+
     private List<String> keyword;
     private List<PaperSearchResponse> relation;
 

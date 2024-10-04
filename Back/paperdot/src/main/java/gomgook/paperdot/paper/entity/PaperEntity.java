@@ -12,7 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "paper")
-public class Paper {
+public class PaperEntity {
 
     @Id
     private Long id;

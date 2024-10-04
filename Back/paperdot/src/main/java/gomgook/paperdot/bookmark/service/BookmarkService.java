@@ -13,8 +13,7 @@ import gomgook.paperdot.member.entity.Member;
 import gomgook.paperdot.member.repository.MemberRepository;
 import gomgook.paperdot.paper.dto.PaperSearchResponse;
 import gomgook.paperdot.paper.dto.RelationDTO;
-import gomgook.paperdot.paper.entity.Paper;
-import gomgook.paperdot.paper.entity.PaperDocument;
+import gomgook.paperdot.paper.entity.PaperEntity;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -129,7 +127,7 @@ public class BookmarkService {
     public void bookmarkToggle(Long memberId, Long paperId) {
 
         Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
-        Paper paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+        PaperEntity paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
         Bookmark bookmark = bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null);
 
 

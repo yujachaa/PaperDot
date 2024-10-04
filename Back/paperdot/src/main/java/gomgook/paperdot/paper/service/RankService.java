@@ -3,10 +3,9 @@ package gomgook.paperdot.paper.service;
 import gomgook.paperdot.exception.CustomException;
 import gomgook.paperdot.exception.ExceptionResponse;
 import gomgook.paperdot.paper.dto.RankResponse;
-import gomgook.paperdot.paper.entity.Paper;
+import gomgook.paperdot.paper.entity.PaperEntity;
 import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.entity.Rank;
-import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
 import gomgook.paperdot.paper.repository.RankRepository;
@@ -32,10 +31,10 @@ public class RankService {
     public void updatePopularPapers() {
         rankRepository.deleteAll();
         for (int category =1; category<=5; category++) {
-            List<Paper> papers = paperJpaRepository.findTop5ByCategoryOrderByBookmarkCntDesc(category).orElseThrow(() -> new ExceptionResponse(CustomException.FAIL_GET_TOP5_PAPER_EXCEPTION));
+            List<PaperEntity> papers = paperJpaRepository.findTop5ByCategoryOrderByBookmarkCntDesc(category).orElseThrow(() -> new ExceptionResponse(CustomException.FAIL_GET_TOP5_PAPER_EXCEPTION));
             List<Rank> ranks = new ArrayList<>();
             int rank = 1;
-            for (Paper paper : papers) {
+            for (PaperEntity paper : papers) {
                 Rank paperRank = new Rank();
                 paperRank.setRank(paper.getId(), paper.getCategory(), rank++);
 

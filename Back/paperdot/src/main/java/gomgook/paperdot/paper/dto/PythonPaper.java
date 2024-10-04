@@ -10,6 +10,6 @@ import java.util.List;
 @Getter @Setter
 public class PythonPaper {
 
-    private String doc_id;
+    private Long id;
     private double similarity;
 }
