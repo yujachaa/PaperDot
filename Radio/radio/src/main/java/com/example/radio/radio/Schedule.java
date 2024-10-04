@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 
 @Service
@@ -23,12 +22,9 @@ public class Schedule {
     private static int sequence3 = 0;
     private static int sequence4 = 0;
     private static int sequence5 = 0;
+//    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
     private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
-    //private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
-
     private static Boolean[] isLiveStreaming = {true, true, true, true, true};
-    private static LocalDateTime[] EndTimes = new LocalDateTime[5];
-    private static Double[] Mp3Durations = new Double[5];
 
     @Autowired
     private HlsStreamService hlsStreamService;
@@ -44,109 +40,114 @@ public class Schedule {
 
     @PostConstruct
     public void init() throws IOException {
-//        LocalDateTime endTime = LocalDateTime.now();
-//
-//        for (int i = 1; i <= 5; i++) {
-//            System.out.println(hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3"));
-//            Mp3Durations[i - 1] = hlsStreamService.getMp3Duration(SEGMENT_DIRECTORY + i + '/'+ "radio" + i + ".mp3");
-//            EndTimes[i - 1] = endTime.plus(Duration.ofSeconds((long) (double) Mp3Durations[i - 1]));
-//            System.out.println(Arrays.toString(EndTimes));
-//        }
         startTasks();
     }
 
     private void startTasks() {
         // Fixed rate로 4초마다 실행되도록 설정
-        task1Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithExceptionHandling(this::executeTask1), 4000);
-        task2Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithExceptionHandling(this::executeTask2), 4000);
-        task3Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithExceptionHandling(this::executeTask3), 4000);
-        task4Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithExceptionHandling(this::executeTask4), 4000);
-        task5Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithExceptionHandling(this::executeTask5), 4000);
+        task1Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask1), 4000);
+        task2Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask2), 4000);
+        task3Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask3), 4000);
+        task4Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask4), 4000);
+        task5Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask5), 4000);
     }
 
-    private void executeTaskWithExceptionHandling(TaskExecutable task) {
+    private void executeTaskWithPause(TaskExecutable task) {
         try {
             task.execute();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    // 작업을 각각 중지하는 메서드들
-    public void stopTask1() {
-        if (task1Future != null) {
-            task1Future.cancel(false);
-            System.out.println("Task 1 has been stopped.");
+    public void pauseTask(int taskIndex, ScheduledFuture<?> futureTask, int delayInMillis) {
+        if (futureTask != null && !futureTask.isCancelled()) {
+            futureTask.cancel(false);
+            System.out.println("Task " + (taskIndex + 1) + "가 일시 중지되었습니다.");
         }
+
+        // 20초 후에 다시 스케줄링 시작
+        taskScheduler.schedule(() -> {
+            if (isLiveStreaming[taskIndex]) {
+                System.out.println("Task " + (taskIndex + 1) + "는 이미 실행 중입니다.");
+                return; // 태스크가 이미 실행 중이면 중복 실행 방지
+            }
+            resumeTask(taskIndex);
+            System.out.println("Task " + (taskIndex + 1) + "가 재개되었습니다.");
+
+            switch (taskIndex) {
+                case 0 -> sequence1 = 0;
+                case 1 -> sequence2 = 0;
+                case 2 -> sequence3 = 0;
+                case 3 -> sequence4 = 0;
+                case 4 -> sequence5 = 0;
+            }
+            isLiveStreaming[taskIndex] = true;
+        }, Instant.now().plusMillis(delayInMillis));
     }
 
-    public void stopTask2() {
-        if (task2Future != null) {
-            task2Future.cancel(false);
-            System.out.println("Task 2 has been stopped.");
+    private void resumeTask(int taskIndex) {
+        if (isLiveStreaming[taskIndex]) {
+            System.out.println("Task " + (taskIndex + 1) + "는 이미 실행 중입니다.");
+            return; // 이미 실행 중이면 재개하지 않음
         }
-    }
 
-    public void stopTask3() {
-        if (task3Future != null) {
-            task3Future.cancel(false);
-            System.out.println("Task 3 has been stopped.");
+        switch (taskIndex) {
+            case 0 -> task1Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask1), 4000);
+            case 1 -> task2Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask2), 4000);
+            case 2 -> task3Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask3), 4000);
+            case 3 -> task4Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask4), 4000);
+            case 4 -> task5Future = taskScheduler.scheduleAtFixedRate(() -> executeTaskWithPause(this::executeTask5), 4000);
+            default -> System.out.println("잘못된 태스크 인덱스입니다.");
         }
-    }
 
-    public void stopTask4() {
-        if (task4Future != null) {
-            task4Future.cancel(false);
-            System.out.println("Task 4 has been stopped.");
-        }
-    }
-
-    public void stopTask5() {
-        if (task5Future != null) {
-            task5Future.cancel(false);
-            System.out.println("Task 5 has been stopped.");
-        }
+        isLiveStreaming[taskIndex] = true; // 태스크가 재개되면 실행 중으로 설정
     }
 
     // 각 태스크별 작업 메서드
-    public void executeTask1() throws IOException {
+    public void executeTask1() throws IOException, InterruptedException {
         checkAndExecuteTask(0, sequence1++, 1);
     }
 
-    public void executeTask2() throws IOException {
+    public void executeTask2() throws IOException, InterruptedException {
         checkAndExecuteTask(1, sequence2++, 2);
     }
 
-    public void executeTask3() throws IOException {
+    public void executeTask3() throws IOException, InterruptedException {
         checkAndExecuteTask(2, sequence3++, 3);
     }
 
-    public void executeTask4() throws IOException {
+    public void executeTask4() throws IOException, InterruptedException {
         checkAndExecuteTask(3, sequence4++, 4);
     }
 
-    public void executeTask5() throws IOException {
+    public void executeTask5() throws IOException, InterruptedException {
         checkAndExecuteTask(4, sequence5++, 5);
     }
 
     // 공통 체크 및 실행 로직
-    private void checkAndExecuteTask(int taskIndex, int sequence, int radioNumber) throws IOException {
-//        if(!isLiveStreaming[taskIndex]){
-//            System.out.println(taskIndex + "라이브 스트리밍이 종료되었습니다.");
-//            stopTask(taskIndex + 1);
-//            return;
-//        }
-
-//        if (LocalDateTime.now().isAfter(EndTimes[taskIndex]) || LocalDateTime.now().isEqual(EndTimes[taskIndex])) {
-//            System.out.println("MP3 파일의 끝에 도달했습니다. 라이브 스트리밍 종료.");
-//            isLiveStreaming[taskIndex]=false;
-//        }
-
+    private void checkAndExecuteTask(int taskIndex, int sequence, int radioNumber) throws IOException, InterruptedException {
         System.out.println(radioNumber + "번 라디오 타이머");
-        makem3u8(sequence, radioNumber,taskIndex);
+        makem3u8(sequence, radioNumber, taskIndex);
+
+        // 특정 조건에서 20초 일시 중지
+        if (!isLiveStreaming[taskIndex]) {
+            pauseTask(taskIndex, getTaskFuture(taskIndex), 20000); // 20초 일시 중지
+        }
     }
 
-    public static void makem3u8(int sequence, int radioNumber,int taskIndex) throws IOException {
+    private ScheduledFuture<?> getTaskFuture(int taskIndex) {
+        return switch (taskIndex) {
+            case 0 -> task1Future;
+            case 1 -> task2Future;
+            case 2 -> task3Future;
+            case 3 -> task4Future;
+            case 4 -> task5Future;
+            default -> null;
+        };
+    }
+
+    public void makem3u8(int sequence, int radioNumber, int taskIndex) throws IOException, InterruptedException {
         StringBuilder m3u8Content = new StringBuilder();
 
         m3u8Content.append("#EXTM3U\n")
@@ -158,26 +159,12 @@ public class Schedule {
 
         for (int i = 0; i < 5; i++) {
             String segmentFileName = "media-ulsusdkv7_b" + radioNumber + "_" + (sequence + i) + ".ts";
-            File segmentFile = new File(SEGMENT_DIRECTORY+ radioNumber + "/" + segmentFileName);
+            File segmentFile = new File(SEGMENT_DIRECTORY + radioNumber + "/" + segmentFileName);
             if (segmentFile.exists()) {
                 m3u8Content.append("#EXTINF:4.0,\n").append(segmentFileName).append("\n");
             } else {
                 System.out.println(segmentFileName + " 파일이 존재하지 않습니다. 추가하지 않음.");
-                if(radioNumber ==1){
-                    sequence1=0;
-                }
-                else if(radioNumber ==2){
-                    sequence2=0;
-                }
-                else if(radioNumber ==3){
-                    sequence3=0;
-                }
-                else if(radioNumber ==4){
-                    sequence4=0;
-                }
-                else if(radioNumber ==5){
-                    sequence5=0;
-                }
+                isLiveStreaming[taskIndex] = false; // 스트리밍 중지
             }
         }
 
@@ -192,19 +179,8 @@ public class Schedule {
         }
     }
 
-    private void stopTask(int taskNumber) {
-        switch (taskNumber) {
-            case 1 -> stopTask1();
-            case 2 -> stopTask2();
-            case 3 -> stopTask3();
-            case 4 -> stopTask4();
-            case 5 -> stopTask5();
-            default -> System.out.println("유효하지 않은 태스크 번호입니다.");
-        }
-    }
-
     @FunctionalInterface
     private interface TaskExecutable {
-        void execute() throws IOException;
+        void execute() throws IOException, InterruptedException;
     }
 }
