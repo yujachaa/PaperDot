@@ -33,9 +33,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       return (
         <div className={styles.errorContainer}>
           <h2 className={styles.errorTitle}>Error</h2>
-          <p className={styles.errorMessage}>
-            {this.state.error?.message || '알 수 없는 오류입니다.'}
-          </p>
           <button
             className={styles.backButton}
             onClick={this.handleGoBack}
