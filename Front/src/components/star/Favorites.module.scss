@@ -14,7 +14,7 @@
   left: 80px;
   width: 330px;
   max-height: 500px;
-  padding: 1.5rem;
+  padding: 1rem;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   z-index: 1000;
@@ -33,12 +33,16 @@
 
 .closeButton {
   position: absolute;
-  top: 1rem;
+  top: 0.5rem;
   right: 1rem;
   border: none;
   background: none;
   font-size: 1.3rem;
   cursor: pointer;
+}
+
+.nodeTitle {
+  font-weight: 700 !important;
 }
 
 .nodeList {
@@ -47,10 +51,10 @@
 }
 
 .nodeList li {
-  padding-bottom: 1rem;
   border-bottom: 2px solid #fafafa;
+  padding: 0 1rem;
   position: relative;
-  margin-bottom: 1rem;
+  list-style: none !important;
 }
 
 .nodeList li:last-child {
@@ -59,7 +63,13 @@
 }
 
 .nodeList p {
-  margin: 0.3rem 0;
+  color: #fafafa;
+  margin: 0.2rem 0 !important;
+  font-weight: 400;
+}
+
+.nodeList span {
+  font-weight: 700;
 }
 
 .infoBox::-webkit-scrollbar {
