@@ -80,15 +80,24 @@ class LargeScaleKoreanPaperEmbedding:
         query_embedding = self._get_query_embedding(query)
         similarities = cosine_similarity(self.embeddings, query_embedding).squeeze()
         
-        threshold = 0.5
+        threshold = 0.27
         top_indices = np.where(similarities >= threshold)[0]
         
+        # if len(top_indices) == 0:
+        #     top_indices = similarities.argsort()[-top_k:][::-1]
+        # else:
+        #     sorted_indices = similarities[top_indices].argsort()[::-1]
+        #     top_indices = top_indices[sorted_indices][:top_k]
+
+        # 임계값을 넘는 유사도만 사용하고, 없으면 빈 리스트 반환
         if len(top_indices) == 0:
-            top_indices = similarities.argsort()[-top_k:][::-1]
-        else:
-            sorted_indices = similarities[top_indices].argsort()[::-1]
-            top_indices = top_indices[sorted_indices][:top_k]
-    
+            print("No papers found with similarity above the threshold.")
+            return []
+
+        # 유사도 순으로 정렬
+        sorted_indices = similarities[top_indices].argsort()[::-1]
+        top_indices = top_indices[sorted_indices]
+
         results = []
         for idx in top_indices:
             # file_path = self.dataset.file_list[idx]
