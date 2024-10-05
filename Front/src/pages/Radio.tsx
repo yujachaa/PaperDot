@@ -23,7 +23,7 @@ const Radio = () => {
       if (!hlsRef.current) {
         hlsRef.current = new Hls(); // HLS 인스턴스 생성
       }
-      const m3u8Url = `https://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
+      const m3u8Url = `https://j11b208.p.ssafy.io/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
 
       hlsRef.current.loadSource(m3u8Url);
       hlsRef.current.attachMedia(audioRef.current);
