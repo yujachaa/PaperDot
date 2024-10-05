@@ -7,10 +7,8 @@ import RadioScript from '../components/radio/RadioScript';
 import styles from './Radio.module.scss';
 import Hls from 'hls.js';
 import Modal from '../components/radio/Modal';
-import ReplayModal from '../components/radio/ReplayModal';
 const Radio = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [isReplayModalOpen, setIsReplayModalOpen] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const handleReplayMove = () => {
@@ -25,38 +23,20 @@ const Radio = () => {
       if (!hlsRef.current) {
         hlsRef.current = new Hls(); // HLS 인스턴스 생성
       }
-      const m3u8Url = `http://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
+      const m3u8Url = `https://j11b208.p.ssafy.io:8081/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
 
       hlsRef.current.loadSource(m3u8Url);
       hlsRef.current.attachMedia(audioRef.current);
-
-      const onEnded = () => {
-        setIsReplayModalOpen(true); // 다시재생할 모달 열기
-        if (hlsRef.current) {
-          hlsRef.current.destroy();
-        }
-      };
-
-      audioRef.current.addEventListener('ended', onEnded);
 
       // 플레이리스트가 파싱되면 오디오 재생
       hlsRef.current.on(Hls.Events.MANIFEST_PARSED, () => {
         audioRef.current?.play();
       });
-
-      return () => {
-        audioRef.current?.removeEventListener('ended', onEnded);
-      };
     }
   };
 
   const onClose = () => {
     setIsModalOpen(false);
-    handlePlayHls(); // 모달 닫히면 HLS 재생 시작
-  };
-
-  const ReplayModalonClose = () => {
-    setIsReplayModalOpen(false);
     handlePlayHls(); // 모달 닫히면 HLS 재생 시작
   };
 
@@ -96,7 +76,6 @@ const Radio = () => {
         // style={{ width: 0, height: 0 }}
       />
       {isModalOpen && <Modal onClose={onClose} />}
-      {isReplayModalOpen && <ReplayModal onClose={ReplayModalonClose} />}
     </>
   );
 };
