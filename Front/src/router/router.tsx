@@ -3,7 +3,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Mypage from '../pages/Mypage';
 import Star from '../pages/Star';
-import UserStar from '../pages/userStar';
+import UserStar from '../pages/UserStar';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
@@ -18,9 +18,9 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      // <ErrorBoundary>
-      <App />
-      // </ErrorBoundary>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     ),
     children: [
       {
