@@ -110,7 +110,9 @@ const Signup: React.FC = () => {
       isNicknameAvailable === true &&
       !passwordError &&
       !birthyearError &&
-      password === passwordCheck
+      password === passwordCheck &&
+      gender !== '' &&
+      degree !== ''
     ) {
       setIsBothChecked(true);
     } else {
@@ -125,6 +127,19 @@ const Signup: React.FC = () => {
 
     if (!isValidPassword(newPassword)) {
       setPasswordError('비밀번호는 영문, 숫자, 특수문자를 포함한 8~15자여야 합니다.');
+    } else {
+      setPasswordError('');
+    }
+    checkBothConditions();
+  };
+
+  // 비밀번호 확인 검증
+  const handlePasswordCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPasswordCheck = e.target.value;
+    setPasswordCheck(newPasswordCheck);
+
+    if (newPasswordCheck !== password) {
+      setPasswordError('비밀번호가 일치하지 않습니다.');
     } else {
       setPasswordError('');
     }
@@ -237,7 +252,7 @@ const Signup: React.FC = () => {
                 type={showPasswordCheck ? 'text' : 'password'}
                 placeholder="Password Check"
                 value={passwordCheck}
-                onChange={(e) => setPasswordCheck(e.target.value)}
+                onChange={handlePasswordCheckChange}
               />
               <span
                 className={styles.passwordIcon}
@@ -246,6 +261,9 @@ const Signup: React.FC = () => {
                 {showPasswordCheck ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+            {passwordCheck !== password && (
+              <p className={styles.errorText}>비밀번호가 일치하지 않습니다.</p>
+            )}
           </div>
 
           <div className={styles.formGroup}>
