@@ -244,30 +244,29 @@ public class PaperService {
 
         }
 
-        List<Long> paginatedIds = new ArrayList<>();
-        List<PaperSimpleDocument> paginatedResults = new ArrayList<>();
+
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
 
         if (cachedResults != null) {
 
+            List<PaperSimpleDocument> paginatedResults = new ArrayList<>();
+
             start = (pageNo-1) * pageSize;
             end = Math.min(start + pageSize, redisDataList.size());
 
-             paginatedResults = redisDataList.subList(start, end);
-             paginatedIds = paginatedResults.stream().map(PaperSimpleDocument::getId).toList();
-             paperSearchResponseList = setPaperSearchResponses(memberId, paginatedIds, paginatedResults);
+            paginatedResults = redisDataList.subList(start, end);
+            List<Long> paginatedIds = paginatedResults.stream().map(PaperSimpleDocument::getId).toList();
+            paperSearchResponseList = setPaperSearchResponses(memberId, paginatedIds, paginatedResults);
             // Return paginatedResults to the client
 
 
         } else {
-
-
-             TotalPageSearchResponse totalPageSearchResponse = getSearchKeyword(keyword, memberId);
+            TotalPageSearchResponse totalPageSearchResponse = getSearchKeyword(keyword, memberId);
 
             start = (pageNo-1) * pageSize;
             end = Math.min(start + pageSize, totalPageSearchResponse.getPaperSearchResponseList().size());
-             paperSearchResponseList = totalPageSearchResponse.getPaperSearchResponseList().subList(start, end);
+            paperSearchResponseList = totalPageSearchResponse.getPaperSearchResponseList().subList(start, end);
 
         }
 

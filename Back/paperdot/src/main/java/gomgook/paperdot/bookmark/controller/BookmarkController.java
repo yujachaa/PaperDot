@@ -57,4 +57,10 @@ public class BookmarkController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/user-bookmark")
+    public ResponseEntity<?> getOtherBookmark(@RequestParam("memberId") Long memberId){
+        BookmarkResponse bookmarkResponse = bookmarkService.getBookmarks(memberId);
+
+        return ResponseEntity.ok(bookmarkResponse);
+    }
 }
