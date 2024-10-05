@@ -28,7 +28,8 @@ public class Schedule {
 
     private static int sequence5 = 0;
     private static int copy5 =0;
-    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
+    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
+//    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
 
     @Autowired
     HlsStreamService hlsStreamService;
