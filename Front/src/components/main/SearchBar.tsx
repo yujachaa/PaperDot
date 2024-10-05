@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 불러오기
 import styles from './SearchBar.module.scss';
 import searchIcon from '../../assets/images/search.svg'; // SVG 아이콘 불러오기
@@ -17,7 +17,7 @@ type SearchResultItem = {
 };
 
 const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) => {
-  // console.log(initialValue);
+  console.log('초기값: ' + initialValue);
   const navigate = useNavigate(); // useNavigate 훅 사용
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [value, setValue] = useState<string>(initialValue);
@@ -25,10 +25,15 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
   const [records, setRecords] = useState<string[]>(JSON.parse(getSearchHistory() || '[]')); //검색기록 가져오기
   const [searchResult, setSearchResult] = useState<SearchResultItem[]>([]);
 
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
+    console.log('검색어 바뀜: ' + value);
     const response = await searchTitle(event.target.value.toLowerCase());
-    console.log('검색응답: ' + response.hits.hits);
+    console.log('검색응답: ', response.hits.hits);
     const transformedArray = response.hits.hits.map((item: HitItem) => {
       return {
         id: item._id,
@@ -38,12 +43,28 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
       };
     });
 
-    console.log('리스트로 변환: ' + transformedArray);
+    console.log('리스트로 변환: ', transformedArray);
     setSearchResult(transformedArray);
   };
 
-  const handleFocus = () => {
+  const handleFocus = async () => {
     setIsFocused(true);
+    if (value) {
+      console.log('포커싱 됨: ', value);
+      const response = await searchTitle(value.trim().toLowerCase());
+      console.log('검색응답: ', response.hits.hits);
+      const transformedArray = response.hits.hits.map((item: HitItem) => {
+        return {
+          id: item._id,
+          title: item._source.original_json.title.ko,
+          authors: item._source.original_json.authors.split(';'),
+          year: parseInt(item._source.original_json.year),
+        };
+      });
+
+      console.log('리스트로 변환: ', transformedArray);
+      setSearchResult(transformedArray);
+    }
   };
 
   const handleBlur = () => {
@@ -111,7 +132,7 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
         {/* 입력값이 없고 포커스가 된 경우 RecordDropdown을 표시 */}
         {isFocused && !value && (
           <RecordDropdown
-            className="absolute" // tailwind 클래스 전달
+            className="absolute"
             records={records}
             onDeleteRecord={handleDeleteRecord}
           />

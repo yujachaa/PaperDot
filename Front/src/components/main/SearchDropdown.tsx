@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './SearchDropdown.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchDropdownProps {
   searchTerm: string;
@@ -79,10 +80,10 @@ const highlightText = (text: string, highlight: string) => {
 };
 
 const SearchDropdown: React.FC<SearchDropdownProps> = ({ searchTerm, className, searchResult }) => {
+  const navigate = useNavigate();
   const goDetail = (id: number) => {
-    // 클릭한 논문의 ID를 이용해 상세 페이지로 이동하는 로직 추가
     console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
-    // 예시: window.location.href = `/paper/${id}`;
+    navigate(`/paper/${id}`);
   };
 
   return (

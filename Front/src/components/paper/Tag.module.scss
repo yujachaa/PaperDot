@@ -1,0 +1,32 @@
+.tag {
+  display: flex;
+  padding: 0.625rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 2.5rem;
+  font-weight: bold;
+  cursor: pointer;
+
+  &.main {
+    background-color: #8cafce;
+    color: #fafafa;
+    font-size: 1rem;
+
+    &:hover {
+      color: #8cafce;
+      background: #fafafa;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  &.relation {
+    background-color: transparent;
+    color: #5a9bd8;
+    font-size: 0.875rem;
+
+    &:hover {
+      color: #317bbf;
+    }
+  }
+}
