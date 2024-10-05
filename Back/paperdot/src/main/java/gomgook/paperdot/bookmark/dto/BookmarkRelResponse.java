@@ -1,6 +1,7 @@
 package gomgook.paperdot.bookmark.dto;
 
 import gomgook.paperdot.paper.dto.PaperSearchResponse;
+import gomgook.paperdot.paper.dto.RelationResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,5 @@ public class BookmarkRelResponse {
     private String title;
     private List<String> authors;
     private String year;
-    private List<PaperSearchResponse> relation;
+    private List<RelationResponse> relation;
 }
