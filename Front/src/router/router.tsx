@@ -9,11 +9,18 @@ import Radio from '../pages/Radio';
 import SearchResult from '../pages/SearchResult';
 import Replay from '../pages/Replay';
 import PaperDetail from '../pages/PaperDetail';
+import ErrorBoundary from '../components/common/ErrorBoundary';
+import TestComponent from '../components/common/TestComponent';
+import NotFound from '../components/common/NotFound';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: (
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    ),
     children: [
       {
         path: '/',
@@ -21,35 +28,83 @@ export const router = createBrowserRouter([
       },
       {
         path: '/login',
-        element: <Login />,
+        element: (
+          <ErrorBoundary>
+            <Login />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/radio/:id',
-        element: <Radio />,
+        element: (
+          <ErrorBoundary>
+            <Radio />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/replay/:id',
-        element: <Replay />,
+        element: (
+          <ErrorBoundary>
+            <Replay />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/signup',
-        element: <Signup />,
+        element: (
+          <ErrorBoundary>
+            <Signup />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/mypage',
-        element: <Mypage />,
+        element: (
+          <ErrorBoundary>
+            <Mypage />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/star',
-        element: <Star />,
+        element: (
+          <ErrorBoundary>
+            <Star />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/search',
-        element: <SearchResult />,
+        element: (
+          <ErrorBoundary>
+            <SearchResult />
+          </ErrorBoundary>
+        ),
       },
       {
         path: '/paper/:id',
-        element: <PaperDetail />,
+        element: (
+          <ErrorBoundary>
+            <PaperDetail />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/e',
+        element: (
+          <ErrorBoundary>
+            <TestComponent />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '*',
+        element: (
+          <ErrorBoundary>
+            <NotFound />
+          </ErrorBoundary>
+        ),
       },
     ],
   },

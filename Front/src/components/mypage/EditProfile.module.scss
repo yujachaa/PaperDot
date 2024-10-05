@@ -148,6 +148,13 @@ input[type='radio']:checked {
   text-decoration: none;
 }
 
+.errorMessage {
+  color: red;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .editform {
     width: 290px;
@@ -198,5 +205,10 @@ input[type='radio']:checked {
 
   .withdrawButton {
     font-size: 0.75rem;
+  }
+
+  .errorMessage {
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 }
