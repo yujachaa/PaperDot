@@ -10,3 +10,24 @@ export interface HitItem {
     };
   };
 }
+
+export interface PaperSearchResponse {
+  total: number;
+  paperSearchResponseList: SearchResultPaper[];
+}
+
+export interface SearchResultPaper {
+  id: number;
+  abstractText: {
+    ko: string;
+    en: string | null;
+  };
+  title: {
+    ko: string;
+    en: string;
+  };
+  authors: string[];
+  year: string;
+  cnt: number;
+  bookmark: boolean;
+}

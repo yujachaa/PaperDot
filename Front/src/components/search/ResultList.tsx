@@ -2,16 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 import
 import styles from './ResultList.module.scss';
 import BookMark from '../common/BookMark';
+import { SearchResultPaper } from '../../interface/search';
 
 interface ResultListProps {
-  searchResult: {
-    id: number;
-    title: string;
-    author: string;
-    year: number;
-    cnt: number;
-    bookmark: boolean;
-  }[];
+  searchResult: SearchResultPaper[] | null;
   searchTerm: string;
 }
 
@@ -48,43 +42,47 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
 
   return (
     <div className={styles.resultList}>
-      {searchResult.map((item) => (
-        <div
-          key={item.id}
-          className="flex w-full"
-        >
-          <div className="w-[90%]">
-            <p
-              className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] font-bold cursor-pointer mobile:text-sm"
-              onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
-            >
-              {highlightText(item.title, searchTerm)}
-            </p>
-            <p
-              className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] cursor-pointer mobile:text-sm"
-              onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
-            >
-              <span className="font-bold mr-1 mobile:text-sm">저자</span>
-              {highlightText(item.author, searchTerm)}
-            </p>
-            <p
-              className="cursor-pointer mobile:text-sm"
-              onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
-            >
-              <span className="font-bold mr-1 mobile:text-sm">발행년도</span>
-              {item.year}
-            </p>
+      {searchResult ? (
+        searchResult.map((item) => (
+          <div
+            key={item.id}
+            className="flex w-full"
+          >
+            <div className="w-[90%]">
+              <p
+                className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] font-bold cursor-pointer mobile:text-sm"
+                onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
+              >
+                {highlightText(item.title.ko, searchTerm)}
+              </p>
+              <p
+                className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] cursor-pointer mobile:text-sm"
+                onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
+              >
+                <span className="font-bold mr-1 mobile:text-sm">저자</span>
+                {highlightText(item.authors.join(', '), searchTerm)}
+              </p>
+              <p
+                className="cursor-pointer mobile:text-sm"
+                onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
+              >
+                <span className="font-bold mr-1 mobile:text-sm">발행년도</span>
+                {item.year}
+              </p>
+            </div>
+            <div className="flex items-center gap-1">
+              <BookMark
+                paperId={item.id}
+                bookmark={item.bookmark}
+                className="w-5"
+              />
+              <span className="font-bold mobile:hidden">{item.cnt > 999 ? '999+' : item.cnt}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <BookMark
-              paperId={item.id}
-              bookmark={item.bookmark}
-              className="w-5"
-            />
-            <span className="font-bold mobile:hidden">{item.cnt > 999 ? '999+' : item.cnt}</span>
-          </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <div>로딩중입니다....</div>
+      )}
     </div>
   );
 };

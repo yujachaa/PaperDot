@@ -24,7 +24,7 @@ const PaperInfo: React.FC<PaperInfoProps> = ({ paperData }) => {
         <p>
           <strong>저자</strong>
         </p>
-        <p>{paperData.author.join(', ')}</p>
+        <p>{paperData.authors.join(', ')}</p>
       </div>
       <div className={styles.infoText}>
         <p>
