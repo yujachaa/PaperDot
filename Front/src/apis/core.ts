@@ -1,6 +1,6 @@
 import axios from 'axios';
-export const BASE_URL = 'http://localhost:8080';
-// export const BASE_URL = 'https://j11b208.p.ssafy.io';
+// export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL = 'https://j11b208.p.ssafy.io';
 
 // Elasticsearch API 기본 URL
 const ELASTIC_URL = 'https://j11b208a.p.ssafy.io';
