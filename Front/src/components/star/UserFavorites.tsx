@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
-import BookMark from '../common/BookMark';
-import { getBookmarks, toggleBookmark } from '../../apis/bookmark';
+import { getUserBookmarks, toggleBookmark } from '../../apis/bookmark';
 
-const Favorites = () => {
+interface UserFavoritesProps {
+  memberId: number;
+}
+
+const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
@@ -20,8 +23,7 @@ const Favorites = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 북마크 데이터를 가져와서 nodes와 links로 설정
-        const { nodes, edges } = await getBookmarks();
+        const { nodes, edges } = await getUserBookmarks(memberId);
         setNodesData(nodes);
         setLinksData(edges);
       } catch (error) {
@@ -30,7 +32,7 @@ const Favorites = () => {
     };
 
     fetchData();
-  }, []);
+  }, [memberId]);
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -226,12 +228,7 @@ const Favorites = () => {
                 <button
                   className={styles.bookmarkButton}
                   onClick={() => handleBookmarkToggle(node.id)}
-                >
-                  <BookMark
-                    paperId={node.id}
-                    bookmark={true}
-                  />
-                </button>
+                ></button>
               </li>
             ))}
           </ul>
@@ -241,7 +238,7 @@ const Favorites = () => {
   );
 };
 
-export default Favorites;
+export default UserFavorites;
 
 // 별 모양을 그리는 함수
 function createStarPoints(
