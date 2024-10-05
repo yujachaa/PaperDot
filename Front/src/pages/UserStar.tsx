@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Header from '../components/common/Header';
 import useTheme from '../zustand/theme';
 import styles from './Star.module.scss';
-import Favorites from '../components/star/Favorites';
-import { getUserProfile } from '../apis/user';
+import UserFavorites from '../components/star/UserFavorites';
 import StarryBackground from '../components/star/StarryBackground';
 
 const pageVariants = {
@@ -13,25 +12,15 @@ const pageVariants = {
   exit: { opacity: 0, scale: 0 },
 };
 
-const Star = () => {
+const UserStar = () => {
   const { isDarkMode, setDarkTrue } = useTheme((state) => state);
-  const [nickname, setNickname] = useState('');
+
+  const memberId = 1;
 
   useEffect(() => {
     if (!isDarkMode) {
       setDarkTrue();
     }
-
-    const fetchUserProfile = async () => {
-      try {
-        const data = await getUserProfile();
-        setNickname(data.nickname);
-      } catch (err) {
-        console.error('유저 프로필을 가져오는 중 오류 발생:', err);
-      }
-    };
-
-    fetchUserProfile();
   }, [isDarkMode, setDarkTrue]);
 
   return (
@@ -57,10 +46,10 @@ const Star = () => {
           <Header />
           <div className={styles.starContainer}>
             <div className={styles.menu}>
-              <div className={styles.mine}>{nickname}의 별자리</div>
+              <div className={styles.mine}>oo의 별자리</div>
             </div>
             <div className={styles.main}>
-              <Favorites />
+              <UserFavorites memberId={memberId} />
             </div>
           </div>
         </div>
@@ -69,4 +58,4 @@ const Star = () => {
   );
 };
 
-export default Star;
+export default UserStar;

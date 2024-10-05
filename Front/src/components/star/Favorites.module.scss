@@ -4,19 +4,21 @@
 
 .networkChart {
   width: 1000px;
-  height: 450px;
+  height: 500px;
 }
 
 .infoBox {
   font-weight: 500;
   position: absolute;
-  top: 20px;
-  left: 80px;
-  width: 330px;
+  top: 0px;
+  left: -200px;
+  width: 300px;
   max-height: 500px;
   padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 15px -3px rgba(200, 200, 200, 0.3);
+  border-radius: 20px;
   z-index: 1000;
   overflow-y: auto;
   font-size: 1.1rem;
@@ -26,7 +28,7 @@
   display: inline-block;
   cursor: pointer;
   position: absolute;
-  right: 1rem;
+  right: -5px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -39,6 +41,7 @@
   background: none;
   font-size: 1.3rem;
   cursor: pointer;
+  z-index: 100;
 }
 
 .nodeTitle {
@@ -52,7 +55,7 @@
 
 .nodeList li {
   border-bottom: 2px solid #fafafa;
-  padding: 0 1rem;
+  padding: 0.5rem 1rem;
   position: relative;
   list-style: none !important;
 }

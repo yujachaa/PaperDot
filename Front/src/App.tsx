@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import useTheme from './zustand/theme';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -16,7 +17,9 @@ function App() {
 
   return (
     <>
-      <Outlet />
+      <AnimatePresence mode="wait">
+        <Outlet />
+      </AnimatePresence>
       <ToastContainer />
     </>
   );

@@ -3,6 +3,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import Mypage from '../pages/Mypage';
 import Star from '../pages/Star';
+import UserStar from '../pages/UserStar';
 import App from '../App';
 import { createBrowserRouter } from 'react-router-dom';
 import Radio from '../pages/Radio';
@@ -69,9 +70,9 @@ export const router = createBrowserRouter([
       {
         path: '/star',
         element: (
-          <ErrorBoundary>
-            <Star />
-          </ErrorBoundary>
+          // <ErrorBoundary>
+          <Star />
+          // </ErrorBoundary>
         ),
       },
       {
@@ -103,6 +104,14 @@ export const router = createBrowserRouter([
         element: (
           <ErrorBoundary>
             <NotFound />
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/userStar',
+        element: (
+          <ErrorBoundary>
+            <UserStar />
           </ErrorBoundary>
         ),
       },
