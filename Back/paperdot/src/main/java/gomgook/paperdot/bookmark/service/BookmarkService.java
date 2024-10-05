@@ -30,7 +30,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
-    private final PaperESRepository paperESRepository;
     private final PapersimpleESRepository papersimpleESRepository;
     private final MemberRepository memberRepository;
     private final PaperJpaRepository paperJpaRepository;
@@ -115,17 +114,17 @@ public class BookmarkService {
                 .map(RelationDTO::getId)
                 .toList();
         List<RelationResponse> paperSearchResponseList = paperService.setPaperRelation(ids);
-/* TODO: 고쳐야함
-        bookmarkRelResponse.setId(paperSimpleDocument.getId());
-        bookmarkRelResponse.setTitle(paperSimpleDocument.getTitle().getKo());
-        bookmarkRelResponse.setYear(paperSimpleDocument.getYear());
 
-        String authors = paperSimpleDocument.getAuthors();
+        bookmarkRelResponse.setId(paperSimpleDocument.getId());
+        bookmarkRelResponse.setTitle(paperSimpleDocument.getOriginalJson().getTitle().getKo());
+        bookmarkRelResponse.setYear(paperSimpleDocument.getOriginalJson().getYear());
+
+        String authors = paperSimpleDocument.getOriginalJson().getAuthors();
         bookmarkRelResponse.setAuthors(
                 authors != null ? Arrays.stream(authors.split(";")).toList() : Collections.emptyList()
         );
         bookmarkRelResponse.setRelation(paperSearchResponseList);
-*/
+
         return bookmarkRelResponse;
     }
 
@@ -155,6 +154,8 @@ public class BookmarkService {
 
         }
     }
+
+
 
 
 

@@ -36,11 +36,12 @@ public class SecurityConfig {
 //                                .anyRequest().permitAll()
 //                );
         http
-                .cors(cors ->cors.disable())
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configure(http))  // CORS 활성화
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(new AntPathRequestMatcher("/bookmarks/**")).authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/bookmarks/user-bookmark")).permitAll()  // /bookmarks/** 경로는 인증 필요
+                        .requestMatchers(new AntPathRequestMatcher("/bookmarks/**")).authenticated()  // /bookmarks/** 경로는 인증 필요
+                        .anyRequest().permitAll()  // 그 외 모든 요청은 허용
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
