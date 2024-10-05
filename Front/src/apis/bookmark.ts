@@ -54,3 +54,29 @@ export const toggleBookmark = async (paperId: number) => {
     throw error;
   }
 };
+
+// 사용자별 북마크 데이터를 불러오는 함수
+export const getUserBookmarks = async (memberId: number) => {
+  try {
+    const response = await Authapi.get(`/api/bookmarks/user-bookmark?memberId=${memberId}`);
+    const data = response.data;
+
+    const nodes = data.nodes.map((node: any) => ({
+      id: node.id,
+      title: node.title,
+      author: node.authors.join(', '),
+      year: node.year,
+    }));
+
+    const edges = data.edges.map((edge: any) => ({
+      source: edge.source,
+      target: edge.target,
+      weight: edge.weight || 1,
+    }));
+
+    return { nodes, edges };
+  } catch (error) {
+    console.error('Error fetching user bookmarks:', error);
+    throw error;
+  }
+};
