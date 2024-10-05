@@ -73,7 +73,7 @@ const Radio = () => {
       <audio
         ref={audioRef}
         controls
-        // style={{ width: 0, height: 0 }}
+        style={{ width: 0, height: 0 }}
       />
       {isModalOpen && <Modal onClose={onClose} />}
     </>
