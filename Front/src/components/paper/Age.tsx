@@ -1,100 +1,57 @@
 import { ResponsiveBar } from '@nivo/bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getPaperStatistics } from '../../apis/paper';
+type AgeProps = {
+  paperId: number;
+};
 
-const data = [
-  {
-    age: '10대',
-    cnt10: 123,
-    cnt10Color: '#344BFD',
+const Age: React.FC<AgeProps> = ({ paperId }) => {
+  const [data, setData] = useState<any[]>([]);
 
-    cnt20: 0,
-    cnt20Color: '#344BFD',
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const response = await getPaperStatistics(paperId);
 
-    cnt30: 0,
-    cnt30Color: '#344BFD',
+        const defaultAgeGroups = [
+          { age: '10대', cnt: 0, cntColor: '#344BFD' },
+          { age: '20대', cnt: 0, cntColor: '#344BFD' },
+          { age: '30대', cnt: 0, cntColor: '#344BFD' },
+          { age: '40대', cnt: 0, cntColor: '#344BFD' },
+          { age: '50대 이상', cnt: 0, cntColor: '#344BFD' },
+        ];
 
-    cnt40: 0,
-    cnt40Color: '#344BFD',
+        const ageData = response.aggregations.age_aggs.buckets.map((bucket: any) => ({
+          age: `${bucket.key}대`,
+          cnt: bucket.doc_count,
+          cntColor: '#344BFD',
+        }));
 
-    cnt50: 0,
-    cnt50Color: '#344BFD',
-  },
-  {
-    age: '20대',
-    cnt10: 0,
-    cnt10Color: '#344BFD',
+        const mergedData = defaultAgeGroups.map((group) => {
+          const found = ageData.find((d: any) => d.age === group.age);
+          return found ? { ...group, cnt: found.cnt } : group;
+        });
 
-    cnt20: 161,
-    cnt20Color: '#344BFD',
+        const maxCnt = Math.max(...mergedData.map((d) => d.cnt));
+        const finalData = mergedData.map((d) => ({
+          ...d,
+          cntColor: d.cnt === maxCnt ? '#FF955A' : '#344BFD',
+        }));
 
-    cnt30: 0,
-    cnt30Color: '#344BFD',
+        setData(finalData);
+      } catch (error) {
+        console.error('통계 데이터 가져오기 오류:', error);
+      }
+    };
 
-    cnt40: 0,
-    cnt40Color: '#344BFD',
+    fetchStatistics();
+  }, [paperId]);
 
-    cnt50: 0,
-    cnt50Color: '#344BFD',
-  },
-  {
-    age: '30대',
-    cnt10: 0,
-    cnt10Color: '#344BFD',
-
-    cnt20: 0,
-    cnt20Color: '#344BFD',
-
-    cnt30: 200,
-    cnt30Color: '#FF955A',
-
-    cnt40: 0,
-    cnt40Color: '#344BFD',
-
-    cnt50: 0,
-    cnt50Color: '#344BFD',
-  },
-  {
-    age: '40대',
-    cnt10: 0,
-    cnt10Color: '#344BFD',
-
-    cnt20: 0,
-    cnt20Color: '#344BFD',
-
-    cnt30: 0,
-    cnt30Color: '#344BFD',
-
-    cnt40: 79,
-    cnt40Color: '#344BFD',
-
-    cnt50: 0,
-    cnt50Color: '#344BFD',
-  },
-  {
-    age: '50대 이상',
-    cnt10: 0,
-    cnt10Color: '#344BFD',
-
-    cnt20: 0,
-    cnt20Color: '#344BFD',
-
-    cnt30: 0,
-    cnt30Color: '#344BFD',
-
-    cnt40: 0,
-    cnt40Color: '#344BFD',
-
-    cnt50: 110,
-    cnt50Color: '#344BFD',
-  },
-];
-
-const Age: React.FC = () => {
   return (
     <div className="w-full h-[20rem]">
       <ResponsiveBar
         data={data}
-        keys={['cnt10', 'cnt20', 'cnt30', 'cnt40', 'cnt50']}
+        keys={['cnt']}
         indexBy="age"
         margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
         padding={0.5}
@@ -125,7 +82,7 @@ const Age: React.FC = () => {
         legends={[]}
         role="application"
         ariaLabel="Nivo bar chart demo"
-        barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in country: ' + e.indexValue}
+        barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in age group: ' + e.indexValue}
         tooltip={({ value, indexValue }) => (
           <div
             style={{

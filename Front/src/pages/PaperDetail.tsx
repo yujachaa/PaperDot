@@ -138,7 +138,7 @@ const PaperDetail: React.FC = () => {
             <Summary paperId={paperData.id} />
             <Relation relation={paperData.relation} />
           </div>
-          <Statistics />
+          <Statistics paperId={paperData.id} />
         </div>
       ) : (
         <p>로딩 중...</p>
