@@ -1,5 +1,18 @@
-import { Authapi } from './core'; // core.ts에서 생성한 Authapi 사용
-import { toast } from 'react-toastify'; // Toastify 라이브러리 임포트
+import { Authapi, searchApi } from './core'; // core.ts에서 생성한 Authapi 사용
+import { getMemberIdFromToken } from '../utills/tokenParser';
+import { getUserProfile } from './user';
+
+// 현재 연도 가져오기
+const getCurrentYear = () => new Date().getFullYear();
+
+// 나이를 10, 20, 30, 40, 50 그룹으로 분류하는 함수
+const categorizeAge = (age: number) => {
+  if (age < 20) return 10;
+  else if (age < 30) return 20;
+  else if (age < 40) return 30;
+  else if (age < 50) return 40;
+  else return 50;
+};
 
 // 북마크 데이터를 불러오는 함수
 export const getBookmarks = async () => {
@@ -38,14 +51,37 @@ export const toggleBookmark = async (paperId: number) => {
   try {
     // 토큰이 있는지 확인
     const token = sessionStorage.getItem('token');
+    const memberId = getMemberIdFromToken();
+
     if (!token) {
-      // 토큰이 없으면 로그인 요청 알림 표시
-      toast.error('로그인해주세요.');
-      return;
+      throw new Error('로그인이 필요합니다');
+    }
+
+    // memberId가 null인 경우 처리
+    if (!memberId) {
+      throw new Error('로그인이 필요합니다');
     }
 
     // 토큰이 있으면 API 호출
     const response = await Authapi.get(`/api/bookmarks/toggle?paperId=${paperId}`);
+
+    // 사용자 프로필 정보를 가져옴
+    const userProfile = await getUserProfile();
+    const { birthyear, degree, gender } = userProfile;
+
+    // 나이를 계산하여 그룹화
+    const currentYear = getCurrentYear();
+    const age = currentYear - parseInt(birthyear, 10);
+    const ageGroup = categorizeAge(age);
+
+    // 통계 정보를 Elasticsearch로 전송하는 요청
+    await searchApi.post('/papers_statistics/_doc', {
+      age: ageGroup.toString(),
+      degree: degree,
+      gender: gender,
+      paper_id: paperId.toString(),
+      user_id: memberId.toString(),
+    });
 
     // 서버에서 반환된 데이터를 처리
     return response.data;
