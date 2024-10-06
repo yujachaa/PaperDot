@@ -17,7 +17,7 @@
         <!-- <producerConfig> Kafka producer의 설정값 (순서대로, 재전송 횟수, 전송 서버 주소, 압축 타입, 데이터 전송 최대 대기 시간  -->
         <producerConfig>retries=1</producerConfig>
         <producerConfig>bootstrap.servers=j11b208a.p.ssafy.io:9092</producerConfig>
-        <producerConfig>compression.type=snappy</producerConfig>
+        <producerConfig>compression.type=none</producerConfig>
         <producerConfig>max.block.ms=1000</producerConfig>
     </appender>
 
