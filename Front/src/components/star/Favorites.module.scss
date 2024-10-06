@@ -3,6 +3,7 @@
 }
 
 .networkChart {
+  z-index: -100;
   width: 1000px;
   height: 500px;
 }
@@ -10,8 +11,8 @@
 .infoBox {
   font-weight: 500;
   position: absolute;
-  top: 0px;
-  left: -200px;
+  top: 15px;
+  left: -50px;
   width: 300px;
   max-height: 500px;
   padding: 1rem;
