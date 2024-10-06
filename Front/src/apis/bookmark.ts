@@ -47,7 +47,7 @@ export const getBookmarks = async () => {
 };
 
 // 북마크 토글 함수
-export const toggleBookmark = async (paperId: number) => {
+export const falseToggleBookmark = async (paperId: number) => {
   try {
     // 토큰이 있는지 확인
     const token = sessionStorage.getItem('token');
@@ -85,6 +85,39 @@ export const toggleBookmark = async (paperId: number) => {
 
     // 서버에서 반환된 데이터를 처리
     return response.data;
+  } catch (error) {
+    console.error('Error toggling bookmark:', error);
+    throw error;
+  }
+};
+
+// 북마크 토글 함수
+export const trueToggleBookmark = async (paperId: number) => {
+  try {
+    // 토큰이 있는지 확인
+    const token = sessionStorage.getItem('token');
+    const memberId = getMemberIdFromToken();
+
+    if (!token) {
+      throw new Error('로그인이 필요합니다');
+    }
+
+    // memberId가 null인 경우 처리
+    if (!memberId) {
+      throw new Error('로그인이 필요합니다');
+    }
+
+    // Elasticsearch로 데이터 제거 요청
+    await searchApi.post('/papers_statistics/_delete_by_query', {
+      query: {
+        bool: {
+          must: [
+            { term: { paper_id: paperId.toString() } },
+            { term: { user_id: memberId.toString() } },
+          ],
+        },
+      },
+    });
   } catch (error) {
     console.error('Error toggling bookmark:', error);
     throw error;
