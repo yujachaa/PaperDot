@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
-import { getUserBookmarks, toggleBookmark } from '../../apis/bookmark';
+import { getUserBookmarks, trueToggleBookmark } from '../../apis/bookmark';
 
 interface UserFavoritesProps {
   memberId: number;
@@ -177,7 +177,7 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
   // 북마크 토글 함수
   const handleBookmarkToggle = async (paperId: number) => {
     try {
-      await toggleBookmark(paperId);
+      await trueToggleBookmark(paperId);
       console.log(`Toggled bookmark for paperId: ${paperId}`);
       // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
       removeNode(paperId);
