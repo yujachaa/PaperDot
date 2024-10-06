@@ -4,8 +4,7 @@ import useTheme from '../../zustand/theme';
 import { Rank } from '../../interface/paper';
 import { getBest } from '../../apis/paper';
 import { useNavigate } from 'react-router-dom';
-
-type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능';
+import { Category } from '../../interface/radio';
 
 const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
 

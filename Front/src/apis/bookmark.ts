@@ -54,6 +54,7 @@ export const falseToggleBookmark = async (paperId: number) => {
     const memberId = getMemberIdFromToken();
 
     if (!token) {
+      // 토큰이 없으면 로그인 요청 알림 표시
       throw new Error('로그인이 필요합니다');
     }
 
@@ -84,6 +85,7 @@ export const falseToggleBookmark = async (paperId: number) => {
     });
 
     // 서버에서 반환된 데이터를 처리
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error('Error toggling bookmark:', error);
@@ -148,4 +150,11 @@ export const getUserBookmarks = async (memberId: number) => {
     console.error('Error fetching user bookmarks:', error);
     throw error;
   }
+};
+
+//논문 뱔 사용자 북마크 여부 가져오기
+
+export const getUserBookMark = async (paperId: number) => {
+  const response = await Authapi.get(`/api/bookmarks/bookmark-check?paperId=${paperId}`);
+  return response.data;
 };

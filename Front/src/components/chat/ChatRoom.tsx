@@ -58,6 +58,8 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [selectedData, setselectedData] = useState<GroupMessage | null>(null);
   const { client, connected } = useWebSocket();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const {isChatBot, setChatBot} = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const openModal = (top: number, left: number, data: GroupMessage) => {
@@ -91,6 +93,11 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
         });
       }
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '/ai') setIsModalOpen(true);
+    else setIsModalOpen(false);
   };
 
   const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -130,10 +137,12 @@ const ChatRoom = ({ className }: ChatRoomProps) => {
       </div>
 
       <div className={styles.inputbox}>
+        {isModalOpen ? <div>AI에게 질문하기</div> : ''}
         <SendInput
           ref={inputRef}
           onKeyUp={handleKeyUp}
           handleSendMessage={handleSendMessage}
+          onChange={handleChange}
         />
       </div>
     </div>
