@@ -3,6 +3,8 @@ import BookMark from '../common/BookMark';
 import MusicIcon from '../common/MusicIcon';
 import styles from './PlayList.module.scss';
 import { Radio } from '../../interface/radio';
+import { useEffect } from 'react';
+import { getUserBookMark } from '../../apis/bookmark';
 
 type PlayListProps = {
   className?: string;
@@ -15,6 +17,14 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
   const handleClick = () => {
     navigate(`/paper/${id}`);
   };
+
+  const hanldeGetUserBookmark = async () => {
+    const data = await getUserBookMark(id);
+    console.log(data);
+  };
+  useEffect(() => {
+    hanldeGetUserBookmark();
+  }, []);
 
   return (
     <div className={`${styles.container} ${className}`}>

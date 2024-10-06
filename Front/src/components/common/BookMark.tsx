@@ -19,9 +19,9 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
   const clickBookmark = async (paperId: number) => {
     try {
       await toggleBookmark(paperId);
-      setIsBookmarked(!isBookmarked);
+      setIsBookmarked((prev) => !prev);
     } catch (error: any) {
-      if (error.message === '로그인이 필요합니다') toast.error('로그인해주세요.');
+      toast.error(error.message);
     }
   };
   return (
