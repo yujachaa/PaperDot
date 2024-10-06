@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import nonBookMark from '../../assets/images/emptyBook.svg';
 import fullBookMark from '../../assets/images/fullBook.svg';
 import nonBookMarkDark from '../../assets/images/emptyBookDark.svg';
 import useTheme from '../../zustand/theme';
-import { toggleBookmark } from '../../apis/bookmark';
+import { getUserBookMark, toggleBookmark } from '../../apis/bookmark';
 import { toast } from 'react-toastify';
 
 type BookMarkProps = {
@@ -14,6 +14,14 @@ type BookMarkProps = {
 const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
   const [isBookmarked, setIsBookmarked] = useState<boolean>(bookmark);
   const isDarkMode = useTheme((state) => state.isDarkMode);
+
+  const hanldeGetUserBookmark = async () => {
+    const data = await getUserBookMark(paperId);
+    setIsBookmarked(data);
+  };
+  useEffect(() => {
+    hanldeGetUserBookmark();
+  }, []);
 
   const clickBookmark = async (paperId: number) => {
     try {
