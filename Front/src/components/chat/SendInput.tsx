@@ -9,10 +9,18 @@ type InputProps = {
   disabled?: boolean;
   onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   handleSendMessage?: () => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SendInput = forwardRef<HTMLInputElement, InputProps>(function SendInput(
-  { className = '', placeholder = '댓글 입력', disabled = false, onKeyUp, handleSendMessage },
+  {
+    className = '',
+    placeholder = '댓글 입력',
+    disabled = false,
+    onKeyUp,
+    handleSendMessage,
+    onChange,
+  },
   ref,
 ) {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -25,6 +33,7 @@ const SendInput = forwardRef<HTMLInputElement, InputProps>(function SendInput(
         className={`${styles.input} ${isDarkMode ? `${styles.dark}` : ''}`}
         disabled={disabled}
         onKeyUp={onKeyUp}
+        onChange={onChange}
       />
       <InputIcon
         className={`ml-auto mr-3 cursor-pointer dark:text-white`}
