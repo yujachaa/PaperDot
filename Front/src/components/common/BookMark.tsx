@@ -33,7 +33,7 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
         className={`${className} cursor-pointer`}
         onClick={() => {
           clickBookmark(paperId);
-        }} //(미완) 북마크 추가/제거 api 호출하는 함수로 수정할 것
+        }}
       />
     </>
   );
