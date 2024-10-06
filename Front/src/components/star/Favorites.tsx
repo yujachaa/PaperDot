@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import BookMark from '../common/BookMark';
-import { getBookmarks, toggleBookmark } from '../../apis/bookmark';
+import { getBookmarks, trueToggleBookmark } from '../../apis/bookmark';
 
 const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -175,7 +175,7 @@ const Favorites = () => {
   // 북마크 토글 함수
   const handleBookmarkToggle = async (paperId: number) => {
     try {
-      await toggleBookmark(paperId);
+      await trueToggleBookmark(paperId);
       console.log(`Toggled bookmark for paperId: ${paperId}`);
       // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
       removeNode(paperId);
