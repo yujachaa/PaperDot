@@ -22,7 +22,7 @@ const Age: React.FC<AgeProps> = ({ paperId }) => {
         ];
 
         const ageData = response.aggregations.age_aggs.buckets.map((bucket: any) => ({
-          age: `${bucket.key}대`,
+          age: bucket.key === '50' ? `${bucket.key}대 이상` : `${bucket.key}대`,
           cnt: bucket.doc_count,
           cntColor: '#344BFD',
         }));
