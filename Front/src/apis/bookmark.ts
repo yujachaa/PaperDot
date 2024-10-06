@@ -79,3 +79,10 @@ export const getUserBookmarks = async (memberId: number) => {
     throw error;
   }
 };
+
+//논문 뱔 사용자 북마크 여부 가져오기
+
+export const getUserBookMark = async (paperId: number) => {
+  const response = await Authapi.get(`/api/bookmarks/bookmark-check?paperId=${paperId}`);
+  return response;
+};
