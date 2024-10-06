@@ -1,5 +1,4 @@
 import { Authapi } from './core'; // core.ts에서 생성한 Authapi 사용
-import { toast } from 'react-toastify'; // Toastify 라이브러리 임포트
 
 // 북마크 데이터를 불러오는 함수
 export const getBookmarks = async () => {
@@ -40,14 +39,14 @@ export const toggleBookmark = async (paperId: number) => {
     const token = sessionStorage.getItem('token');
     if (!token) {
       // 토큰이 없으면 로그인 요청 알림 표시
-      toast.error('로그인해주세요.');
-      return;
+      throw new Error('로그인이 필요합니다');
     }
 
     // 토큰이 있으면 API 호출
     const response = await Authapi.get(`/api/bookmarks/toggle?paperId=${paperId}`);
 
     // 서버에서 반환된 데이터를 처리
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error('Error toggling bookmark:', error);

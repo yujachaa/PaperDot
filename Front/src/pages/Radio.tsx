@@ -7,7 +7,10 @@ import RadioScript from '../components/radio/RadioScript';
 import styles from './Radio.module.scss';
 import Hls from 'hls.js';
 import Modal from '../components/radio/Modal';
+import { Category } from '../interface/radio';
+import { RadioLists } from '../interface/radio';
 const Radio = () => {
+  const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
   const [isModalOpen, setIsModalOpen] = useState(true);
   const { id } = useParams();
 
@@ -49,13 +52,13 @@ const Radio = () => {
       <Header />
       <div className={`${styles.container}`}>
         <div className="flex flex-row gap-7 items-center">
-          <div className={`${styles.title}`}>인문/사회</div>{' '}
+          <div className={`${styles.title}`}>{categories[Number(id) - 1]}</div>{' '}
         </div>
       </div>
 
       <div className={`${styles.content}`}>
         <div className={`${styles.radio}`}>
-          <PlayList />
+          <PlayList Radio={RadioLists[Number(id) - 1]} />
           <RadioScript className="mt-4" />
         </div>
         <ChatRoom className="mt-4" />
