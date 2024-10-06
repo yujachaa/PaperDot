@@ -123,5 +123,5 @@ export const getUserBookmarks = async (memberId: number) => {
 
 export const getUserBookMark = async (paperId: number) => {
   const response = await Authapi.get(`/api/bookmarks/bookmark-check?paperId=${paperId}`);
-  return response;
+  return response.data;
 };

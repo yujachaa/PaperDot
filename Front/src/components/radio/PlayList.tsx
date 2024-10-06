@@ -3,7 +3,7 @@ import BookMark from '../common/BookMark';
 import MusicIcon from '../common/MusicIcon';
 import styles from './PlayList.module.scss';
 import { Radio } from '../../interface/radio';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getUserBookMark } from '../../apis/bookmark';
 
 type PlayListProps = {
@@ -12,6 +12,7 @@ type PlayListProps = {
 };
 const PlayList = ({ className, Radio }: PlayListProps) => {
   const { id, title, author, year } = Radio;
+  const [bookmark, setBookmark] = useState(null);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -21,10 +22,15 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
   const hanldeGetUserBookmark = async () => {
     const data = await getUserBookMark(id);
     console.log(data);
+    setBookmark(data);
   };
   useEffect(() => {
     hanldeGetUserBookmark();
   }, []);
+
+  if (bookmark === null) {
+    return <div>로딩 중...</div>; // 데이터가 로드되기 전 로딩 상태 표시
+  }
 
   return (
     <div className={`${styles.container} ${className}`}>
@@ -38,7 +44,7 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
 
       <BookMark
         paperId={id}
-        bookmark={false}
+        bookmark={bookmark}
         className="absolute top-2.5 right-5"
       />
       <div
