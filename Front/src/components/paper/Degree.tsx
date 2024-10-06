@@ -1,124 +1,149 @@
 import { ResponsiveBar } from '@nivo/bar';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { getPaperStatistics } from '../../apis/paper';
 
-const data = [
-  {
-    degree: '교수',
-    underuniv: 0,
-    underunivColor: '#344BFD',
+type DegreeData = {
+  DEGREE: string;
+  UNDERUNIV: number;
+  UNIV: number;
+  BACHELOR: number;
+  MASTER: number;
+  DOCTOR: number;
+  NONE: number;
+};
 
-    univ: 0,
-    univColor: '#344BFD',
+type DegreeProps = {
+  paperId: number;
+};
 
-    bachelor: 0,
-    bachelorColor: '#344BFD',
+const Degree: React.FC<DegreeProps> = ({ paperId }) => {
+  const [degreeData, setDegreeData] = useState<DegreeData[]>([]);
 
-    master: 0,
-    masterColor: '#344BFD',
+  const noneInitialValue = useRef(0);
 
-    doctor: 60,
-    doctorColor: '#344BFD',
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const response = await getPaperStatistics(paperId);
+        const degreeBuckets = response.aggregations.degree_aggs.buckets;
 
-    none: 40,
-    noneColor: 'hsla(218, 22%, 93%, 1)',
-  },
-  {
-    degree: '박사',
-    underuniv: 0,
-    underunivColor: '#344BFD',
+        let maxCount = 0;
+        degreeBuckets.forEach((bucket: { key: string; doc_count: number }) => {
+          if (bucket.doc_count > maxCount) {
+            maxCount = bucket.doc_count;
+          }
+        });
 
-    univ: 0,
-    univColor: '#344BFD',
+        noneInitialValue.current = Math.ceil(maxCount / 10) * 10;
 
-    bachelor: 0,
-    bachelorColor: '#344BFD',
+        const formattedData: DegreeData[] = [
+          {
+            DEGREE: '교수',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '박사',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '석사',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '대학생',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '중고등학생',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+        ];
 
-    master: 70,
-    masterColor: '#344BFD',
+        degreeBuckets.forEach((bucket: any) => {
+          formattedData.forEach((item) => {
+            switch (bucket.key) {
+              case 'DOCTOR':
+                if (item.DEGREE === '교수') {
+                  item.DOCTOR = bucket.doc_count;
+                  item.NONE -= bucket.doc_count;
+                }
+                break;
+              case 'MASTER':
+                if (item.DEGREE === '박사') {
+                  item.MASTER = bucket.doc_count;
+                  item.NONE -= bucket.doc_count;
+                }
+                break;
+              case 'BACHELOR':
+                if (item.DEGREE === '석사') {
+                  item.BACHELOR = bucket.doc_count;
+                  item.NONE -= bucket.doc_count;
+                }
+                break;
+              case 'UNDERUNIV':
+                if (item.DEGREE === '중고등학생') {
+                  item.UNDERUNIV = bucket.doc_count;
+                  item.NONE -= bucket.doc_count;
+                }
+                break;
+              case 'UNIV':
+                if (item.DEGREE === '대학생') {
+                  item.UNIV = bucket.doc_count;
+                  item.NONE -= bucket.doc_count;
+                }
+                break;
+              default:
+                break;
+            }
+          });
+        });
+        console.log('학위 통계 데이터:', formattedData);
+        setDegreeData(formattedData);
+      } catch (error) {
+        console.error('학위 통계 데이터를 가져오는 중 오류 발생:', error);
+      }
+    };
 
-    doctor: 0,
-    doctorColor: '#344BFD',
+    fetchStatistics();
+  }, [paperId, noneInitialValue]);
 
-    none: 30,
-    noneColor: 'hsla(218, 22%, 93%, 1)',
-  },
-
-  {
-    degree: '석사',
-    underuniv: 0,
-    underunivColor: '#344BFD',
-
-    univ: 0,
-    univColor: '#344BFD',
-
-    bachelor: 90,
-    bachelorColor: '#344BFD',
-
-    master: 0,
-    masterColor: '#344BFD',
-
-    doctor: 0,
-    doctorColor: '#344BFD',
-
-    none: 10,
-    noneColor: 'hsla(218, 22%, 93%, 1)',
-  },
-  {
-    degree: '대학생',
-    underuniv: 0,
-    underunivColor: '#344BFD',
-
-    univ: 55,
-    univColor: '#344BFD',
-
-    bachelor: 0,
-    bachelorColor: '#344BFD',
-
-    master: 0,
-    masterColor: '#344BFD',
-
-    doctor: 0,
-    doctorColor: '#344BFD',
-
-    none: 45,
-    noneColor: 'hsla(218, 22%, 93%, 1)',
-  },
-
-  {
-    degree: '중고등학생',
-    underuniv: 10,
-    underunivColor: '#344BFD',
-
-    univ: 0,
-    univColor: '#344BFD',
-
-    bachelor: 0,
-    bachelorColor: '#344BFD',
-
-    master: 0,
-    masterColor: '#344BFD',
-
-    doctor: 0,
-    doctorColor: '#344BFD',
-
-    none: 90,
-    noneColor: 'hsla(218, 22%, 93%, 1)',
-  },
-];
-
-const Degree: React.FC = () => {
   return (
     <div className="w-full h-[20rem]">
       <ResponsiveBar
-        data={data}
-        keys={['underuniv', 'univ', 'bachelor', 'master', 'doctor', 'none']}
-        indexBy="degree"
+        data={degreeData}
+        keys={['UNDERUNIV', 'UNIV', 'BACHELOR', 'MASTER', 'DOCTOR', 'NONE']}
+        indexBy="DEGREE"
         margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
         padding={0.2}
         layout="horizontal"
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={({ id, data }) => String((data as any)[`${id}Color`])}
+        colors={({ id }) => (id === 'NONE' ? 'hsla(218, 22%, 93%, 1)' : '#344BFD')}
         borderColor={{
           from: 'color',
           modifiers: [['darker', 1.6]],
@@ -142,7 +167,7 @@ const Degree: React.FC = () => {
         legends={[]}
         role="application"
         ariaLabel="Nivo bar chart demo"
-        barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in country: ' + e.indexValue}
+        barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in degree: ' + e.indexValue}
         tooltip={({ id, value, indexValue }) => (
           <div
             style={{
@@ -158,7 +183,7 @@ const Degree: React.FC = () => {
                 color: 'black',
               }}
             >
-              : {id === 'none' ? 100 - value : value}
+              : {id === 'NONE' ? noneInitialValue.current - value : value}
             </strong>
           </div>
         )}
