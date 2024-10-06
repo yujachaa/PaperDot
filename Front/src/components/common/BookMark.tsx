@@ -3,7 +3,7 @@ import nonBookMark from '../../assets/images/emptyBook.svg';
 import fullBookMark from '../../assets/images/fullBook.svg';
 import nonBookMarkDark from '../../assets/images/emptyBookDark.svg';
 import useTheme from '../../zustand/theme';
-import { toggleBookmark } from '../../apis/bookmark';
+import { trueToggleBookmark, falseToggleBookmark } from '../../apis/bookmark';
 import { toast } from 'react-toastify';
 
 type BookMarkProps = {
@@ -17,14 +17,19 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
 
   const clickBookmark = async (paperId: number) => {
     try {
-      // 북마크 토글 API 호출
-      await toggleBookmark(paperId);
+      if (isBookmarked) {
+        await trueToggleBookmark(paperId);
+      } else {
+        await falseToggleBookmark(paperId);
+      }
       setIsBookmarked((prev) => !prev);
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
+  true;
+  false;
   return (
     <>
       <img
