@@ -4,6 +4,9 @@ import fullBookMark from '../../assets/images/fullBook.svg';
 import nonBookMarkDark from '../../assets/images/emptyBookDark.svg';
 import useTheme from '../../zustand/theme';
 
+import { toggleBookmark } from '../../apis/bookmark';
+import { toast } from 'react-toastify';
+
 type BookMarkProps = {
   className?: string;
   paperId: number; //북마크 논문번호
@@ -13,9 +16,13 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
   const [isBookmarked, setIsBookmarked] = useState<boolean>(bookmark);
   const isDarkMode = useTheme((state) => state.isDarkMode);
 
-  const clickBookmark = (paperId: number) => {
-    //(미완) 북마크 추가/제거 api 호출하는 함수로 수정할 것
-    console.log('북마크 논문 id: ' + paperId);
+  const clickBookmark = async (paperId: number) => {
+    try {
+      await toggleBookmark(paperId);
+      setIsBookmarked(!isBookmarked);
+    } catch (error: any) {
+      if (error.message === '로그인이 필요합니다') toast.error('로그인해주세요.');
+    }
   };
   return (
     <>
@@ -24,7 +31,6 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
         alt="북마크"
         className={`${className} cursor-pointer`}
         onClick={() => {
-          setIsBookmarked((prev) => !prev);
           clickBookmark(paperId);
         }} //(미완) 북마크 추가/제거 api 호출하는 함수로 수정할 것
       />

@@ -6,7 +6,7 @@ import { getBest } from '../../apis/paper';
 import { useNavigate } from 'react-router-dom';
 import { Category } from '../../interface/radio';
 
-export const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
+const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
 
 // 카테고리 번호 매핑 객체
 const categoryMap: Record<Category, number> = {
