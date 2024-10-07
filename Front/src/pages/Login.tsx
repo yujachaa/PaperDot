@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Login.module.scss';
 import Logo from '../components/common/Logo';
 import imgLogin from '../assets/images/ImgLogin.jpg';
@@ -8,11 +8,18 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useUser from '../zustand/user';
 import { getMemberIdFromToken } from '../utills/tokenParser';
+import useTheme from '../zustand/theme';
+
 const Login: React.FC = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const { setLoginId } = useUser();
+  const { setDarkFalse } = useTheme();
+
+  useEffect(() => {
+    setDarkFalse(); // 화이트 모드로 강제 설정
+  }, [setDarkFalse]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
