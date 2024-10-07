@@ -20,27 +20,6 @@ export const searchTitle = async (queryTerm: string) => {
   }
 };
 
-// 추가 검색 요청 api
-export const additionalSearchRequest = async (queryTerm: string) => {
-  const requestBody = {
-    query: {
-      match: {
-        'original_json.body_text.text': queryTerm,
-      },
-    },
-    size: 20,
-    from: 0,
-  };
-
-  try {
-    const response = await searchApi.post('/papers/_search', requestBody);
-    return response.data;
-  } catch (error) {
-    console.error('추가 검색 요청 에러!:', error);
-    throw error;
-  }
-};
-
 // 검색결과페이지 첫번째 api
 export const getSearchResult = async (queryTerm: string) => {
   try {
@@ -55,7 +34,7 @@ export const getSearchResult = async (queryTerm: string) => {
 // 검색결과 페이지네이션 api
 export const getSearchPage = async (queryTerm: string, pageNo: number) => {
   try {
-    const response = await api.get(`/api/papers/search?keyword=${queryTerm}&pageNo=${pageNo}`);
+    const response = await api.get(`/api/papers/search?keyword=${queryTerm}&from=${pageNo - 1}`);
     return response.data;
   } catch (error) {
     console.error('검색 페이지네이션 에러!:', error);
