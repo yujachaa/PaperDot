@@ -59,6 +59,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.warn("JWT Token does not begin with Bearer String");
 
             System.out.println(requestURI);
+
+//            if (requestURI.startsWith("/api/ws")) {
+//                System.out.println("ㅎㅇㅎㅇ");
+//                chain.doFilter(request, response); // WebSocket 연결 허용
+//                return;
+//            }
+
+
             if (requestURI.startsWith("/api/bookmarks")) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
