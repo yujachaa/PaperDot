@@ -1,7 +1,8 @@
 import axios from 'axios';
 // export const BASE_URL = 'http://localhost:8080';
 export const BASE_URL = 'https://j11b208.p.ssafy.io';
-export const AI_URL = 'http://j11b208.p.ssafy.io:7777';
+
+export const AI_URL = 'https://j11b208.p.ssafy.io';
 // Elasticsearch API 기본 URL
 const ELASTIC_URL = 'https://j11b208a.p.ssafy.io';
 // 환경 변수에서 사용자명과 비밀번호 가져오기

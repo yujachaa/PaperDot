@@ -9,8 +9,10 @@ import Hls from 'hls.js';
 import Modal from '../components/radio/Modal';
 import { Category } from '../interface/radio';
 import { RadioLists } from '../interface/radio';
+
 const Radio = () => {
   const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
+  // const { setClient, setConnected } = useWebSocket();
   const [isModalOpen, setIsModalOpen] = useState(true);
   const { id } = useParams();
 
@@ -39,6 +41,8 @@ const Radio = () => {
     handlePlayHls(); // 모달 닫히면 HLS 재생 시작
   };
 
+  useEffect(() => {});
+
   useEffect(() => {
     return () => {
       // 컴포넌트 언마운트 시 HLS 리소스 정리
@@ -63,7 +67,8 @@ const Radio = () => {
         </div>
         <ChatRoom
           className="mt-4"
-          id={RadioLists[Number(id) - 1].id}
+          paperId={RadioLists[Number(id) - 1].id}
+          roomId={Number(id)}
         />
       </div>
       <audio

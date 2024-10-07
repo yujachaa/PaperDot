@@ -6,11 +6,13 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../apis/user';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import useUser from '../zustand/user';
+import { getMemberIdFromToken } from '../utills/tokenParser';
 const Login: React.FC = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { setLoginId } = useUser();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +24,8 @@ const Login: React.FC = () => {
         setTimeout(() => {
           navigate('/');
         }, 0);
+        const memberId = getMemberIdFromToken();
+        if (memberId) setLoginId(memberId);
       } else {
         toast.error('로그인에 실패했습니다.');
       }

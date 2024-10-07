@@ -10,7 +10,7 @@ type MessageProps = {
 };
 
 const Message = ({ className, openModal, data }: MessageProps) => {
-  const { Writernickname, message } = data;
+  const { nickname, message } = data;
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const boxRef = useRef<HTMLDivElement>(null); // .box 요소의 참조
 
@@ -31,7 +31,7 @@ const Message = ({ className, openModal, data }: MessageProps) => {
         className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''} cursor-pointer`}
         onClick={handleClick}
       >
-        {Writernickname}
+        {nickname}
       </div>
       <div className={`${style.text}`}>{message}</div>
     </div>

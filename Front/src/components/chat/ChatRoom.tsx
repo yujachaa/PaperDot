@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './ChatRoom.module.scss';
 import notice from '../../assets/images/notice.svg';
 import Message from './Message';
@@ -6,24 +6,21 @@ import SendInput from './SendInput';
 import UserInfoModal from './UserInfoModal';
 import Notice from './Notice';
 import { GroupMessage } from '../../interface/chat';
-import { useWebSocket } from '../../context/WebSocketContext';
 import { toast } from 'react-toastify';
 import SearchItem from './SearhItem'; // Fixed typo from 'SearhItem' to 'SearchItem'
-import { chatAiApi } from '../../apis/chat';
+import { chatAiApi, getChatMessage } from '../../apis/chat';
+import { Stomp } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { BASE_URL } from '../../apis/core';
+import { getMemberIdFromToken } from '../../utills/tokenParser';
+import { useWebSocket } from '../../context/WebSocketContext';
+import { getTokenSessionStorage } from '../../utills/sessionStorage';
 
 type ChatRoomProps = {
   className?: string;
-  id: number;
+  paperId: number;
+  roomId: number;
 };
-
-const datas: GroupMessage[] = [
-  { dmMessageId: 1, message: '안녕하세요', Writernickname: '김싸피', WriterId: 1 },
-  { dmMessageId: 2, message: '오늘 날씨 어때요?', Writernickname: '이영희', WriterId: 2 },
-  { dmMessageId: 3, message: '무슨 일을 하고 계신가요?', Writernickname: '박철수', WriterId: 3 },
-  { dmMessageId: 4, message: '내일 모임이 있나요?', Writernickname: '최민수', WriterId: 4 },
-  { dmMessageId: 5, message: '여러분, 주말에 뭐 할까요?', Writernickname: '김지민', WriterId: 5 },
-  { dmMessageId: 6, message: '다들 어떻게 지내세요?', Writernickname: '이수연', WriterId: 6 },
-];
 
 type Command = {
   id: number;
@@ -37,16 +34,17 @@ const commands: Command[] = [
   // { id: 3, command: '/ask' },
 ];
 
-const ChatRoom = ({ className, id }: ChatRoomProps) => {
+const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isNotice, setIsNotice] = useState(true);
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [selectedData, setSelectedData] = useState<GroupMessage | null>(null);
-  const { client, connected } = useWebSocket();
   const [filterCommands, setFilterCommands] = useState<Command[]>([]);
   const [focusIdx, setFocusIdx] = useState<number>(-1); // Start focus index at -1
   const [inputValue, setInputValue] = useState<string>('');
-
+  const [messages, setMessage] = useState<GroupMessage[]>([]);
+  const { client, setClient, setConnected, connected } = useWebSocket();
+  const messageListRef = useRef<HTMLDivElement>(null);
   const openModal = (top: number, left: number, data: GroupMessage) => {
     setModalPosition({ top, left });
     setModalVisible(true);
@@ -84,35 +82,51 @@ const ChatRoom = ({ className, id }: ChatRoomProps) => {
   };
 
   const postAiChat = async (paper_id: string, question: string, user_id: string) => {
-    const response = await chatAiApi(paper_id, question.slice(4), user_id);
-    console.log(response);
+    try {
+      toast.success('AI에게 질문하고 있습니다', {
+        position: 'top-right',
+      });
+      const response = await chatAiApi(paper_id, question.slice(4), user_id);
+      setMessage((prev) => [
+        ...prev,
+        { chatRoomId: roomId, message: response.data.answer, nickname: 'RAG', senderId: -1 },
+      ]);
+    } catch (err: any) {
+      console.error(err);
+    }
   };
   const closeModal = () => {
     setModalVisible(false);
   };
 
   const handleSendMessage = async () => {
+    if (getTokenSessionStorage() === null) {
+      toast.error('로그인이 필요합니다.', {
+        position: 'top-right',
+      });
+      return;
+    }
     const message = inputValue;
 
     if (message !== '') {
       if (connected) {
         //api에게 질문하기
         if (inputValue.startsWith('/ai ')) {
-          postAiChat(String(id), message, 'username');
+          postAiChat(String(paperId), message, 'username');
         }
         //일반 채팅
         else {
           client!.send(
-            '/app/message',
+            `/app/chat/${roomId}`,
             {},
             JSON.stringify({
-              dmGroupId: 1,
+              chatRoomId: roomId,
               message: message,
-              writerId: 1,
+              senderId: getMemberIdFromToken(),
             }),
           );
-          setInputValue(''); // Clear input after sending
         }
+        setInputValue('');
       } else {
         toast.warn('웹소켓 연결이 끊겨 있습니다', {
           position: 'top-right',
@@ -120,6 +134,19 @@ const ChatRoom = ({ className, id }: ChatRoomProps) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      if (
+        messages[messages.length - 1].senderId === getMemberIdFromToken() ||
+        messages[messages.length - 1].senderId === -1
+      ) {
+        if (messageListRef.current) {
+          messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+        }
+      }
+    }
+  }, [messages]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -134,6 +161,67 @@ const ChatRoom = ({ className, id }: ChatRoomProps) => {
     }
   };
 
+  const connectStompClient = () => {
+    console.log('호출');
+    const stompClient = Stomp.over(() => new SockJS(`${BASE_URL}/api/stomp`));
+    setClient(stompClient);
+    const headers = {
+      Authorization: 'Bearer ' + '123', // JWT 토큰을 여기에 넣어주세요
+    };
+
+    stompClient.connect(
+      headers,
+      function (frame: string) {
+        console.log('Connected: ' + frame);
+        setConnected(true);
+        stompClient!.subscribe(`/topic/${roomId}`, function (message) {
+          console.log('Received message: ' + message.body);
+          const newMessage = JSON.parse(message.body);
+          setMessage((prev) => [...prev, newMessage]);
+        });
+      },
+      function (error: any) {
+        console.error('WebSocket connection error: ', error);
+        setConnected(false);
+        setClient(null);
+
+        setTimeout(() => {
+          console.log('Retrying connection...');
+          setConnected(false);
+          setClient(null);
+          connectStompClient();
+        }, 3000);
+      },
+    );
+  };
+
+  useEffect(() => {
+    // 첫 연결 시도
+    connectStompClient();
+
+    return () => {
+      if (client) {
+        client.disconnect(() => {
+          setClient(null);
+          setConnected(false);
+        });
+      }
+    };
+  }, []);
+
+  const getMessage = async () => {
+    const response = await getChatMessage(roomId);
+
+    let data = response.data.filter((prev: any) => {
+      if (prev) return prev;
+    });
+    console.log(data);
+    setMessage(data);
+  };
+  useEffect(() => {
+    getMessage();
+  }, []);
+
   return (
     <div className={`${styles.box} ${className}`}>
       <img
@@ -146,10 +234,13 @@ const ChatRoom = ({ className, id }: ChatRoomProps) => {
       />
       {isNotice && <Notice onClose={() => setIsNotice(false)} />}
       <div className={`${styles.title}`}>주요채팅</div>
-      <div className={`${styles.chatbox}`}>
-        {datas.map((data) => (
+      <div
+        className={`${styles.chatbox}`}
+        ref={messageListRef}
+      >
+        {messages.map((data, index) => (
           <Message
-            key={data.dmMessageId}
+            key={index}
             data={data}
             openModal={openModal}
           />
