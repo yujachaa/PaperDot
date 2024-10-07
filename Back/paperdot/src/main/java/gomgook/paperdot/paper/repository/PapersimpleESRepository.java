@@ -17,5 +17,9 @@ public interface PapersimpleESRepository extends ElasticsearchRepository<PaperSi
     @Query("{\"terms\": {\"doc_id\": ?0}}")
     Optional<List<PaperSimpleDocument>> findAllByDocIdIn(List<String> docIds);
 
+    // Match 쿼리와 from, size 설정
+    @Query("{ \"match\": { \"original_json.body_text.text\": \"?0\"  } }")
+    Optional<List<PaperSimpleDocument>> findByOriginalJsonTitle(String searchTerm);
+
 
 }

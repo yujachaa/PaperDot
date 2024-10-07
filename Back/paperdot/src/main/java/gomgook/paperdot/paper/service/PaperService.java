@@ -16,6 +16,7 @@ import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
+import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
@@ -48,6 +49,9 @@ public class PaperService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RestClient Client;
+
 
     private final WebClient webClient;
 
@@ -79,8 +83,9 @@ public class PaperService {
     }
 
     // controller로 세팅한 데이터 반환
-    public TotalPageSearchResponse getSearchKeyword(String keyword, Long memberId) {
+    public TotalPageSearchResponse getSearchKeyword(String keyword, Long memberId, int from, int size) {
 
+        /*
         // python 서버 요청(응답 데이터 flux 형식)
         Mono<List<Long>> docIdMono  = sendRequest(keyword);
         List<Long> stringIds = docIdMono.block();
@@ -92,19 +97,45 @@ public class PaperService {
         // ES에서 LIST 가져오기
         List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findAllByIdIn(stringIds).orElse(new ArrayList<>());
 
+         */
+
+        // ES에서 LIST 가져오기
+        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findByOriginalJsonTitle(keyword).orElse(new ArrayList<>());
+
+        //paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
+
+        List<Long> stringIds = paperSimpleDocumentList.stream().map(PaperSimpleDocument::getId).toList();
+
+        System.out.println("from"+from+"size"+size);
+
+        for(Long i : stringIds) System.out.println("id :"+i);
+
+        //for(PaperSimpleDocument paperSimpleDocument : paperSimpleDocumentList) {
+        //    System.out.println("Id List + "+paperSimpleDocument.getId());
+        //}
         nullCheck(paperSimpleDocumentList);
 
+
+        /*
 //        // paperSearchResponseList caching
         String redisKey = "searchData::"+keyword;
         saveToRedis(redisKey, paperSimpleDocumentList);
+         */
 
         // 총 검색 리스트 갯수
-        Long totalCount = (stringIds.isEmpty()) ? 0 : (long)paperSimpleDocumentList.size();
+        //Long totalCount = (stringIds.isEmpty()) ? 0 : (long)paperSimpleDocumentList.size();
+        Long totalCount = (long) paperSimpleDocumentList.size();
+
 
         // pagination
+        /*
         int pageSize = 20;
         int end = Math.min(pageSize, paperSimpleDocumentList.size());
-        paperSimpleDocumentList.subList(0, end);
+         */
+
+        int min = Math.min(paperSimpleDocumentList.size(), size);
+        paperSimpleDocumentList.subList(from*min, from*min+min);
+
         // 20개 검색된 논문리스트 DTO 구성
         List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, paperSimpleDocumentList);
 
@@ -228,6 +259,9 @@ public class PaperService {
 ////    // page
     public List<PaperSearchResponse> getSearchPage(String keyword, int pageNo, Long memberId) throws JsonProcessingException {
 
+
+        List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
+        /*
         int pageSize = 20;
         int start, end;
         String redisKey = "searchData::"+keyword;
@@ -271,7 +305,10 @@ public class PaperService {
         }
 
 
+
+         */
         return paperSearchResponseList;
+
 
     }
 
