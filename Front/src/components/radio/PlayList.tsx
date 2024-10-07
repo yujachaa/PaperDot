@@ -11,11 +11,9 @@ type PlayListProps = {
 const PlayList = ({ className, Radio }: PlayListProps) => {
   const { id, title, author, year } = Radio;
   const navigate = useNavigate();
-
   const handleClick = () => {
     navigate(`/paper/${id}`);
   };
-
   return (
     <div className={`${styles.container} ${className}`}>
       <MusicIcon className="w-14 h-14 ml-3" />
@@ -25,6 +23,7 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
           {author}({year})
         </div>
       </div>
+
       <BookMark
         paperId={id}
         bookmark={false}
