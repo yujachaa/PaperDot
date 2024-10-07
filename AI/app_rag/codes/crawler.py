@@ -105,6 +105,7 @@ def create_driver():
     
     # 디버깅 관련 옵션
     options.add_argument('--remote-debugging-port=9222')
+    options.add_argument('--log-level=3')
     
     # 브라우저 자동 테스트 감지 방지
     options.add_argument('--disable-blink-features=AutomationControlled')

@@ -32,7 +32,8 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     libgtk-3-0 \
     libgbm-dev \
-    libgl1-mesa-glx
+    libgl1-mesa-glx \
+    libxcomposite1
 
 # Copy the application code to the container
 COPY . /app_rag
