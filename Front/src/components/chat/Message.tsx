@@ -16,11 +16,8 @@ const Message = ({ className, openModal, data }: MessageProps) => {
 
   const handleClick = () => {
     if (boxRef.current) {
-      // offsetTop과 offsetLeft는 부모 요소에 대한 상대적 위치를 반환
       const top = boxRef.current.offsetTop;
       const left = boxRef.current.offsetLeft;
-
-      // 결과를 모달 위치에 넘김
       openModal(top, left, data);
     }
   };

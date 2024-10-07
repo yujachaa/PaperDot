@@ -61,7 +61,10 @@ const Radio = () => {
           <PlayList Radio={RadioLists[Number(id) - 1]} />
           <RadioScript className="mt-4" />
         </div>
-        <ChatRoom className="mt-4" />
+        <ChatRoom
+          className="mt-4"
+          id={RadioLists[Number(id) - 1].id}
+        />
       </div>
       <audio
         ref={audioRef}

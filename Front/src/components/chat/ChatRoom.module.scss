@@ -40,4 +40,16 @@
   width: 100%;
   border-top: 1px solid #c4c4c4;
   height: 70px;
+  position: relative;
+}
+
+.command {
+  position: absolute;
+  bottom: 4rem;
+  left: 1rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5px;
 }
