@@ -8,12 +8,14 @@ type PlayListProps = {
   className?: string;
   Radio: Radio;
 };
+
 const PlayList = ({ className, Radio }: PlayListProps) => {
   const { id, title, author, year } = Radio;
   const navigate = useNavigate();
   const handleClick = () => {
     navigate(`/paper/${id}`);
   };
+
   return (
     <div className={`${styles.container} ${className}`}>
       <MusicIcon className="w-14 h-14 ml-3" />
