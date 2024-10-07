@@ -63,4 +63,16 @@ public class BookmarkController {
 
         return ResponseEntity.ok(bookmarkResponse);
     }
+    @GetMapping("/bookmark-check")
+    public ResponseEntity<?> checkBookmark(@RequestHeader(value = "Authorization") String token,@RequestParam("paperId") Long paperId){
+        Long memberId = null;
+        if (token != null && !token.isEmpty()){
+            memberId = jwtUtil.extractMemberId(token);
+        }
+
+        boolean response = bookmarkService.checkBookmark(memberId, paperId);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

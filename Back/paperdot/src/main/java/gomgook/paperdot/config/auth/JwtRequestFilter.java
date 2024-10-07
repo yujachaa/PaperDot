@@ -37,6 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
+        String requestURI = request.getRequestURI();
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
             try {
@@ -56,6 +57,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
+
+            System.out.println(requestURI);
+            if (requestURI.startsWith("/api/bookmarks")) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

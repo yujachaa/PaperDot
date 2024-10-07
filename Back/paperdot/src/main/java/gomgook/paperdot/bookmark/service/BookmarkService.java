@@ -24,6 +24,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Paper;
 import java.util.*;
 
 @Service
@@ -153,6 +154,14 @@ public class BookmarkService {
             paperJpaRepository.save(paper);
 
         }
+    }
+
+    public Boolean checkBookmark(Long memberId, Long paperId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+        PaperEntity paper = paperJpaRepository.findById(paperId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PAPER_EXCEPTION));
+
+        Bookmark bookmark = bookmarkRepository.findAllByMemberAndPaper(member, paper).orElse(null);
+        return bookmark != null;
     }
 
 
