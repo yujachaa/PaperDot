@@ -105,7 +105,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ searchTerm, className, 
           </div>
         ))
       ) : (
-        <div>검색 결과가 없습니다.</div>
+        <div className="text-light-text">검색 결과가 없습니다.</div>
       )}
     </div>
   );

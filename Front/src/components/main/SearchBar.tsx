@@ -117,7 +117,7 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
           onFocus={handleFocus} // 포커스 시 호출
           onBlur={handleBlur} // 포커스 아웃 시 호출
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Enter 키 감지 시 handleSearch 호출
-          placeholder="제목, 저자, 키워드로 논문을 검색하세요."
+          placeholder="제목, 키워드로 논문을 검색하세요."
           className={styles.input}
         />
         <button
