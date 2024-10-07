@@ -17,12 +17,12 @@ const GenderRatio: React.FC<GenderRatioProps> = ({ paperId }) => {
         const genderBuckets = response.aggregations.gender_aggs.buckets;
 
         const formattedData = genderBuckets.map((bucket: any) => ({
-          id: bucket.key === 'male' ? '남자' : '여자',
-          label: bucket.key === 'male' ? '남자' : '여자',
+          id: bucket.key === 'MALE' ? '남자' : '여자',
+          label: bucket.key === 'MALE' ? '남자' : '여자',
           value: bucket.doc_count,
-          color: bucket.key === 'male' ? '#007BFF' : '#FF955A',
+          color: bucket.key === 'MALE' ? '#007BFF' : '#FF955A',
         }));
-
+        console.log('젠더 데이터: ', formattedData);
         setGenderData(formattedData);
       } catch (error) {
         console.error('성별 통계 데이터를 가져오는 중 오류 발생:', error);
