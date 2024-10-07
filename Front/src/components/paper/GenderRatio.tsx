@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import { getPaperStatistics } from '../../apis/paper';
+import noData from '../../assets/images/nodata.png';
+import styles from './Statistics.module.scss';
 
 type GenderRatioProps = {
   paperId: number;
@@ -20,7 +22,7 @@ const GenderRatio: React.FC<GenderRatioProps> = ({ paperId }) => {
           id: bucket.key === 'MALE' ? '남자' : '여자',
           label: bucket.key === 'MALE' ? '남자' : '여자',
           value: bucket.doc_count,
-          color: bucket.key === 'MALE' ? '#007BFF' : '#FF955A',
+          color: bucket.key === 'MALE' ? '#344BFD' : '#F68D2B',
         }));
         console.log('젠더 데이터: ', formattedData);
         setGenderData(formattedData);
@@ -70,7 +72,14 @@ const GenderRatio: React.FC<GenderRatioProps> = ({ paperId }) => {
           ]}
         />
       ) : (
-        <p>로딩 중...</p>
+        <div className={styles.noData}>
+          <img
+            src={noData}
+            alt="데이터없음"
+            style={{ width: '50px' }}
+          />
+          <div>통계 데이터가 부족합니다.</div>
+        </div>
       )}
     </div>
   );
