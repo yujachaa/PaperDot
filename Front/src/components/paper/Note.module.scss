@@ -45,6 +45,10 @@
     transform: scale(1.05); // 살짝 확대되는 효과
   }
 
+  &.dark {
+    color: rgba(250, 250, 250, 0.8);
+  }
+
   @media (max-width: 768px) {
     padding: 0.1rem 0.5rem;
   }
@@ -68,8 +72,8 @@
     min-width: 119.555px;
   }
   &.dark {
-    background-color: #1f2937;
-    border-color: #374151;
+    background-color: #626262;
+    border-color: #414141;
   }
 
   .optionItem {
@@ -83,7 +87,7 @@
     }
 
     &.dark:hover {
-      background-color: #4b5563;
+      background-color: rgba(0, 0, 0, 0.1); // 호버 시 살짝 어두워지는 효과
     }
   }
 }
