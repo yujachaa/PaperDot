@@ -1,4 +1,4 @@
-import { api, searchApi } from './core';
+import { Authapi, api, searchApi } from './core';
 
 // 검색창 자동완성 api
 export const searchTitle = async (queryTerm: string) => {
@@ -24,6 +24,17 @@ export const searchTitle = async (queryTerm: string) => {
 export const getSearchResult = async (queryTerm: string) => {
   try {
     const response = await api.get(`/api/papers/search?keyword=${queryTerm}`);
+    return response.data;
+  } catch (error) {
+    console.error('첫번째 검색페이지 에러!:', error);
+    throw error;
+  }
+};
+
+//검색결과페이지 첫번째 api - 로그인 한 경우
+export const getSearchResultLogined = async (queryTerm: string) => {
+  try {
+    const response = await Authapi.get(`/api/papers/search?keyword=${queryTerm}`);
     return response.data;
   } catch (error) {
     console.error('첫번째 검색페이지 에러!:', error);
