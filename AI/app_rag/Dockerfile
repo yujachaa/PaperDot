@@ -43,7 +43,7 @@ RUN wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.89/
 RUN wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.89/linux64/chromedriver-linux64.zip
 
 RUN unzip chrome-linux64.zip
-RUN unzup chromedriver-linux64.zip
+RUN unzip chromedriver-linux64.zip
 
 # Grant execution permission to Chromedriver and Chrome binaries
 RUN chmod +x /app_rag/chromedriver-linux64/chromedriver
