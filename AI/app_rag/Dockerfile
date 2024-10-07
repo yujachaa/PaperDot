@@ -16,9 +16,6 @@ RUN conda config --add channels defaults && \
     conda config --add channels conda-forge && \
     conda env create -f environment.yml
 
-# && \
-#     echo "source activate paper-rag" > ~/.bashrc
-
 # Add Conda to the PATH environment variable
 ENV PATH /opt/conda/envs/paper-rag/bin:$PATH
 
@@ -40,6 +37,7 @@ RUN apt-get update && apt-get install -y \
 # Copy the application code to the container
 COPY . /app_rag
 
+# Grant execution permission to Chromedriver and Chrome binaries
 RUN chmod +x /app_rag/chromedriver-linux64/chromedriver
 RUN chmod +x /app_rag/chrome-linux64/chrome
 
@@ -47,4 +45,4 @@ RUN chmod +x /app_rag/chrome-linux64/chrome
 EXPOSE 7777
 
 # Define the command to run the application
-CMD ["/opt/conda/envs/paper-rag/bin/uvicorn", "codes.app:app", "--host", "0.0.0.0", "--port", "7777"]
+CMD ["bash", "-c", "source activate paper-rag && uvicorn codes.app:app --host 0.0.0.0 --port 7777"]
