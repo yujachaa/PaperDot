@@ -152,7 +152,7 @@ const Signup: React.FC = () => {
     setBirthyear(newBirthyear);
 
     if (!isValidBirthYear(newBirthyear)) {
-      setBirthyearError('생년은 숫자 4자리여야 합니다.');
+      setBirthyearError('1900~2024년 사이 값만 입력 가능합니다.');
     } else {
       setBirthyearError('');
     }
