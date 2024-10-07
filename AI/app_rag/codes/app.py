@@ -9,6 +9,7 @@ import openai
 import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 from langchain_community.document_loaders import PDFPlumberLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -48,6 +49,14 @@ INDEX_NAME = 'papers'
 mapper = None
 reverse_mapper = None
 store = {}
+
+# CORS 설정 추가
+origins = [
+    "http://localhost:5173",  # 예를 들어 리액트 로컬 서버
+    "https://j11b208.p.ssafy.io",  # 실제로 사용하는 도메인 추가
+]
+
+
 
 def load_mapping_pickle_data(pickle_file):
     """
@@ -126,7 +135,13 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
 app = FastAPI(lifespan=lifespan)
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # 허용할 도메인
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 메서드 허용 (GET, POST 등)
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 @app.post("/chatAI", response_model=QueryResponse)
 async def ask_question(request: QueryRequest):
