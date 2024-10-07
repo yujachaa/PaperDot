@@ -26,6 +26,9 @@ ENV PATH /opt/conda/envs/paper-rag/bin:$PATH
 # Copy the application code to the container
 COPY . /app_rag
 
+RUN chmod +x /app_rag/chromedriver-linux64/chromedriver
+RUN chmod +x /app_rag/chrome-linux64/chrome
+
 # Expose the port that the FastAPI application will run on
 EXPOSE 7777
 
