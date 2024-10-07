@@ -92,10 +92,14 @@ const SearchResult: React.FC = () => {
             건
           </div>
 
-          <ResultList
-            searchResult={searchResult}
-            searchTerm={searchTerm}
-          />
+          {totalCnt === 0 ? (
+            <div>결과를 찾을 수 없습니다.</div>
+          ) : (
+            <ResultList
+              searchResult={searchResult}
+              searchTerm={searchTerm}
+            />
+          )}
         </div>
         <div className={styles.pagination}>
           <LeftArrowIcon
