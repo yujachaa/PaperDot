@@ -5,16 +5,15 @@ import ConfirmModal from '../common/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 import { withdrawUser, checkNickname, updateUserProfile, getUserProfile } from '../../apis/user';
 import { toast } from 'react-toastify';
-import { isValidNickname, isValidBirthYear } from '../../utills/userValidation';
+import { isValidNickname } from '../../utills/userValidation';
 
 const EditProfile: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [userId, setUserId] = useState('');
   const [nickname, setNickname] = useState('');
   const [initialNickname, setInitialNickname] = useState('');
-  const [birthyear, setBirthyear] = useState('');
-  const [birthyearError, setBirthyearError] = useState('');
-  const [gender, setGender] = useState('');
+  const [birthyear, setBirthyear] = useState(''); // 생년 정보 유지
+  const [gender, setGender] = useState(''); // 성별 정보 유지
   const [degree, setDegree] = useState('');
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
   const [isBothChecked, setIsBothChecked] = useState(false);
@@ -29,8 +28,8 @@ const EditProfile: React.FC = () => {
         setUserId(profileData.userId);
         setNickname(profileData.nickname);
         setInitialNickname(profileData.nickname);
-        setBirthyear(profileData.birthyear);
-        setGender(profileData.gender);
+        setBirthyear(profileData.birthyear); // 생년 정보 세팅
+        setGender(profileData.gender); // 성별 정보 세팅
         setDegree(profileData.degree);
       }
     } catch (error) {
@@ -89,13 +88,9 @@ const EditProfile: React.FC = () => {
     checkBothConditions();
   };
 
-  // 닉네임과 생년 상태 확인
+  // 닉네임 상태 확인
   const checkBothConditions = () => {
-    if (
-      (nickname === initialNickname || isNicknameAvailable === true) &&
-      !birthyearError && // 생년 오류가 없을 때
-      isValidBirthYear(birthyear) // 생년이 유효할 때
-    ) {
+    if (nickname === initialNickname || isNicknameAvailable === true) {
       setIsBothChecked(true);
     } else {
       setIsBothChecked(false);
@@ -104,13 +99,13 @@ const EditProfile: React.FC = () => {
 
   useEffect(() => {
     checkBothConditions();
-  }, [isNicknameAvailable, nickname, birthyear, birthyearError]);
+  }, [isNicknameAvailable, nickname]);
 
   // 회원 수정
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await updateUserProfile(userId, nickname, birthyear, gender, degree);
+      const response = await updateUserProfile(userId, nickname, birthyear, gender, degree); // 생년과 성별 포함
       if (response?.status === 200) {
         toast.success('회원 정보 수정에 성공했습니다.');
         navigate('/');
@@ -121,18 +116,6 @@ const EditProfile: React.FC = () => {
     } catch (error) {
       toast.error('회원 정보 수정 중 오류가 발생했습니다.');
       console.error('회원 정보 수정 중 오류 발생:', error);
-    }
-  };
-
-  // 생년 입력 처리 및 유효성 검사
-  const handleBirthyearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newBirthyear = e.target.value;
-    setBirthyear(newBirthyear);
-
-    if (!isValidBirthYear(newBirthyear)) {
-      setBirthyearError('생년은 숫자 4자리여야 합니다.');
-    } else {
-      setBirthyearError('');
     }
   };
 
@@ -172,42 +155,6 @@ const EditProfile: React.FC = () => {
                 ? '사용 가능'
                 : '중복 체크'}
             </button>
-          </div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label>Birth</label>
-          <input
-            type="text"
-            value={birthyear}
-            onChange={handleBirthyearChange}
-          />
-          {birthyearError && <p className={styles.errorMessage}>{birthyearError}</p>}
-        </div>
-
-        <div className={styles.formGroup}>
-          <label>Gender</label>
-          <div className={styles.genderGroup}>
-            <div>
-              <input
-                type="radio"
-                name="gender"
-                value="MALE"
-                checked={gender === 'MALE'}
-                onChange={() => setGender('MALE')}
-              />{' '}
-              남
-            </div>
-            <div>
-              <input
-                type="radio"
-                name="gender"
-                value="FEMALE"
-                checked={gender === 'FEMALE'}
-                onChange={() => setGender('FEMALE')}
-              />{' '}
-              여
-            </div>
           </div>
         </div>
 

@@ -19,5 +19,12 @@ export const isValidPassword = (password: string): boolean => {
 // 생년 형식 검증
 export const isValidBirthYear = (birthyear: string): boolean => {
   const birthyearRegex = /^\d{4}$/;
-  return birthyearRegex.test(birthyear);
+
+  // 입력이 4자리 숫자인지 확인하고, 해당 범위 내에 있는지 체크
+  if (!birthyearRegex.test(birthyear)) {
+    return false;
+  }
+
+  const year = parseInt(birthyear, 10);
+  return year >= 1900 && year <= 2024; // 1900년에서 2024년까지 허용
 };

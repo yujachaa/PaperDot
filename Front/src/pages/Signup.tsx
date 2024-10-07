@@ -13,6 +13,7 @@ import {
   isValidBirthYear,
 } from '../utills/userValidation';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import useTheme from '../zustand/theme';
 
 const Signup: React.FC = () => {
   const [userID, setUserID] = useState('');
@@ -30,6 +31,11 @@ const Signup: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordCheck, setShowPasswordCheck] = useState(false);
   const navigate = useNavigate();
+  const { setDarkFalse } = useTheme();
+
+  useEffect(() => {
+    setDarkFalse(); // 화이트 모드로 강제 설정
+  }, [setDarkFalse]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -152,7 +158,7 @@ const Signup: React.FC = () => {
     setBirthyear(newBirthyear);
 
     if (!isValidBirthYear(newBirthyear)) {
-      setBirthyearError('생년은 숫자 4자리여야 합니다.');
+      setBirthyearError('1900~2024년 사이 값만 입력 가능합니다.');
     } else {
       setBirthyearError('');
     }
