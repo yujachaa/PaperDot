@@ -120,6 +120,9 @@ export const trueToggleBookmark = async (paperId: number) => {
         },
       },
     });
+
+    const response = await Authapi.get(`/api/bookmarks/toggle?paperId=${paperId}`);
+    return response.data;
   } catch (error) {
     console.error('Error toggling bookmark:', error);
     throw error;
