@@ -34,7 +34,8 @@ RUN apt-get update && apt-get install -y \
     fonts-liberation \
     xdg-utils \
     libgtk-3-0 \
-    libgbm-dev
+    libgbm-dev \
+    libgl1-mesa-glx
 
 # Copy the application code to the container
 COPY . /app_rag
