@@ -86,7 +86,7 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
           className={styles.btn}
           onClick={oepnOption}
         >
-          <p className="mobile:text-sm">{selectedModel}</p>
+          <p className="font-bold mobile:text-sm">{selectedModel}</p>
           <ReloadIcon
             className="w-[1.2rem]"
             style={{
