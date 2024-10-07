@@ -66,7 +66,7 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
                 className="cursor-pointer mobile:text-sm"
                 onClick={() => goDetail(item.id)} // 클릭 시 goDetail 함수 호출
               >
-                <span className="font-bold mr-1 mobile:text-sm">발행년도</span>
+                <span className="font-bold mr-1 mobile:text-sm">발행 연도</span>
                 {item.year}
               </p>
             </div>
