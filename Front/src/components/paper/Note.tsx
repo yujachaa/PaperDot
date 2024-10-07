@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import copyIcon from '../../assets/images/copy.svg';
-import copiedIcon from '../../assets/images/copied.svg';
+import CopyIcon from '../../assets/images/copy.svg?react';
+import CopiedIcon from '../../assets/images/copied.svg?react';
+import ReloadIcon from '../../assets/images/reload.svg?react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import NoteSkeleton from './NoteSkeleton';
-import { useLocation } from 'react-router-dom'; // URL 경로를 가져오기 위해 추가
+import { useLocation } from 'react-router-dom';
+import useTheme from '../../zustand/theme';
+import styles from './Note.module.scss';
+import ReactDOM from 'react-dom';
 
 interface NoteProps {
   paperId: number;
@@ -15,38 +19,38 @@ const summaryText = `### 📄 논문 요약\n\n# 목차\n\n1. [한문단 요약]
 const Note: React.FC<NoteProps> = ({ paperId }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const location = useLocation(); // 현재 경로를 가져오기 위한 훅
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showOptions, setShowOptions] = useState<boolean>(false); // 옵션 창 상태
+  const [selectedModel, setSelectedModel] = useState<string>('LLama3.1-ko'); // 선택된 모델
+  const location = useLocation();
+  const isDarkMode = useTheme((state) => state.isDarkMode);
 
   useEffect(() => {
     if (!isLoaded) {
-      // 요약노트 로딩하기
       getNote();
-
       setTimeout(() => {
-        console.log('3초 후');
         setIsLoaded(true);
       }, 2000);
     }
   }, [isLoaded]);
 
   useEffect(() => {
-    if (isLoaded) {
-      // URL 해시를 감지하여 해당 요소로 스크롤
-      if (location.hash) {
-        const elementId = location.hash.replace('#', ''); // 해시에서 # 제거
-        const element = document.getElementById(decodeURI(elementId)); // ID로 요소 찾기
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' }); // 해당 요소로 스크롤
-        }
+    if (isLoaded && location.hash) {
+      const elementId = location.hash.replace('#', '');
+      const element = document.getElementById(decodeURI(elementId));
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
     }
   }, [location, isLoaded]);
 
   const getCopy = async () => {
-    // 클립보드에 md파일 text 복사하기
     try {
       await navigator.clipboard.writeText(summaryText);
-      console.log('요약노트가 클립보드에 복사되었습니다!');
+      setShowModal(true);
+      setTimeout(() => {
+        setShowModal(false);
+      }, 1500);
     } catch (error) {
       console.error('요약노트 복사 실패:', error);
     }
@@ -54,38 +58,91 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
   };
 
   const getNote = () => {
-    // 요약노트 가져오는 로직 만들기
     console.log(paperId);
   };
 
+  const oepnOption = () => {
+    setShowOptions(!showOptions); // 옵션 창 표시 토글
+  };
+
+  const handleModelSelect = (model: string) => {
+    setSelectedModel(model);
+    setShowOptions(false);
+    setIsLoaded(false);
+    setIsCopied(false);
+    setTimeout(() => {
+      setIsLoaded(true);
+    }, 2000);
+  };
+
+  const Modal = () => (
+    <div className={styles.modal}>AI요약노트가 클립보드에 {'\n'} 복사되었습니다!✅</div>
+  );
+
   return isLoaded ? (
     <>
-      {isCopied ? (
+      <div className="flex w-full justify-between">
         <div
-          className="flex w-full justify-end items-center gap-[0.3125rem] cursor-pointer font-bold opacity-80"
-          onClick={getCopy}
+          className={styles.btn}
+          onClick={oepnOption}
         >
-          <img
-            src={copiedIcon}
-            alt="복사됨"
+          <p className="mobile:text-sm">{selectedModel}</p>
+          <ReloadIcon
             className="w-[1.2rem]"
+            style={{
+              color: isDarkMode ? '#fafafa' : '#2e2e2e',
+            }}
           />
-          <p>복사되었습니다!</p>
+          {showOptions && (
+            <div className={`${styles.options} ${isDarkMode ? styles.dark : ''} mobile:text-sm`}>
+              <div
+                className={`${styles.optionItem} ${isDarkMode ? styles.dark : ''}`}
+                onClick={() => handleModelSelect('LLama3.1-ko')}
+              >
+                LLama3.1-ko
+              </div>
+              <div
+                className={`${styles.optionItem} ${isDarkMode ? styles.dark : ''}`}
+                onClick={() => handleModelSelect('GPT-4o')}
+              >
+                GPT-4
+              </div>
+            </div>
+          )}
         </div>
-      ) : (
-        <div
-          className="flex w-full justify-end items-center gap-[0.3125rem] cursor-pointer opacity-80"
-          onClick={getCopy}
-        >
-          <img
-            src={copyIcon}
-            alt="복사"
-            className="w-[1.2rem]"
-          />
-          <p>복사하기</p>
-        </div>
-      )}
+
+        {isCopied ? (
+          <div
+            className={styles.btn}
+            onClick={getCopy}
+          >
+            <CopiedIcon
+              className="w-[1.2rem]"
+              style={{
+                color: isDarkMode ? '#fafafa' : '#2e2e2e',
+              }}
+            />
+            <p className="mobile:text-sm">복사되었습니다!</p>
+          </div>
+        ) : (
+          <div
+            className={styles.btn}
+            onClick={getCopy}
+          >
+            <CopyIcon
+              className="w-[1.2rem]"
+              style={{
+                color: isDarkMode ? '#fafafa' : '#2e2e2e',
+              }}
+            />
+            <p className="mobile:text-sm">복사하기</p>
+          </div>
+        )}
+      </div>
+
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{summaryText}</ReactMarkdown>
+
+      {showModal && ReactDOM.createPortal(<Modal />, document.body)}
     </>
   ) : (
     <NoteSkeleton />
