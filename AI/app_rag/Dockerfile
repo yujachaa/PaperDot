@@ -22,6 +22,19 @@ RUN conda config --add channels defaults && \
 # Add Conda to the PATH environment variable
 ENV PATH /opt/conda/envs/paper-rag/bin:$PATH
 
+# Install necessary system packages
+RUN apt-get update && apt-get install -y \
+    wget \
+    unzip \
+    libnss3 \
+    libgconf-2-4 \
+    libxss1 \
+    libappindicator3-1 \
+    libasound2 \
+    fonts-liberation \
+    xdg-utils \
+    libgtk-3-0 \
+    libgbm-dev
 
 # Copy the application code to the container
 COPY . /app_rag
