@@ -1,6 +1,8 @@
 import { ResponsiveBar } from '@nivo/bar';
 import React, { useEffect, useRef, useState } from 'react';
 import { getPaperStatistics } from '../../apis/paper';
+import noData from '../../assets/images/nodata.png';
+import styles from './Statistics.module.scss';
 
 type DegreeData = {
   DEGREE: string;
@@ -18,6 +20,7 @@ type DegreeProps = {
 
 const Degree: React.FC<DegreeProps> = ({ paperId }) => {
   const [degreeData, setDegreeData] = useState<DegreeData[]>([]);
+  const [notEnoughData, setNotEnoughData] = useState<boolean>(false);
 
   const noneInitialValue = useRef(0);
 
@@ -26,6 +29,10 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
       try {
         const response = await getPaperStatistics(paperId);
         const degreeBuckets = response.aggregations.degree_aggs.buckets;
+        if (degreeBuckets.length === 0) {
+          setNotEnoughData(true);
+          return;
+        }
 
         let maxCount = 0;
         degreeBuckets.forEach((bucket: { key: string; doc_count: number }) => {
@@ -134,60 +141,71 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
 
   return (
     <div className="w-full h-[20rem]">
-      <ResponsiveBar
-        data={degreeData}
-        keys={['UNDERUNIV', 'UNIV', 'BACHELOR', 'MASTER', 'DOCTOR', 'NONE']}
-        indexBy="DEGREE"
-        margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
-        padding={0.2}
-        layout="horizontal"
-        valueScale={{ type: 'linear' }}
-        indexScale={{ type: 'band', round: true }}
-        colors={({ id }) => (id === 'NONE' ? 'hsla(218, 22%, 93%, 1)' : '#344BFD')}
-        borderColor={{
-          from: 'color',
-          modifiers: [['darker', 1.6]],
-        }}
-        axisTop={null}
-        axisRight={null}
-        axisBottom={null}
-        axisLeft={{
-          tickSize: 0,
-          tickPadding: 5,
-          tickRotation: 0,
-          truncateTickAt: 0,
-        }}
-        enableGridY={false}
-        enableLabel={false}
-        labelSkipWidth={12}
-        labelTextColor={{
-          from: 'color',
-          modifiers: [['darker', 1.6]],
-        }}
-        legends={[]}
-        role="application"
-        ariaLabel="Nivo bar chart demo"
-        barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in degree: ' + e.indexValue}
-        tooltip={({ id, value, indexValue }) => (
-          <div
-            style={{
-              padding: 12,
-              backgroundColor: 'white',
-              boxShadow: 'rgba(0, 0, 0, 0.25) 0px 1px 2px',
-              borderRadius: '5px',
-            }}
-          >
-            {indexValue}
-            <strong
+      {notEnoughData ? (
+        <div className={styles.noData}>
+          <img
+            src={noData}
+            alt="데이터없음"
+            style={{ width: '50px' }}
+          />
+          <div>통계 데이터가 부족합니다.</div>
+        </div>
+      ) : (
+        <ResponsiveBar
+          data={degreeData}
+          keys={['UNDERUNIV', 'UNIV', 'BACHELOR', 'MASTER', 'DOCTOR', 'NONE']}
+          indexBy="DEGREE"
+          margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
+          padding={0.2}
+          layout="horizontal"
+          valueScale={{ type: 'linear' }}
+          indexScale={{ type: 'band', round: true }}
+          colors={({ id }) => (id === 'NONE' ? 'hsla(218, 22%, 93%, 1)' : '#344BFD')}
+          borderColor={{
+            from: 'color',
+            modifiers: [['darker', 1.6]],
+          }}
+          axisTop={null}
+          axisRight={null}
+          axisBottom={null}
+          axisLeft={{
+            tickSize: 0,
+            tickPadding: 5,
+            tickRotation: 0,
+            truncateTickAt: 0,
+          }}
+          enableGridY={false}
+          enableLabel={false}
+          labelSkipWidth={12}
+          labelTextColor={{
+            from: 'color',
+            modifiers: [['darker', 1.6]],
+          }}
+          legends={[]}
+          role="application"
+          ariaLabel="Nivo bar chart demo"
+          barAriaLabel={(e) => e.id + ': ' + e.formattedValue + ' in degree: ' + e.indexValue}
+          tooltip={({ id, value, indexValue }) => (
+            <div
               style={{
-                color: 'black',
+                padding: 12,
+                backgroundColor: 'white',
+                boxShadow: 'rgba(0, 0, 0, 0.25) 0px 1px 2px',
+                borderRadius: '5px',
               }}
             >
-              : {id === 'NONE' ? noneInitialValue.current - value : value}
-            </strong>
-          </div>
-        )}
-      />
+              {indexValue}
+              <strong
+                style={{
+                  color: 'black',
+                }}
+              >
+                : {id === 'NONE' ? noneInitialValue.current - value : value}
+              </strong>
+            </div>
+          )}
+        />
+      )}
     </div>
   );
 };
