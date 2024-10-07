@@ -28,7 +28,7 @@ const Statistics: React.FC<StatisticsProps> = ({ paperId }) => {
         <div className={styles.graph}>
           <div className={styles.graphTitle}>학력 분포</div>
           {/* <Degree paperId={paperId} /> */}
-          <Degree />
+          <Degree paperId={paperId} />
         </div>
       </div>
     </div>

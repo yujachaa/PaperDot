@@ -23,7 +23,7 @@ const Signup: React.FC = () => {
   const [birthyear, setBirthyear] = useState('');
   const [birthyearError, setBirthyearError] = useState('');
   const [gender, setGender] = useState('');
-  const [degree, setDegree] = useState('UNDERUNIV');
+  const [degree, setDegree] = useState('');
   const [isUserIdAvailable, setIsUserIdAvailable] = useState<boolean | null>(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
   const [isBothChecked, setIsBothChecked] = useState(false);
@@ -161,7 +161,15 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     checkBothConditions();
-  }, [isUserIdAvailable, isNicknameAvailable, password, passwordCheck, birthyear, birthyearError]);
+  }, [
+    isUserIdAvailable,
+    isNicknameAvailable,
+    password,
+    passwordCheck,
+    birthyear,
+    birthyearError,
+    handleBirthyearChange,
+  ]);
 
   return (
     <div className={styles.signupContainer}>
@@ -309,6 +317,7 @@ const Signup: React.FC = () => {
               value={degree}
               onChange={(e) => setDegree(e.target.value)}
             >
+              <option value="NULL">선택해주세요</option>
               <option value="UNDERUNIV">중고등학생</option>
               <option value="UNIV">대학생</option>
               <option value="BACHELOR">석사</option>
