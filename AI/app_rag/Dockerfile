@@ -12,8 +12,10 @@ WORKDIR /app_rag
 COPY environment.yml /app_rag
 
 # Create the environment and activate it
-RUN conda config --add channels conda-forge && \
+RUN conda config --add channels defaults && \
+    conda config --add channels conda-forge && \
     conda env create -f environment.yml
+
 # && \
 #     echo "source activate paper-rag" > ~/.bashrc
 
