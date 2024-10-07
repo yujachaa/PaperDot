@@ -12,8 +12,9 @@ WORKDIR /app_rag
 COPY environment.yml /app_rag
 
 # Create the environment and activate it
-RUN conda env create -f environment.yml && \
-    echo "source activate paper-rag" > ~/.bashrc
+RUN conda env create -f environment.yml 
+# && \
+#     echo "source activate paper-rag" > ~/.bashrc
 
 # Add Conda to the PATH environment variable
 ENV PATH /opt/conda/envs/paper-rag/bin:$PATH
@@ -26,4 +27,4 @@ COPY . /app_rag
 EXPOSE 7777
 
 # Define the command to run the application
-CMD ["uvicorn", "codes.app:app", "--host", "0.0.0.0", "--port", "7777"]
+CMD ["/opt/conda/envs/paper-rag/bin/uvicorn", "codes.app:app", "--host", "0.0.0.0", "--port", "7777"]
