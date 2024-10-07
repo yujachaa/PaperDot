@@ -223,13 +223,11 @@ const Favorites = () => {
                 <p>
                   <span>발행 연도</span> {node.year}
                 </p>
-                <button
-                  className={styles.bookmarkButton}
-                  onClick={() => handleBookmarkToggle(node.id)}
-                >
+                <button className={styles.bookmarkButton}>
                   <BookMark
                     paperId={node.id}
-                    bookmark={true}
+                    isBookmarked={true}
+                    clickBookmark={() => handleBookmarkToggle(node.id)}
                   />
                 </button>
               </li>

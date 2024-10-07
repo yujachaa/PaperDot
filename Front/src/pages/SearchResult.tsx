@@ -56,7 +56,7 @@ const SearchResult: React.FC = () => {
         }
       }
     };
-    fetchSearchData(searchTerm, currentPage);
+    fetchSearchData(searchTerm.toLowerCase(), currentPage);
     setPageInput(currentPage.toString()); // 페이지 변경 시 input 값도 업데이트
     //검색어 변경 시
     console.log('주소창 값 변경!!' + searchTerm);

@@ -4,8 +4,26 @@ import { Authapi, api, searchApi } from './core';
 export const searchTitle = async (queryTerm: string) => {
   const requestBody = {
     query: {
-      match: {
-        'original_json.title.ko': queryTerm,
+      bool: {
+        must: [
+          {
+            exists: {
+              field: 'original_json.abstract',
+            },
+          },
+        ],
+        should: [
+          {
+            term: {
+              'original_json.title.ko': queryTerm,
+            },
+          },
+          {
+            term: {
+              'original_json.authors.keyword': queryTerm,
+            },
+          },
+        ],
       },
     },
     size: 10,
@@ -22,6 +40,7 @@ export const searchTitle = async (queryTerm: string) => {
 
 // 검색결과페이지 첫번째 api
 export const getSearchResult = async (queryTerm: string) => {
+  console.log('api 요청으로 보내는 쿼리~~:', queryTerm);
   try {
     const response = await api.get(`/api/papers/search?keyword=${queryTerm}`);
     return response.data;
