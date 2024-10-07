@@ -58,7 +58,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
 
-            System.out.println(requestURI);
 
 //            if (requestURI.startsWith("/api/ws")) {
 //                System.out.println("ㅎㅇㅎㅇ");
