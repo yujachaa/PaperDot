@@ -108,7 +108,6 @@ public class PaperService {
 
         System.out.println("from"+from+"size"+size);
 
-        for(Long i : stringIds) System.out.println("id :"+i);
 
         //for(PaperSimpleDocument paperSimpleDocument : paperSimpleDocumentList) {
         //    System.out.println("Id List + "+paperSimpleDocument.getId());
@@ -134,8 +133,8 @@ public class PaperService {
          */
 
         int min = Math.min(paperSimpleDocumentList.size(), size);
-        paperSimpleDocumentList.subList(from*min, from*min+min);
-
+        paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
+        System.out.println("list size :"+paperSimpleDocumentList.size());
         // 20개 검색된 논문리스트 DTO 구성
         List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, paperSimpleDocumentList);
 

@@ -27,13 +27,15 @@ public class PaperController {
     public ResponseEntity<?> getSearchKeyword(@RequestHeader(value = "Authorization", required = false) String token,
                                               @RequestParam("keyword") String keyword,
                                               @RequestParam(value = "from", defaultValue = "0")  int from,
-                                              @RequestParam(value = "size", defaultValue = "25") int size)  throws Exception {
+                                              @RequestParam(value = "size", defaultValue = "20") int size)  throws Exception {
 
         Long memberId = null;
 
         if (token != null && !token.isEmpty()){
             memberId = jwtUtil.extractMemberId(token);
         }
+
+        System.out.println("controller from :" +from+"controller size : "+size);
         TotalPageSearchResponse totalPageSearchResponse = paperService.getSearchKeyword(keyword, memberId, from, size);
 
         return ResponseEntity.ok(totalPageSearchResponse);
