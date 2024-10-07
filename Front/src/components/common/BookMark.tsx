@@ -18,8 +18,12 @@ const BookMark = ({ className, paperId, bookmark }: BookMarkProps) => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
 
   const hanldeGetUserBookmark = async () => {
-    const data = await getUserBookMark(paperId);
-    setIsBookmarked(data);
+    try {
+      const data = await getUserBookMark(paperId);
+      setIsBookmarked(data);
+    } catch (err: any) {
+      console.log(err);
+    }
   };
   useEffect(() => {
     hanldeGetUserBookmark();
