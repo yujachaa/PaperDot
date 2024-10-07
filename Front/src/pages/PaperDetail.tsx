@@ -12,6 +12,7 @@ import useTheme from '../zustand/theme';
 import { PaperDetailData, RelationData } from '../interface/paper';
 import { getDetail, getDetailLogined } from '../apis/paper';
 import { useAuth } from '../hooks/useAuth';
+import { useBookmark } from '../hooks/useBookmark';
 
 const PaperDetail: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -19,7 +20,9 @@ const PaperDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const paperId = Number(id);
   const [paperData, setPaperData] = useState<PaperDetailData | null>(null); // 서버로부터 받은 데이터를 저장할 상태 변수
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const isLoggedIn = useAuth();
+  const clickBookmark = useBookmark();
 
   // 처음 렌더링될 때 데이터 요청
   useEffect(() => {
@@ -47,7 +50,7 @@ const PaperDetail: React.FC = () => {
               };
             }),
           };
-
+          setIsBookmarked(cleanedPaperData.bookmark); //북마크 여부 저장
           setPaperData(cleanedPaperData);
         } catch (error) {
           console.error('데이터 요청 실패:', error);
@@ -58,8 +61,21 @@ const PaperDetail: React.FC = () => {
   }, [paperId]);
 
   //북마크 토글 함수
+  const handleBookmarkClick = async () => {
+    //북마크 개수 변경
+    if (paperData) {
+      if (isBookmarked) {
+        paperData.cnt = paperData.cnt - 1;
+        console.log('북마크 제거!!!!!!!!!!!!!', paperData.cnt);
+      } else {
+        paperData.cnt = paperData.cnt + 1;
+        console.log('북마크 추가!!!!!!!!!!!!!', paperData.cnt);
+      }
+    }
 
-  //북마크 개수 변경 함수
+    await clickBookmark(paperId, isBookmarked);
+    setIsBookmarked((prev) => !prev); // 북마크 상태를 업데이트하여 렌더링 반영
+  };
 
   return (
     <>
@@ -78,8 +94,9 @@ const PaperDetail: React.FC = () => {
               <div className="flex items-center gap-1">
                 <BookMark
                   paperId={paperData.id}
-                  bookmark={paperData.bookmark}
+                  isBookmarked={isBookmarked}
                   className="w-5"
+                  clickBookmark={handleBookmarkClick}
                 />
                 <span className="font-bold mobile:hidden">
                   {paperData.cnt > 999 ? '999+' : paperData.cnt}
