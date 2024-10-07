@@ -38,6 +38,13 @@ RUN apt-get update && apt-get install -y \
 # Copy the application code to the container
 COPY . /app_rag
 
+# Chrome 다운로드
+RUN wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.89/linux64/chrome-linux64.zip
+RUN wget https://storage.googleapis.com/chrome-for-testing-public/129.0.6668.89/linux64/chromedriver-linux64.zip
+
+RUN unzip chrome-linux64.zip
+RUN unzup chromedriver-linux64.zip
+
 # Grant execution permission to Chromedriver and Chrome binaries
 RUN chmod +x /app_rag/chromedriver-linux64/chromedriver
 RUN chmod +x /app_rag/chrome-linux64/chrome
