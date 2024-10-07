@@ -132,7 +132,7 @@ public class PaperService {
         int end = Math.min(pageSize, paperSimpleDocumentList.size());
          */
 
-        int min = Math.min(paperSimpleDocumentList.size(), size);
+        int min = Math.min(paperSimpleDocumentList.size()-from*size, size);
         paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
         System.out.println("list size :"+paperSimpleDocumentList.size());
         // 20개 검색된 논문리스트 DTO 구성
