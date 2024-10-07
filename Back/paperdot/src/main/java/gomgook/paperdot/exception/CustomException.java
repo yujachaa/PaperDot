@@ -19,6 +19,7 @@ public enum CustomException {
     FAIL_SEND_NOTIFICATION_EXCEPTION(400, "FailSendNotificationException", "알림 전송에 실패했습니다."),
     FAIL_GET_TOP5_PAPER_EXCEPTION(400, "FailGetTop5PaperException", "북마크에 따른 논문을 가져올 수 없습니다."),
     FAIL_GET_PAPER_ES_EXCEPTION(400, "FailGetPaperESException", "논문 정보를 가져올 수 없습니다."),
+    FAIL_CONVERT_MESSAGE_DTO_EXCEPTION(400, "FailConvertMessageDtoException", "메세지를 DTO형태로 바꿀 수 없습니다."),
 
     //인증 에러 401
     EXPIRED_JWT_EXCEPTION(401,"ExpiredJwtException","토큰이 만료했습니다."),
