@@ -120,7 +120,8 @@ def create_internal_links(markdown_text):
         # 특수 문자 제거 (이모지를 유지하기 위해 이모지 유니코드 범위는 허용)
         # anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1F64F\u1F680-\u1F6FF]', '', anchor)
         # 특수 문자 제거 시 이모지 유니코드를 포함하여 유지 (필요 시 추가)
-        anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF]', '', anchor)
+        # anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF]', '', anchor)
+        anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF\u1F900-\u1F9FF\u1F600-\u1F64F]', '', anchor)
 
         # 내부 링크 형식 생성
         # anchor = urllib.parse.quote(anchor)
