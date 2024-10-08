@@ -54,7 +54,7 @@ public class MemberController {
         Map<String, String> response = new HashMap<>();
         Member check_exist = memberService.findByUserId(userid);
 
-        if(check_exist==null || !check_exist.isActive()) {
+        if(check_exist==null) {
             response.put("message", "사용 가능한 아이디입니다.");
             return ResponseEntity.ok().body(response);
         }
@@ -69,7 +69,7 @@ public class MemberController {
         Map<String, String> response = new HashMap<>();
         Member check_exist = memberService.findByNickname(nickname);
 
-        if(check_exist==null || !check_exist.isActive()) {
+        if(check_exist==null ) {
             response.put("message", "사용 가능한 닉네임입니다.");
             return ResponseEntity.ok().body(response);
         }
