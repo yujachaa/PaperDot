@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Footer from '../components/common/Footer';
@@ -13,6 +13,9 @@ import { PaperDetailData, RelationData } from '../interface/paper';
 import { getDetail, getDetailLogined } from '../apis/paper';
 import { useAuth } from '../hooks/useAuth';
 import { useBookmark } from '../hooks/useBookmark';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import usePaperBookmark from '../zustand/paperBookmark';
 
 const PaperDetail: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -20,9 +23,13 @@ const PaperDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const paperId = Number(id);
   const [paperData, setPaperData] = useState<PaperDetailData | null>(null); // 서버로부터 받은 데이터를 저장할 상태 변수
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  // const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isBookmarked, setBookmark } = usePaperBookmark();
   const isLoggedIn = useAuth();
   const clickBookmark = useBookmark();
+  const navigate = useNavigate();
+  const isLoading = useRef(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   // 처음 렌더링될 때 데이터 요청
   useEffect(() => {
@@ -50,7 +57,8 @@ const PaperDetail: React.FC = () => {
               };
             }),
           };
-          setIsBookmarked(cleanedPaperData.bookmark); //북마크 여부 저장
+          setBookmark(cleanedPaperData.bookmark);
+          // setIsBookmarked(cleanedPaperData.bookmark); //북마크 여부 저장
           setPaperData(cleanedPaperData);
         } catch (error) {
           console.error('데이터 요청 실패:', error);
@@ -60,8 +68,37 @@ const PaperDetail: React.FC = () => {
     fetchPaperData(); // 논문 상세 데이터 가져오기
   }, [paperId]);
 
-  //북마크 토글 함수
+  // 북마크 클릭 함수
   const handleBookmarkClick = async () => {
+    if (isLoading.current) return; // 이미 로딩 중일 때 함수 종료
+
+    if (!isLoggedIn) {
+      toast.error(
+        <>
+          로그인이 필요합니다. <br />
+          <span
+            onClick={() => {
+              toast.dismiss();
+              navigate('/login');
+            }}
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            로그인하러 가기
+          </span>
+        </>,
+      );
+      return;
+    }
+
+    isLoading.current = true; // 로딩 상태 활성화
+    await clickBookmark(paperId, isBookmarked);
+    setBookmark(!isBookmarked);
+    // setIsBookmarked((prev) => !prev); // 북마크 상태를 업데이트하여 렌더링 반영
+    setShowModal(true);
+    setTimeout(() => {
+      setShowModal(false);
+      isLoading.current = false; // 로딩 상태 비활성화
+    }, 1500);
     //북마크 개수 변경
     if (paperData) {
       if (isBookmarked) {
@@ -72,10 +109,11 @@ const PaperDetail: React.FC = () => {
         console.log('북마크 추가!!!!!!!!!!!!!', paperData.cnt);
       }
     }
-
-    await clickBookmark(paperId, isBookmarked);
-    setIsBookmarked((prev) => !prev); // 북마크 상태를 업데이트하여 렌더링 반영
   };
+
+  const Modal = () => (
+    <div className={styles.modal}>북마크 {isBookmarked ? '등록' : '해제'}되었습니다.✅</div>
+  );
 
   return (
     <>
@@ -97,6 +135,7 @@ const PaperDetail: React.FC = () => {
                   isBookmarked={isBookmarked}
                   className="w-5"
                   clickBookmark={handleBookmarkClick}
+                  isLoading={isLoading.current}
                 />
                 <span className="font-bold mobile:hidden">
                   {paperData.cnt > 999 ? '999+' : paperData.cnt}
@@ -116,7 +155,8 @@ const PaperDetail: React.FC = () => {
         <p>로딩 중...</p>
       )}
 
-      <Footer />
+      {paperData && <Footer />}
+      {showModal && <Modal />}
     </>
   );
 };

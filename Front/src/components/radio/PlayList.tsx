@@ -3,10 +3,11 @@ import BookMark from '../common/BookMark';
 import MusicIcon from '../common/MusicIcon';
 import styles from './PlayList.module.scss';
 import { Radio } from '../../interface/radio';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { getUserBookMark } from '../../apis/bookmark';
 import { useBookmark } from '../../hooks/useBookmark';
+import { toast } from 'react-toastify';
 
 type PlayListProps = {
   className?: string;
@@ -18,6 +19,8 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const clickBookmark = useBookmark();
   const navigate = useNavigate();
+  const isLoading = useRef(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const handleClick = () => {
     navigate(`/paper/${id}`);
@@ -39,9 +42,38 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
   }, [id, isLoggedIn]);
 
   const handleBookmarkClick = async () => {
+    if (isLoading.current) return; // 이미 로딩 중일 때 함수 종료
+    if (!isLoggedIn) {
+      toast.error(
+        <>
+          로그인이 필요합니다. <br />
+          <span
+            onClick={() => {
+              toast.dismiss();
+              navigate('/login');
+            }}
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            로그인하러 가기
+          </span>
+        </>,
+      );
+      return;
+    }
+
+    isLoading.current = true; // 로딩 상태 활성화
     await clickBookmark(id, isBookmarked);
     setIsBookmarked((prev) => !prev); // 북마크 상태를 업데이트하여 렌더링 반영
+    setShowModal(true);
+    setTimeout(() => {
+      setShowModal(false);
+      isLoading.current = false; // 로딩 상태 비활성화
+    }, 1500);
   };
+
+  const Modal = () => (
+    <div className={styles.modal}>북마크 {isBookmarked ? '등록' : '해제'}되었습니다.✅</div>
+  );
 
   return (
     <div className={`${styles.container} ${className}`}>
@@ -57,6 +89,7 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
         isBookmarked={isBookmarked}
         className="absolute top-2.5 right-5"
         clickBookmark={handleBookmarkClick}
+        isLoading={isLoading.current}
       />
       <div
         className="absolute bottom-1.5 right-4 cursor-pointer"
@@ -64,6 +97,8 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
       >
         상세보기 &gt;{' '}
       </div>
+
+      {showModal && <Modal />}
     </div>
   );
 };

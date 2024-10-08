@@ -3,6 +3,7 @@ import { ResponsivePie } from '@nivo/pie';
 import { getPaperStatistics } from '../../apis/paper';
 import noData from '../../assets/images/nodata.png';
 import styles from './Statistics.module.scss';
+import usePaperBookmark from '../../zustand/paperBookmark';
 
 type GenderRatioProps = {
   paperId: number;
@@ -10,6 +11,7 @@ type GenderRatioProps = {
 
 const GenderRatio: React.FC<GenderRatioProps> = ({ paperId }) => {
   const [genderData, setGenderData] = useState<any[]>([]);
+  const isBookmarked = usePaperBookmark((state) => state.isBookmarked);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -30,9 +32,10 @@ const GenderRatio: React.FC<GenderRatioProps> = ({ paperId }) => {
         console.error('성별 통계 데이터를 가져오는 중 오류 발생:', error);
       }
     };
-
-    fetchStatistics();
-  }, [paperId]);
+    setTimeout(() => {
+      fetchStatistics();
+    }, 2000);
+  }, [paperId, isBookmarked]);
 
   return (
     <div className="w-full h-[20rem]">
