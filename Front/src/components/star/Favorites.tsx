@@ -9,6 +9,7 @@ const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [showFullBox, setShowFullBox] = useState<boolean>(true);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -212,8 +213,47 @@ const Favorites = () => {
 
   const Modal = () => <div className={styles.modal}>북마크 해제되었습니다.✅</div>;
 
+  const renderInfoFullBox = () =>
+    showFullBox && (
+      <div className={styles.infoFullBox}>
+        <button
+          className={styles.closeFullBoxButton}
+          onClick={() => setShowFullBox(false)}
+        >
+          ✕
+        </button>
+        <ul className={styles.nodeList}>
+          {nodesData.map((node, index) => (
+            <li key={index}>
+              <p
+                className={styles.nodeTitle}
+                onClick={() => goDetail(node.id)}
+              >
+                {node.title}
+              </p>
+              <p>
+                <span>저자</span> {node.author}
+              </p>
+              <p>
+                <span>발행 연도</span> {node.year}
+              </p>
+              <button className={styles.bookmarkButton}>
+                <BookMark
+                  paperId={node.id}
+                  isBookmarked={true}
+                  clickBookmark={() => handleBookmarkToggle(node.id)}
+                  isLoading={false}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+
   return (
     <div className={styles.favorites}>
+      {renderInfoFullBox()}
       <svg
         ref={svgRef}
         className={styles.networkChart}
