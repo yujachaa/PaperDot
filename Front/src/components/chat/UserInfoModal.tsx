@@ -13,7 +13,7 @@ const UserInfoModal = ({ className, onClose, position, data }: UserInfoModalProp
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/userStar`, { state: { memberId: data?.senderId, nikename: data?.nickname } });
+    navigate(`/userStar`, { state: { memberId: data?.senderId, nickname: data?.nickname } });
   };
   return (
     <div
