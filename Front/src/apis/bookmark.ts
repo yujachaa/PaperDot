@@ -85,7 +85,7 @@ export const falseToggleBookmark = async (paperId: number) => {
     });
 
     // 서버에서 반환된 데이터를 처리
-    console.log(response);
+    console.log('false 토글 북마크:', response);
     return response.data;
   } catch (error) {
     console.error('Error toggling bookmark:', error);
@@ -125,6 +125,8 @@ export const trueToggleBookmark = async (paperId: number) => {
     if (response.status !== 200) {
       throw new Error('get 요청에 실패');
     }
+
+    console.log('true 토글 북마크:', response);
   } catch (error) {
     console.error('Error toggling bookmark:', error);
     throw error;
