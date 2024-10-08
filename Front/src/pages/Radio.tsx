@@ -9,8 +9,10 @@ import Hls from 'hls.js';
 import Modal from '../components/radio/Modal';
 import { Category } from '../interface/radio';
 import { RadioLists } from '../interface/radio';
+
 const Radio = () => {
   const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
+  // const { setClient, setConnected } = useWebSocket();
   const [isModalOpen, setIsModalOpen] = useState(true);
   const { id } = useParams();
 
@@ -22,7 +24,7 @@ const Radio = () => {
       if (!hlsRef.current) {
         hlsRef.current = new Hls(); // HLS 인스턴스 생성
       }
-      const m3u8Url = `https://j11b208.p.ssafy.io/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
+      const m3u8Url = `https://j11b208.p.ssafy.io/radios/radio/playlist_${id}.m3u8`; // 서버에서 제공하는 M3U8 파일 URL
 
       hlsRef.current.loadSource(m3u8Url);
       hlsRef.current.attachMedia(audioRef.current);
@@ -38,6 +40,8 @@ const Radio = () => {
     setIsModalOpen(false);
     handlePlayHls(); // 모달 닫히면 HLS 재생 시작
   };
+
+  useEffect(() => {});
 
   useEffect(() => {
     return () => {
@@ -61,7 +65,11 @@ const Radio = () => {
           <PlayList Radio={RadioLists[Number(id) - 1]} />
           <RadioScript className="mt-4" />
         </div>
-        <ChatRoom className="mt-4" />
+        <ChatRoom
+          className="mt-4"
+          paperId={RadioLists[Number(id) - 1].id}
+          roomId={Number(id)}
+        />
       </div>
       <audio
         ref={audioRef}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UserImage from '../../assets/images/user.svg?react';
 import styles from './User.module.scss';
 import useTheme from '../../zustand/theme';
-
+import useUser from '../../zustand/user';
 type UserProps = {
   className?: string;
 };
@@ -11,6 +11,7 @@ type UserProps = {
 const User = ({ className = '' }: UserProps) => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { setLoginId } = useUser();
   const navigate = useNavigate();
 
   const handleMouseEnter = () => setIsDropdownOpen(true);
@@ -19,6 +20,7 @@ const User = ({ className = '' }: UserProps) => {
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     window.location.href = '/';
+    setLoginId(0);
   };
 
   const goToMypage = () => {

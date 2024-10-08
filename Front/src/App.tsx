@@ -6,7 +6,6 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
   const isDarkMode = useTheme((state) => state.isDarkMode);
-
   useEffect(() => {
     document.body.classList.toggle('dark', isDarkMode);
 

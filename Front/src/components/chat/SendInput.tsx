@@ -2,38 +2,36 @@ import React from 'react';
 import styles from './SendInput.module.scss';
 import useTheme from '../../zustand/theme';
 import InputIcon from '../../assets/images/submit.svg?react';
-import { forwardRef } from 'react';
 type InputProps = {
   className?: string;
   placeholder?: string;
   disabled?: boolean;
-  onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   handleSendMessage?: () => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string;
 };
 
-const SendInput = forwardRef<HTMLInputElement, InputProps>(function SendInput(
-  {
-    className = '',
-    placeholder = '댓글 입력',
-    disabled = false,
-    onKeyUp,
-    handleSendMessage,
-    onChange,
-  },
-  ref,
-) {
+const SendInput = ({
+  className = '',
+  placeholder = '댓글 입력',
+  disabled = false,
+  value,
+  onKeyDown,
+  handleSendMessage,
+  onChange,
+}: InputProps) => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   return (
     <div className={`${styles.box} ${className} ${isDarkMode ? `${styles.dark}` : ''}`}>
       <input
-        ref={ref}
         type="text"
         placeholder={placeholder}
         className={`${styles.input} ${isDarkMode ? `${styles.dark}` : ''}`}
         disabled={disabled}
-        onKeyUp={onKeyUp}
+        onKeyDown={onKeyDown}
         onChange={onChange}
+        value={value}
       />
       <InputIcon
         className={`ml-auto mr-3 cursor-pointer dark:text-white`}
@@ -41,6 +39,6 @@ const SendInput = forwardRef<HTMLInputElement, InputProps>(function SendInput(
       />
     </div>
   );
-});
+};
 
 export default SendInput;
