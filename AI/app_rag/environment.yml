@@ -99,3 +99,4 @@ dependencies:
       - wget==3.2
       - wsproto==1.2.0
       - yarl==1.13.1
+      - pymupdf4llm==0.0.17
