@@ -8,8 +8,9 @@ import LeftArrowIcon from '../assets/images/channel/leftArrow.svg?react';
 import RightArrowIcon from '../assets/images/channel/rightArrow.svg?react';
 import Footer from '../components/common/Footer';
 import useTheme from '../zustand/theme';
-import { getSearchPage, getSearchResult } from '../apis/search';
+import { getSearchPage, getSearchResult, getSearchResultLogined } from '../apis/search';
 import { SearchResultPaper } from '../interface/search';
+import { useAuth } from '../hooks/useAuth';
 
 const SearchResult: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
@@ -24,6 +25,7 @@ const SearchResult: React.FC = () => {
   const [searchResult, setSearchResult] = useState<SearchResultPaper[] | null>(null);
 
   const [pageInput, setPageInput] = useState(currentPage.toString());
+  const isLoggedIn = useAuth();
 
   useEffect(() => {
     //처음 렌더링 할 때 주소에 따라 검색 결과 fetch
@@ -32,7 +34,9 @@ const SearchResult: React.FC = () => {
         //첫번째 페이지인 경우
         setSearchResult(null); // 데이터를 초기화
         try {
-          const response = await getSearchResult(searchTerm); // 비동기 함수 호출
+          const response = isLoggedIn
+            ? await getSearchResultLogined(searchTerm)
+            : await getSearchResult(searchTerm);
           console.log('논문검색 첫페이지 가져왔어요~', response);
           setTotalCnt(response.total);
           setSearchResult(response.paperSearchResponseList);
@@ -52,7 +56,7 @@ const SearchResult: React.FC = () => {
         }
       }
     };
-    fetchSearchData(searchTerm, currentPage);
+    fetchSearchData(searchTerm.toLowerCase(), currentPage);
     setPageInput(currentPage.toString()); // 페이지 변경 시 input 값도 업데이트
     //검색어 변경 시
     console.log('주소창 값 변경!!' + searchTerm);
