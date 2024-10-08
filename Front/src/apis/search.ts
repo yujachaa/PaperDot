@@ -11,21 +11,15 @@ export const searchTitle = async (queryTerm: string) => {
               field: 'original_json.abstract',
             },
           },
-        ],
-        should: [
           {
-            term: {
+            match_phrase_prefix: {
               'original_json.title.ko': queryTerm,
-            },
-          },
-          {
-            term: {
-              'original_json.authors.keyword': queryTerm,
             },
           },
         ],
       },
     },
+
     size: 10,
   };
 

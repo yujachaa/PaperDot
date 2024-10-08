@@ -3,7 +3,7 @@ import { Authapi, api, searchApi } from './core';
 export const getDetail = async (paperId: number) => {
   try {
     const response = await api.get(`/api/papers/detail?paperId=${paperId}`);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('논문 상세 정보 조회 실패:', error);
@@ -15,7 +15,7 @@ export const getDetail = async (paperId: number) => {
 export const getDetailLogined = async (paperId: number) => {
   try {
     const response = await Authapi.get(`/api/papers/detail?paperId=${paperId}`);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('논문 상세 정보 조회 실패:', error);
@@ -26,7 +26,7 @@ export const getDetailLogined = async (paperId: number) => {
 export const getBest = async (category: number) => {
   try {
     const response = await api.get(`/api/papers/top?category=${category}`);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('논문 랭킹 정보 조회 실패:', error);
@@ -64,7 +64,7 @@ export const getPaperStatistics = async (paperId: number) => {
     });
 
     // 요청이 성공하면 데이터 반환
-    console.log('논문 통계 데이터:', response.data);
+    // console.log('논문 통계 데이터:', response.data);
     return response.data;
   } catch (error) {
     console.error('논문 통계 조회 중 오류 발생:', error);
