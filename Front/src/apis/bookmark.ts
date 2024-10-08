@@ -1,4 +1,4 @@
-import { Authapi, searchApi } from './core'; // core.ts에서 생성한 Authapi 사용
+import { api, Authapi, searchApi } from './core'; // core.ts에서 생성한 Authapi 사용
 import { getMemberIdFromToken } from '../utills/tokenParser';
 import { getUserProfile } from './user';
 
@@ -136,7 +136,7 @@ export const trueToggleBookmark = async (paperId: number) => {
 // 사용자별 북마크 데이터를 불러오는 함수
 export const getUserBookmarks = async (memberId: number) => {
   try {
-    const response = await Authapi.get(`/api/bookmarks/user-bookmark?memberId=${memberId}`);
+    const response = await api.get(`/api/bookmarks/user-bookmark?memberId=${memberId}`);
     const data = response.data;
 
     const nodes = data.nodes.map((node: any) => ({
