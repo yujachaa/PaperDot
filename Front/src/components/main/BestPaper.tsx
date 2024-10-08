@@ -21,6 +21,7 @@ const categoryMap: Record<Category, number> = {
 const BestPaper: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState<Category>('인문/사회');
+  const [previousCategory, setPreviousCategory] = useState<Category | null>(null);
   const [categoryData, setCategoryData] = useState<Record<Category, Rank[]>>(
     {} as Record<Category, Rank[]>,
   );
@@ -54,9 +55,12 @@ const BestPaper: React.FC = () => {
 
   // 카테고리 클릭 시 데이터가 없으면 fetch
   const handleCategoryClick = (category: Category) => {
-    setSelectedCategory(category);
-    if (!categoryData[category]) {
-      fetchBestData(category);
+    if (category !== selectedCategory) {
+      setPreviousCategory(selectedCategory);
+      setSelectedCategory(category);
+      if (!categoryData[category]) {
+        fetchBestData(category);
+      }
     }
   };
 
@@ -66,19 +70,25 @@ const BestPaper: React.FC = () => {
     navigate(`/paper/${id}`);
   };
 
+  // 애니메이션 방향 결정
+  const getDirection = () => {
+    const currentIndex = categories.indexOf(selectedCategory);
+    const previousIndex = previousCategory ? categories.indexOf(previousCategory) : 0;
+    return currentIndex > previousIndex ? 100 : -100; // 오른쪽에서 왼쪽, 왼쪽에서 오른쪽을 결정
+  };
+
   // 애니메이션 variants
   const variants = {
-    hidden: { opacity: 0, x: 100 },
-    visible: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -100 },
+    hidden: (direction: number) => ({ opacity: 0, x: direction }), // 방향에 따른 시작 위치
+    visible: { opacity: 1, x: 0 }, // 중앙
+    exit: (direction: number) => ({ opacity: 0, x: -direction }), // 방향에 따른 종료 위치
   };
 
   return (
     <div className={styles.bestPaper}>
       <div className="text-xl font-bold ml-3">Best 논문</div>
-      {/* <p className="text-base ml-3">최근 가장 많이 찾은 논문입니다.</p> */}
       <div className="w-full overflow-x-auto">
-        <div className="flex justify-between mt-2 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
+        <div className="flex justify-between mt-4 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
           {categories.map((category) => (
             <div
               key={category}
@@ -96,10 +106,14 @@ const BestPaper: React.FC = () => {
       {loading ? (
         <p>Loading...</p> // 로딩 중일 때 표시
       ) : (
-        <AnimatePresence mode="wait">
+        <AnimatePresence
+          mode="wait"
+          custom={getDirection()}
+        >
           <motion.ul
             key={selectedCategory}
             className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}
+            custom={getDirection()}
             initial="hidden"
             animate="visible"
             exit="exit"
