@@ -140,6 +140,7 @@ const EditProfile: React.FC = () => {
             <input
               type="text"
               value={nickname}
+              maxLength={100}
               onChange={(e) => {
                 setNickname(e.target.value);
                 setIsNicknameAvailable(null);
