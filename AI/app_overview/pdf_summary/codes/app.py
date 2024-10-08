@@ -127,7 +127,7 @@ def create_internal_links(markdown_text):
         # link = f"[{header_text}](#{anchor})"
         link = f"[{i}. {header_text}](#{anchor})"
         links.append(link)
-    links = "\n".join(links)
+    links = "<br>".join(links)
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper):
