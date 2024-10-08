@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from '../components/common/Header';
 import useTheme from '../zustand/theme';
 import styles from './Star.module.scss';
@@ -14,8 +15,8 @@ const pageVariants = {
 
 const UserStar = () => {
   const { isDarkMode, setDarkTrue } = useTheme((state) => state);
-
-  const memberId = 1;
+  const location = useLocation();
+  const { memberId, nickname } = location.state || { memberId: null, nickname: '' };
 
   useEffect(() => {
     if (!isDarkMode) {
@@ -46,7 +47,7 @@ const UserStar = () => {
           <Header />
           <div className={styles.starContainer}>
             <div className={styles.menu}>
-              <div className={styles.mine}>oo의 별자리</div>
+              <div className={styles.mine}>{nickname ? `${nickname}의 별자리` : '별자리'}</div>
             </div>
             <div className={styles.main}>
               <UserFavorites memberId={memberId} />
