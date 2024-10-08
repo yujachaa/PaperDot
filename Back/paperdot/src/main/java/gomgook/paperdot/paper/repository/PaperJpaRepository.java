@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PaperJpaRepository extends JpaRepository<PaperEntity, Long> {
+    PaperEntity findById(long id);
 
     Optional<List<PaperEntity>> findByIdIn(List<Long> docIds);
 

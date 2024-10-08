@@ -104,7 +104,6 @@ public class PaperService {
 
         //paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
 
-        List<Long> stringIds = paperSimpleDocumentList.stream().map(PaperSimpleDocument::getId).toList();
 
         System.out.println("from"+from+"size"+size);
 
@@ -114,6 +113,7 @@ public class PaperService {
         //}
         nullCheck(paperSimpleDocumentList);
 
+        List<Long> stringIds = paperSimpleDocumentList.stream().map(PaperSimpleDocument::getId).toList();
 
         /*
 //        // paperSearchResponseList caching
@@ -162,7 +162,12 @@ public class PaperService {
         }
 
         // 논문 북마크 횟수
-        List<PaperEntity> sqlPaperList = paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
+        List<PaperEntity> sqlPaperList = new ArrayList<>();
+        for(PaperSimpleDocument paperSimpleDocument : paperSimpleDocumentList){
+            long id = paperSimpleDocument.getId();
+            sqlPaperList.add(paperJpaRepository.findById(id));
+        }
+        //        paperJpaRepository.findByIdIn(ids).orElse(new ArrayList<>());
 
         // 사용자 북마크
         List<Bookmark> bookmarks = (member != null)
@@ -225,7 +230,7 @@ public class PaperService {
     }
 
     // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
-    private static PaperSearchResponse setPaperSearchResponse(PaperSimpleDocument python, PaperEntity sql) {
+    private static PaperSearchResponse  setPaperSearchResponse(PaperSimpleDocument python, PaperEntity sql) {
         PaperSearchResponse response = new PaperSearchResponse();
 
         response.setId(python.getId());
@@ -246,6 +251,7 @@ public class PaperService {
         response.setTitle(title);
         response.setAuthors(authors);
         response.setCnt(sql.getBookmarkCnt());
+        System.out.println("id : "+response.getId()+ "sql id : "+ sql.getId() + " cnt : "+response.getCnt());
         response.setYear(originalJsonFrom.getYear());
 
         response.setBookmark(false);
