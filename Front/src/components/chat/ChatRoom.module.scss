@@ -53,3 +53,22 @@
   justify-content: center;
   gap: 0.5px;
 }
+
+.question {
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  bottom: 70px;
+  right: 20px;
+  background-color: #a7c7e7;
+  border-radius: 5px;
+}
+.loading {
+  width: 1rem;
+  height: 1rem;
+}
