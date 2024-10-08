@@ -242,7 +242,7 @@ def summary_paper(paper_id: str = Query(..., description="Paper ID to search"), 
         # overview 필드가 비어 있는지 확인
         if 'overview' in doc and doc['overview'] and not gen:
             # 이미 요약된 내용이 있다면 그 내용을 반환
-            return {"results": doc['overview']}
+            return {"results": doc['overview'], "mdoel": 0}
 
         # es에 없다면 pdf 로더
         else:
@@ -251,15 +251,15 @@ def summary_paper(paper_id: str = Query(..., description="Paper ID to search"), 
 
             es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
 
-            return {"results": results}
+            return {"results": results, "mdoel": 1}
 
 
     # es 에 삽입
 
     # es 종료
 
-
-    return {"results": results}
+    results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
+    return {"results": results, "mdoel": 0}
 
 def main():
     """
