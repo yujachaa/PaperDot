@@ -89,3 +89,4 @@ dependencies:
   - websocket-client=1.8.0
   - wsproto=1.2.0
   - yarl=1.13.1
+  - pymupdf4llm=0.0.17
