@@ -118,13 +118,16 @@ def create_internal_links(markdown_text):
         # 특수 문자 제거 (필요에 따라 조정 가능)
         # anchor = re.sub(r'[^\w\-]', '', anchor)
         # 특수 문자 제거 (이모지를 유지하기 위해 이모지 유니코드 범위는 허용)
-        anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1F64F\u1F680-\u1F6FF]', '', anchor)
+        # anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1F64F\u1F680-\u1F6FF]', '', anchor)
+        # 특수 문자 제거 시 이모지 유니코드를 포함하여 유지 (필요 시 추가)
+        anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF]', '', anchor)
+
         # 내부 링크 형식 생성
         # anchor = urllib.parse.quote(anchor)
         # link = f"[{header_text}](#{anchor})"
         link = f"[{i}. {header_text}](#{anchor})"
         links.append(link)
-    
+    links = "\n".join(links)
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper):
@@ -233,7 +236,8 @@ def agent_pipeline(paper_path, paper_id):
 
     internal_links = create_internal_links(doc_summaries)
 
-    toc_markdown = "# 목차\n\n" + '\n'.join(internal_links) + '\n\n'
+    # toc_markdown = "# 목차\n\n" + '\n'.join(internal_links) + '\n\n'
+    toc_markdown = f"# 목차\n\n{internal_links}\n\n"
     final_markdown = toc_markdown + '\n --- \n' + doc_summaries
 
     return final_markdown
