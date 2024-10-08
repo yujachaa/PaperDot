@@ -270,7 +270,7 @@ async def ask_question(request: QueryRequest):
     
 
     # Step 2: Check if FAISS index for the paper exists
-    index_file = f"{FAISS_INDEX_PATH}{paper_id}_index"
+    index_file = f"{FAISS_INDEX_PATH}{paper_id}_index_ver_md"
     if not os.path.exists(index_file):
         if not os.path.exists(paper_path):
             # Download the paper PDF using the existing crawling function
