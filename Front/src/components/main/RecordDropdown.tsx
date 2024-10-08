@@ -36,7 +36,7 @@ const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteR
             ) => (
               <li
                 key={index}
-                className={styles.recordItem}
+                className={`${styles.recordItem} hover:bg-grey`}
                 onClick={() => handleClick(record)} // 검색어 클릭 시 검색 실행
               >
                 <img
@@ -54,7 +54,7 @@ const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteR
           )}
         </ul>
       ) : (
-        <div className="text-light-text">이전 검색 기록이 없습니다.</div>
+        <div className="text-light-text pl-11">이전 검색 기록이 없습니다.</div>
       )}
     </div>
   );
