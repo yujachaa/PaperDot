@@ -72,7 +72,7 @@ public class MemberService {
         String password = loginInfo.getPassword();
         Member member = findByUserId(userId);
 
-        if (member != null && passwordEncoder.matches(password, member.getPassword())) {
+        if (member != null && member.isActive() && passwordEncoder.matches(password, member.getPassword())) {
             String token = jwtUtil.generateToken(member);
             member.updateToken(token); // updateToken 메서드 사용
             memberRepository.save(member);
