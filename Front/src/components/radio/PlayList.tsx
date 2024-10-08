@@ -12,13 +12,13 @@ type PlayListProps = {
   className?: string;
   Radio: Radio;
 };
+
 const PlayList = ({ className, Radio }: PlayListProps) => {
   const { id, title, author, year } = Radio;
   const isLoggedIn = useAuth();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const clickBookmark = useBookmark();
   const navigate = useNavigate();
-
   const handleClick = () => {
     navigate(`/paper/${id}`);
   };
@@ -52,6 +52,7 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
           {author}({year})
         </div>
       </div>
+
       <BookMark
         paperId={id}
         isBookmarked={isBookmarked}

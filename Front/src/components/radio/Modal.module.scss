@@ -24,6 +24,10 @@
   align-items: center;
 }
 
+.dark {
+  background-color: #2e2e2e;
+}
+
 .closeButton {
   width: 6.75rem;
   height: 3rem;
@@ -32,8 +36,15 @@
   background: #a7c7e7;
   border: none;
   cursor: pointer;
-}
+  &:hover {
+    background-color: #78a4d1;
+  }
 
-.closeButton:hover {
-  background-color: #78a4d1;
+  &.dark {
+    background-color: #78a4d1;
+
+    &:hover {
+      background-color: #8bafc9;
+    }
+  }
 }
