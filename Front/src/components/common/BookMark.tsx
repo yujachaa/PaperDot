@@ -8,9 +8,16 @@ type BookMarkProps = {
   paperId: number; //북마크 논문번호
   isBookmarked: boolean; // 현재 북마크 상태
   clickBookmark: (paperId: number, isBookmarked: boolean) => Promise<void>; // 북마크 클릭 핸들러
+  isLoading: boolean;
 };
 
-const BookMark = ({ className, paperId, isBookmarked, clickBookmark }: BookMarkProps) => {
+const BookMark = ({
+  className,
+  paperId,
+  isBookmarked,
+  clickBookmark,
+  isLoading,
+}: BookMarkProps) => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
 
   return (
@@ -19,8 +26,9 @@ const BookMark = ({ className, paperId, isBookmarked, clickBookmark }: BookMarkP
         src={isBookmarked ? fullBookMark : isDarkMode ? nonBookMarkDark : nonBookMark}
         alt="북마크"
         className={`${className} cursor-pointer`}
-        onClick={() => {
-          clickBookmark(paperId, isBookmarked);
+        onClick={async () => {
+          if (isLoading) return;
+          await clickBookmark(paperId, isBookmarked);
         }}
       />
     </>
