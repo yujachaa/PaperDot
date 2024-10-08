@@ -1,0 +1,21 @@
+conda create -n paper-overview python=3.11 -y
+conda activate paper-overview
+
+pip install python-dotenv-1.0.1
+
+pip install langchain
+pip install langchain_openai
+pip install langchain_community
+
+pip install fastapi-0.115.0
+pip install elasticsearch-8.15.1
+
+pip install torch faiss-cpu
+pip install uvicorn-0.31.0
+pip install selenium-4.25.0
+pip install pdfplumber-0.11.4
+pip install langchainhub-0.1.21
+
+pip install scikit-learn
+pip install pymupdf4llm
+pip install llama_index
