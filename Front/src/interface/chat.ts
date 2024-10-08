@@ -1,6 +1,6 @@
 export interface GroupMessage {
-  dmMessageId: number;
+  chatRoomId: number;
   message: string;
-  Writernickname: string;
-  WriterId: number;
+  nickname: string;
+  senderId: number;
 }

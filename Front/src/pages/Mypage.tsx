@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from '../components/common/Header';
 import EditProfile from '../components/mypage/EditProfile';
 import ChangePassword from '../components/mypage/ChangePassword';
@@ -8,6 +9,12 @@ import useTheme from '../zustand/theme';
 const Mypage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const isDarkMode = useTheme((state) => state.isDarkMode);
+
+  const tabVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
 
   return (
     <>
@@ -28,8 +35,35 @@ const Mypage: React.FC = () => {
           </button>
         </div>
 
-        {activeTab === 'profile' && <EditProfile />}
-        {activeTab === 'password' && <ChangePassword />}
+        <div className={styles.tabContent}>
+          <AnimatePresence mode="wait">
+            {activeTab === 'profile' && (
+              <motion.div
+                key="profile"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={tabVariants}
+                transition={{ duration: 0.3 }}
+              >
+                <EditProfile />
+              </motion.div>
+            )}
+
+            {activeTab === 'password' && (
+              <motion.div
+                key="password"
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={tabVariants}
+                transition={{ duration: 0.3 }}
+              >
+                <ChangePassword />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </>
   );
