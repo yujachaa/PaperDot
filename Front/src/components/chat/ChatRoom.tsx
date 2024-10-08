@@ -73,7 +73,7 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
         const selectedCommand = filterCommands[focusIdx];
         if (selectedCommand) {
           setInputValue(selectedCommand.command + ' '); // Append selected command to input value
-          setFocusIdx(-1); // Reset focus after selection
+          setFocusIdx(filterCommands.length); // Reset focus after selection
         }
       } else {
         handleSendMessage();
@@ -154,15 +154,14 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
     if (value.startsWith('/')) {
       const filtered = commands.filter((command) => command.command.includes(value));
       setFilterCommands(filtered);
-      setFocusIdx(filtered.length - 1);
+      setFocusIdx(filtered.length);
     } else {
       setFilterCommands([]);
       setFocusIdx(-1);
     }
   };
 
-  const connectStompClient = () => {
-    console.log('호출');
+  useEffect(() => {
     const stompClient = Stomp.over(() => new SockJS(`${BASE_URL}/api/stomp`));
     setClient(stompClient);
     const headers = {
@@ -182,32 +181,15 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
       },
       function (error: any) {
         console.error('WebSocket connection error: ', error);
-        setConnected(false);
-        setClient(null);
-
-        setTimeout(() => {
-          console.log('Retrying connection...');
-          setConnected(false);
-          setClient(null);
-          connectStompClient();
-        }, 3000);
       },
     );
-  };
-
-  useEffect(() => {
-    // 첫 연결 시도
-    connectStompClient();
-
     return () => {
-      if (client) {
-        client.disconnect(() => {
-          setClient(null);
-          setConnected(false);
-        });
-      }
+      stompClient?.disconnect(() => {
+        setConnected(false);
+        setClient(null);
+      });
     };
-  }, []);
+  }, [setClient, setConnected]);
 
   const getMessage = async () => {
     const response = await getChatMessage(roomId);
