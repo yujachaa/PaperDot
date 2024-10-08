@@ -5,6 +5,7 @@ import { Rank } from '../../interface/paper';
 import { getBest } from '../../apis/paper';
 import { useNavigate } from 'react-router-dom';
 import { Category } from '../../interface/radio';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
 
@@ -65,6 +66,13 @@ const BestPaper: React.FC = () => {
     navigate(`/paper/${id}`);
   };
 
+  // 애니메이션 variants
+  const variants = {
+    hidden: { opacity: 0, x: 100 },
+    visible: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
+  };
+
   return (
     <div className={styles.bestPaper}>
       <div className="text-xl font-bold ml-3">Best 논문</div>
@@ -88,19 +96,29 @@ const BestPaper: React.FC = () => {
       {loading ? (
         <p>Loading...</p> // 로딩 중일 때 표시
       ) : (
-        <ul className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}>
-          {categoryData[selectedCategory]?.map((paper, index) => (
-            <li
-              key={paper.paperId}
-              className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
-              onClick={() => {
-                goDetail(paper.paperId);
-              }}
-            >
-              <span className="mr-1">0{index + 1}</span> {paper.title}
-            </li>
-          ))}
-        </ul>
+        <AnimatePresence mode="wait">
+          <motion.ul
+            key={selectedCategory}
+            className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
+            transition={{ duration: 0.3 }}
+          >
+            {categoryData[selectedCategory]?.map((paper, index) => (
+              <li
+                key={paper.paperId}
+                className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
+                onClick={() => {
+                  goDetail(paper.paperId);
+                }}
+              >
+                <span className="mr-1">0{index + 1}</span> {paper.title}
+              </li>
+            ))}
+          </motion.ul>
+        </AnimatePresence>
       )}
     </div>
   );
