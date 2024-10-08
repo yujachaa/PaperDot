@@ -31,7 +31,7 @@ public class ChatService {
 
         Member member = memberRepository.findById(memberId).orElse(null);
         if(member!= null) message.setNickname(member.getNickname());
-        
+
         String jsonString = objectMapper.writeValueAsString(message);
         redisTemplate.opsForList().rightPush(key, jsonString);
     }

@@ -66,7 +66,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 //            }
 
 
-            if (requestURI.startsWith("/api/bookmarks")) {
+            if (requestURI.startsWith("/api/bookmarks") && !requestURI.equals("/api/bookmarks/user-bookmark")) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
