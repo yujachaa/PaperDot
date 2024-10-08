@@ -22,6 +22,7 @@ export default {
       'dark-hover': '#7295B0',
       'dark-strong': '#4A88C7',
       'dark-bg': '#2E2E2E',
+      grey: '#E9E9E9',
     },
   },
   plugins: [],
