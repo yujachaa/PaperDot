@@ -87,12 +87,12 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ searchTerm, className, 
   };
 
   return (
-    <div className={`${styles.searchDropdown} ${className}`}>
+    <div className={`${styles.searchDropdown} ${className} `}>
       {searchResult.length > 0 ? (
         searchResult.map((item) => (
           <div
             key={item.id}
-            className={styles.searchItem}
+            className={`${styles.searchItem} hover:bg-grey`}
             onClick={() => goDetail(item.id)} // 클릭 시 id를 전달
           >
             <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] text-light-text">
