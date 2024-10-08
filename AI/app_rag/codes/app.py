@@ -53,7 +53,8 @@ store = {}
 
 # CORS 설정 추가
 origins = [
-    "http://localhost:5173",  # 예를 들어 리액트 로컬 서버
+    "http://localhost:5173",
+    "https://localhost:5173",  # 예를 들어 리액트 로컬 서버
     "https://j11b208.p.ssafy.io",  # 실제로 사용하는 도메인 추가
 ]
 
