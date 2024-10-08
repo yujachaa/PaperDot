@@ -5,6 +5,7 @@ import BookMark from '../common/BookMark';
 import { SearchResultPaper } from '../../interface/search';
 import { useBookmark } from '../../hooks/useBookmark';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks/useAuth';
 
 interface ResultListProps {
   searchResult: SearchResultPaper[] | null;
@@ -14,6 +15,7 @@ interface ResultListProps {
 const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => {
   const navigate = useNavigate();
   const clickBookmark = useBookmark();
+  const isLoggedIn = useAuth();
 
   const [bookmarkStates, setBookmarkStates] = useState<boolean[]>(
     searchResult ? searchResult.map((item) => item.bookmark) : [],
@@ -30,6 +32,24 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
 
   const handleBookmarkClick = async (paperId: number, index: number) => {
     if (isLoadingStates[index]) return;
+
+    if (!isLoggedIn) {
+      toast.error(
+        <>
+          로그인이 필요합니다. <br />
+          <span
+            onClick={() => {
+              toast.dismiss();
+              navigate('/login');
+            }}
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            로그인하러 가기
+          </span>
+        </>,
+      );
+      return;
+    }
 
     setIsLoadingStates((prev) => {
       const updated = [...prev];
