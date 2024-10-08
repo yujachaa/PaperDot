@@ -120,7 +120,7 @@ def create_internal_links(markdown_text):
         # 내부 링크 형식 생성
         # anchor = urllib.parse.quote(anchor)
         # link = f"[{header_text}](#{anchor})"
-        link = f"[{i}. {header_text}](#{anchor}) \n"
+        link = f"[{i}. {header_text}](#{anchor})"
         links.append(link)
     
     return links
@@ -226,12 +226,12 @@ def agent_pipeline(paper_path, paper_id):
 
     # print(doc_summaries)
 
-    doc_summaries = '\n\n '.join(doc_summaries)
+    doc_summaries = '\n\n'.join(doc_summaries)
 
 
     internal_links = create_internal_links(doc_summaries)
 
-    toc_markdown = "# 목차\n\n " + '\n '.join(internal_links) + '\n\n '
+    toc_markdown = "# 목차\n\n" + '\n'.join(internal_links) + '\n\n'
     final_markdown = toc_markdown + '\n --- \n' + doc_summaries
 
     return final_markdown
