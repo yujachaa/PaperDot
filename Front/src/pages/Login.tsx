@@ -67,6 +67,7 @@ const Login: React.FC = () => {
               type="text"
               id="id"
               placeholder="ID"
+              maxLength={100}
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
             />
@@ -77,6 +78,7 @@ const Login: React.FC = () => {
               type="password"
               id="pw"
               placeholder="PW"
+              maxLength={100}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
