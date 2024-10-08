@@ -8,7 +8,7 @@ import requests
 import time
 import os
 from dotenv import load_dotenv
-
+from concurrent.futures import ThreadPoolExecutor
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 env_path = os.path.join(current_dir, "../../config/.env")
@@ -16,12 +16,8 @@ env_path = os.path.join(current_dir, "../../config/.env")
 # .env 파일 로드
 load_dotenv(dotenv_path=env_path)
 
-# CHROME_PATH = os.path.join(current_dir, os.getenv('MY_CHROME_PATH'))
-# DRIVER_PATH = os.path.join(current_dir, os.getenv('MY_DRIVER_PATH'))
-
 CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
 DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
-
 
 def download_pdf(doc_id, save_path):
     url = f"https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn={doc_id}&oCn={doc_id}&dbt=JAKO"
@@ -29,66 +25,60 @@ def download_pdf(doc_id, save_path):
     driver = create_driver()
     
     try:
-        print("논문 페이지로 이동 중...")
+        print(f"{doc_id} - 논문 페이지로 이동 중...")
         driver.get(url)
         
-        print("'ScienceON 원문보기' 버튼 찾는 중...")
+        print(f"{doc_id} - 'ScienceON 원문보기' 버튼 찾는 중...")
         view_button = WebDriverWait(driver, 30).until(
             EC.element_to_be_clickable((By.XPATH, "//a[contains(@onclick, 'fncOrgDown') and contains(text(), 'ScienceON 원문보기')]"))
         )
         
         driver.execute_script("arguments[0].scrollIntoView(true);", view_button)
         time.sleep(1)  # 페이지 렌더링을 위한 짧은 대기
-        print("'ScienceON 원문보기' 버튼 클릭 중...")
+        print(f"{doc_id} - 'ScienceON 원문보기' 버튼 클릭 중...")
         driver.execute_script("arguments[0].click();", view_button)
         
-        print("새 창으로 전환 중...")
+        print(f"{doc_id} - 새 창으로 전환 중...")
         WebDriverWait(driver, 10).until(EC.number_of_windows_to_be(2))
         driver.switch_to.window(driver.window_handles[-1])
         
-        print(f"새 창 URL: {driver.current_url}")
- 
-        print("PDF URL 탐지 중...")
+        print(f"{doc_id} - 새 창 URL: {driver.current_url}")
+    
+        print(f"{doc_id} - PDF URL 탐지 중...")
         # 페이지 소스에서 직접 PDF URL 탐지 시도
         page_source = driver.page_source
         pdf_url_start = page_source.find("/commons/util/orgDocDown.do")
         if pdf_url_start != -1:
             pdf_url_end = page_source.find("'", pdf_url_start)  # URL이 '로 끝날 것으로 가정
             pdf_url = "https://scienceon.kisti.re.kr" + page_source[pdf_url_start:pdf_url_end]
-            print(f"PDF URL 탐지됨: {pdf_url}")
+            print(f"{doc_id} - PDF URL 탐지됨: {pdf_url}")
 
             pdf_url = clean_pdf_url(pdf_url)
             
-            print(f"변환된 PDF URL: {pdf_url}")
+            print(f"{doc_id} - 변환된 PDF URL: {pdf_url}")
             
             download_pdf_with_session(pdf_url, save_path, driver)
         else:
-            print("PDF 링크를 찾지 못했습니다.")
-            print(f"현재 페이지 제목: {driver.title}")
-            print(f"현재 페이지 URL: {driver.current_url}")
+            print(f"{doc_id} - PDF 링크를 찾지 못했습니다.")
+            print(f"{doc_id} - 현재 페이지 제목: {driver.title}")
+            print(f"{doc_id} - 현재 페이지 URL: {driver.current_url}")
             # 스크린샷 저장
-            screenshot_path = "./screenshot.png"
+            screenshot_path = f"./screenshot_{doc_id}.png"
             driver.save_screenshot(screenshot_path)
-            print(f"스크린샷 저장됨: {screenshot_path}")
+            print(f"{doc_id} - 스크린샷 저장됨: {screenshot_path}")
     
     except Exception as e:
-        print(f"오류 발생: {e}")
+        print(f"{doc_id} - 오류 발생: {e}")
         # 스크린샷 저장
-        screenshot_path = "./error_screenshot.png"
+        screenshot_path = f"./error_screenshot_{doc_id}.png"
         driver.save_screenshot(screenshot_path)
-        print(f"오류 시 스크린샷 저장됨: {screenshot_path}")
+        print(f"{doc_id} - 오류 시 스크린샷 저장됨: {screenshot_path}")
     finally:
-        print("웹드라이버 종료 중...")
+        print(f"{doc_id} - 웹드라이버 종료 중...")
         driver.quit()
-
-    return
-
 
 def clean_pdf_url(pdf_url):
     pdf_url = pdf_url.replace("&amp;", "&")
-    
-    # 정규 표현식을 사용하여 filename=부터 다음 &까지 제거
-    # cleaned_url = re.sub(r'filename=[^&]*&', '', pdf_url)
     return pdf_url
 
 def create_driver():
@@ -142,6 +132,38 @@ def download_pdf_with_session(pdf_url, save_path, driver):
                 if chunk:
                     file.write(chunk)
         
-        print("PDF 다운로드 완료!")
+        print(f"{save_path} - PDF 다운로드 완료!")
     except requests.exceptions.RequestException as e:
-        print(f"PDF 다운로드 실패: {e}")
+        print(f"{save_path} - PDF 다운로드 실패: {e}")
+
+def download_pdfs_in_parallel(doc_ids):
+    save_dir = "./downloads"
+    os.makedirs(save_dir, exist_ok=True)
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = []
+        for doc_id in doc_ids:
+            save_path = os.path.join(save_dir, f"{doc_id}.pdf")
+            futures.append(executor.submit(download_pdf, doc_id, save_path))
+
+        for future in futures:
+            try:
+                future.result()  # 예외 발생 시 처리
+            except Exception as e:
+                print(f"다운로드 작업 중 오류 발생: {e}")
+
+if __name__ == "__main__":
+    # 예시 논문 ID 목록
+    document_ids = [
+        "DOC_ID_1",
+        "DOC_ID_2",
+        "DOC_ID_3",
+        "DOC_ID_4",
+        "DOC_ID_5",
+        "DOC_ID_6",
+        "DOC_ID_7",
+        "DOC_ID_8",
+        "DOC_ID_9",
+        "DOC_ID_10",
+    ]
+    download_pdfs_in_parallel(document_ids)
