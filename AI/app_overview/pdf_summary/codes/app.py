@@ -116,7 +116,9 @@ def create_internal_links(markdown_text):
         # 공백을 '-'로 대체하고 소문자로 변환 (GitHub 스타일 앵커 기준)
         anchor = re.sub(r'\s+', '-', header_text.strip()).lower()
         # 특수 문자 제거 (필요에 따라 조정 가능)
-        anchor = re.sub(r'[^\w\-]', '', anchor)
+        # anchor = re.sub(r'[^\w\-]', '', anchor)
+        # 특수 문자 제거 (이모지를 유지하기 위해 이모지 유니코드 범위는 허용)
+        anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1F64F\u1F680-\u1F6FF]', '', anchor)
         # 내부 링크 형식 생성
         # anchor = urllib.parse.quote(anchor)
         # link = f"[{header_text}](#{anchor})"
