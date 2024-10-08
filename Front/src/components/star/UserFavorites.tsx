@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import { getUserBookmarks, trueToggleBookmark } from '../../apis/bookmark';
@@ -9,6 +10,7 @@ interface UserFavoritesProps {
 
 const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const navigate = useNavigate();
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -33,6 +35,11 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
 
     fetchData();
   }, [memberId]);
+
+  const goDetail = (id: number) => {
+    console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/paper/${id}`);
+  };
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -80,7 +87,7 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
           .distance(150),
       )
       // 노드 간 반발력 설정
-      .force('charge', d3.forceManyBody().strength(-100))
+      .force('charge', d3.forceManyBody().strength(-25))
       // 시뮬레이션 중심 위치 지정
       .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -218,7 +225,12 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
           <ul className={styles.nodeList}>
             {linkedNodes.map((node, index) => (
               <li key={index}>
-                <p className={styles.nodeTitle}>{node.title}</p>
+                <p
+                  className={styles.nodeTitle}
+                  onClick={() => goDetail(node.id)}
+                >
+                  {node.title}
+                </p>
                 <p>
                   <span>저자</span> {node.author}
                 </p>
