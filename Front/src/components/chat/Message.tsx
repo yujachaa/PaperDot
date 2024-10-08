@@ -10,17 +10,14 @@ type MessageProps = {
 };
 
 const Message = ({ className, openModal, data }: MessageProps) => {
-  const { Writernickname, message } = data;
+  const { nickname, message } = data;
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const boxRef = useRef<HTMLDivElement>(null); // .box 요소의 참조
 
   const handleClick = () => {
     if (boxRef.current) {
-      // offsetTop과 offsetLeft는 부모 요소에 대한 상대적 위치를 반환
       const top = boxRef.current.offsetTop;
       const left = boxRef.current.offsetLeft;
-
-      // 결과를 모달 위치에 넘김
       openModal(top, left, data);
     }
   };
@@ -34,7 +31,7 @@ const Message = ({ className, openModal, data }: MessageProps) => {
         className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''} cursor-pointer`}
         onClick={handleClick}
       >
-        {Writernickname}
+        {nickname}
       </div>
       <div className={`${style.text}`}>{message}</div>
     </div>
