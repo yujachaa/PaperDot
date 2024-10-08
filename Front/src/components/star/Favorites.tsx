@@ -6,6 +6,7 @@ import { getBookmarks, trueToggleBookmark } from '../../apis/bookmark';
 
 const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -175,7 +176,11 @@ const Favorites = () => {
   // 북마크 토글 함수
   const handleBookmarkToggle = async (paperId: number) => {
     try {
+      setShowModal(true);
       await trueToggleBookmark(paperId);
+      setTimeout(() => {
+        setShowModal(false);
+      }, 1500);
       console.log(`Toggled bookmark for paperId: ${paperId}`);
       // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
       removeNode(paperId);
@@ -197,6 +202,8 @@ const Favorites = () => {
     // 선택된 노드를 초기화
     setSelectedNode(null);
   };
+
+  const Modal = () => <div className={styles.modal}>북마크 해제되었습니다.✅</div>;
 
   return (
     <div className={styles.favorites}>
@@ -228,6 +235,7 @@ const Favorites = () => {
                     paperId={node.id}
                     isBookmarked={true}
                     clickBookmark={() => handleBookmarkToggle(node.id)}
+                    isLoading={false}
                   />
                 </button>
               </li>
@@ -235,6 +243,7 @@ const Favorites = () => {
           </ul>
         </div>
       )}
+      {showModal && <Modal />}
     </div>
   );
 };

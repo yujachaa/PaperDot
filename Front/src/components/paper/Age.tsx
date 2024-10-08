@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getPaperStatistics } from '../../apis/paper';
 import noData from '../../assets/images/nodata.png';
 import styles from './Statistics.module.scss';
+import usePaperBookmark from '../../zustand/paperBookmark';
 
 type AgeProps = {
   paperId: number;
@@ -11,6 +12,7 @@ type AgeProps = {
 const Age: React.FC<AgeProps> = ({ paperId }) => {
   const [data, setData] = useState<any[]>([]);
   const [notEnoughData, setNotEnoughData] = useState<boolean>(false);
+  const isBookmarked = usePaperBookmark((state) => state.isBookmarked);
 
   useEffect(() => {
     const fetchStatistics = async () => {
@@ -29,6 +31,8 @@ const Age: React.FC<AgeProps> = ({ paperId }) => {
         if (buckets.length === 0) {
           setNotEnoughData(true);
           return;
+        } else {
+          setNotEnoughData(false);
         }
 
         const ageData = buckets.map((bucket: any) => ({
@@ -53,9 +57,10 @@ const Age: React.FC<AgeProps> = ({ paperId }) => {
         console.error('통계 데이터 가져오기 오류:', error);
       }
     };
-
-    fetchStatistics();
-  }, [paperId]);
+    setTimeout(() => {
+      fetchStatistics();
+    }, 2000);
+  }, [paperId, isBookmarked]);
 
   return (
     <div className="w-full h-[20rem]">

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getPaperStatistics } from '../../apis/paper';
 import noData from '../../assets/images/nodata.png';
 import styles from './Statistics.module.scss';
+import usePaperBookmark from '../../zustand/paperBookmark';
 
 type DegreeData = {
   DEGREE: string;
@@ -21,6 +22,7 @@ type DegreeProps = {
 const Degree: React.FC<DegreeProps> = ({ paperId }) => {
   const [degreeData, setDegreeData] = useState<DegreeData[]>([]);
   const [notEnoughData, setNotEnoughData] = useState<boolean>(false);
+  const isBookmarked = usePaperBookmark((state) => state.isBookmarked);
 
   const noneInitialValue = useRef(0);
 
@@ -32,6 +34,8 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
         if (degreeBuckets.length === 0) {
           setNotEnoughData(true);
           return;
+        } else {
+          setNotEnoughData(false);
         }
 
         let maxCount = 0;
@@ -135,9 +139,11 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
         console.error('학위 통계 데이터를 가져오는 중 오류 발생:', error);
       }
     };
-
-    fetchStatistics();
-  }, [paperId, noneInitialValue]);
+    setTimeout(() => {
+      fetchStatistics();
+    }, 2000);
+    console.log('북마크 랜더링');
+  }, [paperId, noneInitialValue, isBookmarked]);
 
   return (
     <div className="w-full h-[20rem]">
