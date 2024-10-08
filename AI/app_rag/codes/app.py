@@ -260,7 +260,7 @@ async def ask_question(request: QueryRequest):
     global mapper, reverse_mapper, store
     paper_id = request.paper_id
     question = request.question
-    user_id = request.user_id
+    user_id = f'{request.user_id}_{paper_id}'
 
     # Step 1: Check if paper is already downloaded
     paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
