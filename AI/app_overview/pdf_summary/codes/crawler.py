@@ -16,11 +16,11 @@ env_path = os.path.join(current_dir, "../../config/.env")
 # .env 파일 로드
 load_dotenv(dotenv_path=env_path)
 
-CHROME_PATH = os.path.join(current_dir, os.getenv('MY_CHROME_PATH'))
-DRIVER_PATH = os.path.join(current_dir, os.getenv('MY_DRIVER_PATH'))
+# CHROME_PATH = os.path.join(current_dir, os.getenv('MY_CHROME_PATH'))
+# DRIVER_PATH = os.path.join(current_dir, os.getenv('MY_DRIVER_PATH'))
 
-# CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
-# DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
+CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
+DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
 
 
 def download_pdf(doc_id, save_path):
