@@ -7,14 +7,14 @@ import UserInfoModal from './UserInfoModal';
 import Notice from './Notice';
 import { GroupMessage } from '../../interface/chat';
 import { toast } from 'react-toastify';
-import SearchItem from './SearhItem'; // Fixed typo from 'SearhItem' to 'SearchItem'
+import SearchItem from './SearhItem';
 import { chatAiApi, getChatMessage } from '../../apis/chat';
-import { Stomp } from '@stomp/stompjs';
+import { CompatClient, Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { BASE_URL } from '../../apis/core';
 import { getMemberIdFromToken } from '../../utills/tokenParser';
-import { useWebSocket } from '../../context/WebSocketContext';
 import { getTokenSessionStorage } from '../../utills/sessionStorage';
+import Loading from '../../assets/images/loading.gif';
 
 type ChatRoomProps = {
   className?: string;
@@ -43,7 +43,8 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
   const [focusIdx, setFocusIdx] = useState<number>(-1); // Start focus index at -1
   const [inputValue, setInputValue] = useState<string>('');
   const [messages, setMessage] = useState<GroupMessage[]>([]);
-  const { client, setClient, setConnected, connected } = useWebSocket();
+  const [isLoading, setIsLoading] = useState(false);
+  const clientRef = useRef<CompatClient | null>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
   const openModal = (top: number, left: number, data: GroupMessage) => {
     setModalPosition({ top, left });
@@ -82,17 +83,24 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
   };
 
   const postAiChat = async (paper_id: string, question: string, user_id: string) => {
-    try {
-      toast.success('AI에게 질문하고 있습니다', {
+    if (isLoading) {
+      toast.warn('AI에게 질문중입니다 완료후 다시 질문해주세요!', {
         position: 'top-right',
       });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
       const response = await chatAiApi(paper_id, question.slice(4), user_id);
       setMessage((prev) => [
         ...prev,
-        { chatRoomId: roomId, message: response.data.answer, nickname: 'RAG', senderId: -1 },
+        { chatRoomId: roomId, message: response.data.answer, nickname: 'AI챗봇', senderId: -1 },
       ]);
     } catch (err: any) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
   const closeModal = () => {
@@ -109,24 +117,32 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
     const message = inputValue;
 
     if (message !== '') {
-      if (connected) {
-        //api에게 질문하기
-        if (inputValue.startsWith('/ai ')) {
-          postAiChat(String(paperId), message, 'username');
+      if (clientRef.current && clientRef.current.connected) {
+        //200자 이상 입력 불가능
+        if (message.length >= 200) {
+          toast.error('200자 이상 입력할 수 없습니다.', {
+            position: 'top-right',
+          });
+          return;
+        } else {
+          //api에게 질문하기
+          if (inputValue.startsWith('/ai ')) {
+            postAiChat(String(paperId), message, 'username');
+          }
+          //일반 채팅
+          else {
+            clientRef.current.send(
+              `/app/chat/${roomId}`,
+              {},
+              JSON.stringify({
+                chatRoomId: roomId,
+                message: message,
+                senderId: getMemberIdFromToken(),
+              }),
+            );
+          }
+          setInputValue('');
         }
-        //일반 채팅
-        else {
-          client!.send(
-            `/app/chat/${roomId}`,
-            {},
-            JSON.stringify({
-              chatRoomId: roomId,
-              message: message,
-              senderId: getMemberIdFromToken(),
-            }),
-          );
-        }
-        setInputValue('');
       } else {
         toast.warn('웹소켓 연결이 끊겨 있습니다', {
           position: 'top-right',
@@ -137,13 +153,8 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      if (
-        messages[messages.length - 1].senderId === getMemberIdFromToken() ||
-        messages[messages.length - 1].senderId === -1
-      ) {
-        if (messageListRef.current) {
-          messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
-        }
+      if (messageListRef.current) {
+        messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
       }
     }
   }, [messages]);
@@ -163,7 +174,7 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
 
   useEffect(() => {
     const stompClient = Stomp.over(() => new SockJS(`${BASE_URL}/api/stomp`));
-    setClient(stompClient);
+    clientRef.current = stompClient;
     const headers = {
       Authorization: 'Bearer ' + '123', // JWT 토큰을 여기에 넣어주세요
     };
@@ -172,7 +183,6 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
       headers,
       function (frame: string) {
         console.log('Connected: ' + frame);
-        setConnected(true);
         stompClient!.subscribe(`/topic/${roomId}`, function (message) {
           console.log('Received message: ' + message.body);
           const newMessage = JSON.parse(message.body);
@@ -185,11 +195,10 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
     );
     return () => {
       stompClient?.disconnect(() => {
-        setConnected(false);
-        setClient(null);
+        clientRef.current = null;
       });
     };
-  }, [setClient, setConnected]);
+  }, [roomId]);
 
   const getMessage = async () => {
     const response = await getChatMessage(roomId);
@@ -197,7 +206,6 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
     let data = response.data.filter((prev: any) => {
       if (prev) return prev;
     });
-    console.log(data);
     setMessage(data);
   };
   useEffect(() => {
@@ -246,6 +254,16 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
             />
           ))}
         </div>
+        {isLoading && (
+          <div className={styles.question}>
+            AI에게 질문중{' '}
+            <img
+              src={Loading}
+              alt="로딩"
+              className={styles.loading}
+            />
+          </div>
+        )}
         <SendInput
           onKeyDown={handleKeyDown}
           handleSendMessage={handleSendMessage}
