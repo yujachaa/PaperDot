@@ -15,9 +15,6 @@ interface NoteProps {
   paperId: number;
 }
 
-// const summaryText =
-//   '# 목차\n\n[1. 📄 저널 정보](#-저널-정보) ...'; // 요약 텍스트는 생략
-
 const Note: React.FC<NoteProps> = ({ paperId }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -67,7 +64,10 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
     try {
       const response = await getSummary(paperId, gen); // getSummary 호출
       console.log('요약 데이터:', response);
-      setSummaryText(response.results);
+      const editedText = addHeadingTagsWithIdsAfterHr(response.results);
+      setSummaryText(editedText);
+      console.log(editedText);
+      console.log(summaryText);
       console.log('요약내용', summaryText);
       if (response.model === 0) {
         console.log('모델 라마');
@@ -83,19 +83,23 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
     }
   };
 
-  // const oepnOption = () => {
-  //   setShowOptions(!showOptions);
-  // };
+  const addHeadingTagsWithIdsAfterHr = (text: string): string => {
+    // <hr> 태그 이후 텍스트를 분리하여 처리
+    const [beforeHr, afterHr] = text.split(/---\s*\n/); // <hr> 기준으로 텍스트 분리
+    const transformedAfterHr = afterHr.replace(/^# (.+)$/gm, (_, title) => {
+      const id =
+        '-' +
+        title
+          .replace(/^[^\w\s]+/, '')
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-'); // 첫 이모지 제거, 소문자 변환, 첫 글자 앞에 '-' 추가
+      return `<h1 id="${id}">${title}</h1>`;
+    });
 
-  // const handleModelSelect = (model: string) => {
-  //   setSelectedModel(model);
-  //   // setShowOptions(false);
-  //   setIsLoaded(false);
-  //   setIsCopied(false);
-  //   setTimeout(() => {
-  //     setIsLoaded(true);
-  //   }, 2000);
-  // };
+    // <hr> 전후 텍스트를 다시 합쳐서 반환
+    return `${beforeHr}---\n${transformedAfterHr}`;
+  };
 
   const Modal = () => (
     <div className={styles.modal}>AI요약노트가 클립보드에 {'\n'} 복사되었습니다!✅</div>
@@ -118,22 +122,6 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
               color: isDarkMode ? '#fafafa' : '#2e2e2e',
             }}
           />
-          {/* {showOptions && (
-            <div className={`${styles.options} ${isDarkMode ? styles.dark : ''} mobile:text-sm`}>
-              <div
-                className={`${styles.optionItem} ${isDarkMode ? styles.dark : ''}`}
-                onClick={() => handleModelSelect('LLama3.1-ko')}
-              >
-                LLama3.1-ko
-              </div>
-              <div
-                className={`${styles.optionItem} ${isDarkMode ? styles.dark : ''}`}
-                onClick={() => handleModelSelect('GPT-4o')}
-              >
-                GPT-4
-              </div>
-            </div>
-          )} */}
         </div>
 
         {isCopied ? (
