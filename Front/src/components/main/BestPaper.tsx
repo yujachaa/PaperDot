@@ -70,7 +70,7 @@ const BestPaper: React.FC = () => {
       <div className="text-xl font-bold ml-3">Best 논문</div>
       {/* <p className="text-base ml-3">최근 가장 많이 찾은 논문입니다.</p> */}
       <div className="w-full overflow-x-auto">
-        <div className="flex justify-between mt-4 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
+        <div className="flex justify-between mt-2 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
           {categories.map((category) => (
             <div
               key={category}
