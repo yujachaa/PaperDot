@@ -1,8 +1,20 @@
-import { api, searchApi } from './core';
+import { Authapi, api, searchApi } from './core';
 
 export const getDetail = async (paperId: number) => {
   try {
     const response = await api.get(`/api/papers/detail?paperId=${paperId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('논문 상세 정보 조회 실패:', error);
+    throw error;
+  }
+};
+
+//로그인한 유저가 조회하는 경우
+export const getDetailLogined = async (paperId: number) => {
+  try {
+    const response = await Authapi.get(`/api/papers/detail?paperId=${paperId}`);
     console.log(response.data);
     return response.data;
   } catch (error) {
