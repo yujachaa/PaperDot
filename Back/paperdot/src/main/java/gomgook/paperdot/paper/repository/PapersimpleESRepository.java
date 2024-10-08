@@ -19,8 +19,27 @@ public interface PapersimpleESRepository extends ElasticsearchRepository<PaperSi
 
     // Match 쿼리와 from, size 설정
     //@Query("{ \"match\": { \"original_json.title.ko\": \"?0\"  } }")
-    @Query("{ \"bool\": { \"should\": [ { \"term\": { \"original_json.title.ko\": \"?0\" } }, { \"term\": { \"original_json.title.ko.keyword\": \"?0\" } } ] } }")
-    Optional<List<PaperSimpleDocument>> findByOriginalJsonTitle(String searchTerm);
+    //@Query("{ \"bool\": { \"should\": [ { \"term\": { \"original_json.title.ko\": \"?0\" } }, { \"term\": { \"original_json.title.ko.keyword\": \"?0\" } } ] } }")
+    //@Query("{ \"bool\": { \"should\": [ { \"match_phrase_prefix\": { \"original_json.title.ko\": \"?0\" } }] } }")
 
+    @Query("""
+{
+  "bool": {
+    "must": [
+      {
+        "exists": {
+          "field": "original_json.abstract"
+        }
+      },
+      {
+        "match_phrase_prefix": {
+          "original_json.title.ko": "?0"
+        }
+      }
+    ]
+  }
+}
+""")
+    Optional<List<PaperSimpleDocument>> findByOriginalJsonTitle(String searchTerm);
 
 }
