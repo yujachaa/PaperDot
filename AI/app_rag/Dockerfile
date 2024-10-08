@@ -52,6 +52,7 @@ RUN chmod +x /app_rag/chrome-linux64/chrome
 # RUN pip install pymupdf4llm==0.0.17
 # RUN pip install pdfplumber==0.11.4
 
+
 # Expose the port that the FastAPI application will run on
 EXPOSE 7777
 
