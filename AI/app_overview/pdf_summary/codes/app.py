@@ -1,6 +1,6 @@
 import warnings
 import os
-from crawler import download_pdf  # embedding.py에서 가져옴
+from pdf_summary.codes.crawler import download_pdf  # embedding.py에서 가져옴
 from contextlib import asynccontextmanager
 import uvicorn
 import pickle
