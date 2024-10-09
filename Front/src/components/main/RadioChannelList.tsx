@@ -113,6 +113,7 @@ const RadioChannelList: React.FC = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     swipeToSlide: true,
+    useTransform: false,
     arrows: true,
     variableWidth: true,
     nextArrow: <RightArrow />,
