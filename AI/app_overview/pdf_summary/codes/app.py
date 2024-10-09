@@ -32,7 +32,7 @@ import pymupdf4llm
 import asyncio
 from selenium import webdriver
 from queue import Queue
-from threading import Lock
+from threading import Lock, Thread
 import logging
 
 # 로깅 설정
@@ -155,7 +155,6 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
     if not os.path.exists(paper_path):
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
         task_queue.put((doc_id, paper_path, driver))
-        return process_download_queue()
     else:
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
 
@@ -166,7 +165,7 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
 async def process_download_queue():
     while not task_queue.empty():
         doc_id, paper_path, driver = task_queue.get()
-        download_pdf(doc_id, paper_path, driver)
+        await download_pdf(doc_id, paper_path, driver)
         task_queue.task_done()
 
 # Elasticsearch 클라이언트 생성
@@ -245,7 +244,7 @@ async def agent_pipeline_async(paper_path, paper_id, state: AppState):
 def agent_pipeline(paper_path, paper_id, state: AppState):
     driver = driver_pool
     try:
-        pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
+        pdf_document = asyncio.run(get_pdf(paper_path, paper_id, state.reverse_mapper, driver))
 
         try:
             markdown_document = pymupdf4llm.to_markdown(paper_path)
