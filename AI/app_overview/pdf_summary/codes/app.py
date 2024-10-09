@@ -236,6 +236,7 @@ async def summary_paper(
         else:
             paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
             try:
+                print('체크3-1')
                 results = await agent_pipeline_async(paper_path, paper_id, state)
                 print('체크3')
                 es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
