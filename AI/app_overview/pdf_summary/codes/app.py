@@ -1,6 +1,6 @@
 import warnings
 import os
-from pdf_summary.codes.crawler import download_pdf 
+from crawler import download_pdf 
 from contextlib import asynccontextmanager
 import uvicorn
 import pickle
@@ -30,41 +30,14 @@ from langchain import hub
 import openai
 import pymupdf4llm
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from selenium import webdriver
 from queue import Queue
 from threading import Lock
-
 import logging
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# WebDriver 풀 클래스 정의
-class WebDriverPool:
-    def __init__(self, max_size=5):
-        self.pool = Queue(max_size)
-        self.lock = Lock()
-        for i in range(max_size):
-            driver = create_driver(port=9222 + i)  # 포트를 다르게 설정하여 충돌 방지
-            self.pool.put(driver)
-            logger.info(f"WebDriver 인스턴스 초기화 완료. 현재 풀 크기: {self.pool.qsize()}")
-
-    def get_driver(self):
-        driver = self.pool.get()
-        logger.info(f"WebDriver 인스턴스 가져옴. 현재 풀 크기: {self.pool.qsize()}")
-        return driver
-
-    def return_driver(self, driver):
-        self.pool.put(driver)
-        logger.info(f"WebDriver 인스턴스 풀에 반환됨. 현재 풀 크기: {self.pool.qsize()}")
-
-    def close_all(self):
-        while not self.pool.empty():
-            driver = self.pool.get()
-            driver.quit()
-            logger.info(f"WebDriver 인스턴스 종료됨. 남은 풀 크기: {self.pool.qsize()}")
 
 # WebDriver 생성 함수
 def create_driver(port=9222):
@@ -74,8 +47,8 @@ def create_driver(port=9222):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     env_path = os.path.join(current_dir, "../../config/.env")
     load_dotenv(dotenv_path=env_path)
-    CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
-    DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
+    CHROME_PATH = os.path.join(current_dir, os.getenv('MY_CHROME_PATH'))
+    DRIVER_PATH = os.path.join(current_dir, os.getenv('MY_DRIVER_PATH'))
 
     options = Options()
     options.add_argument('--headless')  # 필요시 주석 해제
@@ -83,7 +56,7 @@ def create_driver(port=9222):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
-    options.add_argument(f'--remote-debugging-port={port}')  # 각 인스턴스마다 서로 다른 포트 사용
+    options.add_argument(f'--remote-debugging-port={port}')
     options.add_argument('--log-level=3')
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.binary_location = CHROME_PATH
@@ -96,7 +69,7 @@ def create_driver(port=9222):
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-# WebDriver 풀 초기화 (최대 5개)
+# WebDriver 초기화
 driver_pool = None
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -181,13 +154,20 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
 
     if not os.path.exists(paper_path):
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
-        download_pdf(doc_id, paper_path, driver)
+        task_queue.put((doc_id, paper_path, driver))
+        return process_download_queue()
     else:
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
 
     with open(paper_path, "rb") as f:
         pdf_document = f.read()
     return pdf_document
+
+async def process_download_queue():
+    while not task_queue.empty():
+        doc_id, paper_path, driver = task_queue.get()
+        download_pdf(doc_id, paper_path, driver)
+        task_queue.task_done()
 
 # Elasticsearch 클라이언트 생성
 def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSWORD):
@@ -232,8 +212,6 @@ class AppState:
 async def get_app_state():
     return AppState()
 
-# driver_pool = WebDriverPool(max_size=5)
-
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -241,12 +219,12 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing embedding system...")
     app.state = AppState()
 
-    driver_pool = WebDriverPool(max_size=5)
+    driver_pool = create_driver()
     
     yield
     
     logger.info("Shutting down...")
-    driver_pool.close_all()
+    driver_pool.quit()
 
 # FastAPI 인스턴스 생성
 app = FastAPI(lifespan=lifespan)
@@ -258,19 +236,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ThreadPoolExecutor 초기화
-executor = ThreadPoolExecutor(max_workers=5)
+# Message Queue 초기화
+task_queue = Queue()
 
 async def agent_pipeline_async(paper_path, paper_id, state: AppState):
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
+    return await asyncio.get_event_loop().run_in_executor(None, agent_pipeline, paper_path, paper_id, state)
 
 def agent_pipeline(paper_path, paper_id, state: AppState):
-    driver = driver_pool.get_driver()
+    driver = driver_pool
     try:
         pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
 
-        markdown_document = pymupdf4llm.to_markdown(paper_path)
+        try:
+            markdown_document = pymupdf4llm.to_markdown(paper_path)
+        except Exception as e:
+            logger.error(f"Markdown 변환 중 오류 발생 (paper_id: {paper_id}): {e}")
+            raise ValueError(f"PDF에서 텍스트를 추출하는 중 오류가 발생했습니다. (paper_id: {paper_id})")
 
         markdown_splitter = MarkdownHeaderTextSplitter(
             headers_to_split_on=headers_to_split_on,
@@ -297,7 +278,7 @@ def agent_pipeline(paper_path, paper_id, state: AppState):
         logger.info(f"Paper ID: {paper_id} 요약 완료.")
         return final_markdown
     finally:
-        driver_pool.return_driver(driver)
+        driver_pool.delete_all_cookies()
 
 @app.get("/summary")
 async def summary_paper(
@@ -334,12 +315,19 @@ async def summary_paper(
         return {"results": results, "model": 0}
 
 def main():
-    uvicorn.run("app:app", host="0.0.0.0", port=3333, reload=True)
+    try:
+        uvicorn.run("app:app", host="0.0.0.0", port=3333, reload=True)
+    except Exception as e:
+        logger.error(f"오류 발생: {e}", exc_info=True)
+        # 모든 드라이버 종료
+        if driver_pool:
+            driver_pool.quit()
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
         logger.error(f"오류 발생: {e}", exc_info=True)
+        # 모든 드라이버 종료
         if driver_pool:
-            driver_pool.close_all()
+            driver_pool.quit()
