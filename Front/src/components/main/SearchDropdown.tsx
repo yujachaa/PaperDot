@@ -49,6 +49,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ searchTerm, className, 
             key={item.id}
             className={`${styles.searchItem} hover:bg-grey`}
             onClick={() => goDetail(item.id)} // 클릭 시 id를 전달
+            onMouseDown={() => goDetail(item.id)}
           >
             <p className="w-full overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] text-light-text">
               {highlightText(item.title, searchTerm)}
