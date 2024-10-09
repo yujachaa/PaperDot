@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './SendInput.module.scss';
 import useTheme from '../../zustand/theme';
 import InputIcon from '../../assets/images/submit.svg?react';
+import { getTokenSessionStorage } from '../../utills/sessionStorage';
 type InputProps = {
   className?: string;
   placeholder?: string;
@@ -27,7 +28,7 @@ const SendInput = ({
       <input
         type="text"
         placeholder={placeholder}
-        className={`${styles.input} ${isDarkMode ? `${styles.dark}` : ''}`}
+        className={`${styles.input} ${isDarkMode ? `${styles.dark}` : ''} ${getTokenSessionStorage() === null ? 'hover:cursor-not-allowed' : ''}`}
         disabled={disabled}
         onKeyDown={onKeyDown}
         onChange={onChange}

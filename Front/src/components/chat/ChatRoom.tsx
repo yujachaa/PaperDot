@@ -269,6 +269,10 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
           handleSendMessage={handleSendMessage}
           onChange={handleChange}
           value={inputValue}
+          disabled={getTokenSessionStorage() !== null ? false : true}
+          placeholder={
+            getTokenSessionStorage() !== null ? '채팅입력' : '로그인후 채팅이 가능합니다'
+          }
         />
       </div>
     </div>
