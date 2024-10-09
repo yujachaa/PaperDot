@@ -1,4 +1,3 @@
-# app.py
 import warnings
 import os
 from pdf_summary.codes.crawler import download_pdf  # 수정된 download_pdf 사용
@@ -32,16 +31,72 @@ import openai
 import pymupdf4llm
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from selenium import webdriver
+from queue import Queue
+from threading import Lock
 
-from pdf_summary.codes import driver_pool  # WebDriverPool을 가져옵니다.
+# WebDriver 풀 클래스 정의
+class WebDriverPool:
+    def __init__(self, max_size=5):
+        self.pool = Queue(max_size)
+        self.lock = Lock()
+        for _ in range(max_size):
+            driver = create_driver()
+            self.pool.put(driver)
+
+    def get_driver(self):
+        return self.pool.get()
+
+    def return_driver(self, driver):
+        self.pool.put(driver)
+
+    def close_all(self):
+        while not self.pool.empty():
+            driver = self.pool.get()
+            driver.quit()
+
+# WebDriver 생성 함수
+def create_driver():
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.chrome.options import Options
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    env_path = os.path.join(current_dir, "../../config/.env")
+    load_dotenv(dotenv_path=env_path)
+    CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
+    DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
+
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--window-size=1920,1080')
+    options.add_argument('--remote-debugging-port=9222')
+    options.add_argument('--log-level=3')
+    options.add_argument('--disable-blink-features=AutomationControlled')
+    options.binary_location = CHROME_PATH
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-infobars')
+    options.add_argument('--disable-browser-side-navigation')
+    options.add_argument('--disable-features=VizDisplayCompositor')
+
+    service = Service(DRIVER_PATH)
+    driver = webdriver.Chrome(service=service, options=options)
+    return driver
+
+# WebDriver 풀 초기화 (최대 5개)
+driver_pool = WebDriverPool(max_size=5)
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, "../config/.env")
 
 # Define paths
-current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../../config/.env")
 MAPPING_PICKLE_FILE = os.path.join(current_dir, "../models/doc_id_index_mapping.pkl")
 PAPER_STORAGE_PATH = os.path.join(current_dir, "../datas/")
 
 load_dotenv(dotenv_path=env_path)
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Elasticsearch 설정
@@ -51,6 +106,10 @@ ES_USER = os.getenv('ES_USER')  # 인증이 필요한 경우
 ES_PASSWORD = os.getenv('ES_PASSWORD')  # 인증이 필요한 경우
 ES_APIKEY = os.getenv('ES_APIKEY')
 INDEX_NAME = 'papers'
+
+mapper = None
+reverse_mapper = None
+llm = None
 
 # CORS 설정 추가
 origins = [
@@ -100,15 +159,11 @@ def create_internal_links(markdown_text):
     links = "<br>".join(links)
     return links
 
-def get_pdf(paper_path, paper_id, reverse_mapper):
-    print('pdf')
+def get_pdf(paper_path, paper_id, reverse_mapper, driver):
     if not os.path.exists(paper_path):
-        print('pdf-2')
-        download_pdf(reverse_mapper[int(paper_id)], paper_path)
+        download_pdf(reverse_mapper[int(paper_id)], paper_path, driver)
     with open(paper_path, "rb") as f:
-        print('pdf-3')
         pdf_document = f.read()
-    print('pdf-4')
     return pdf_document
 
 # Elasticsearch 클라이언트 생성
@@ -153,46 +208,6 @@ class AppState:
 async def get_app_state():
     return app.state
 
-# ThreadPoolExecutor 초기화
-executor = ThreadPoolExecutor(max_workers=5)
-
-def agent_pipeline(paper_path, paper_id, state: AppState):
-    print('pipe-line-input')
-    pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper)
-    print('pipe-line-input')
-    markdown_document = pymupdf4llm.to_markdown(paper_path)
-    print('pipe-line-input')    
-    markdown_splitter = MarkdownHeaderTextSplitter(
-        headers_to_split_on=headers_to_split_on,
-        strip_headers=False, # 헤더 제거 off
-    )
-    print('pipe-line-input')
-    md_header_splits = markdown_splitter.split_text(markdown_document)
-    print('pipe-line-input')
-    md_header_splits = [section.page_content for section in md_header_splits]
-    print('pipe-line-input')
-    # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
-    llm = state.llm
-    print('pipe-line-input')
-    map_chain = PROMPT | llm | StrOutputParser()
-    print('pipe-line-input')
-    doc_summaries = map_chain.batch(md_header_splits)
-    print('pipe-line-input')
-    doc_summaries = '\n\n'.join(doc_summaries)
-    print('pipe-line-input')
-    internal_links = create_internal_links(doc_summaries)
-    print('pipe-line-input')
-    toc_markdown = f"# 목차\n\n{internal_links}\n\n"
-    final_markdown = toc_markdown + '\n --- \n' + doc_summaries
-
-    return final_markdown
-
-async def agent_pipeline_async(paper_path, paper_id, state: AppState):
-    print('loof1')
-    loop = asyncio.get_event_loop()
-    print('loof2')
-    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
-
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -217,6 +232,47 @@ app.add_middleware(
     allow_headers=["*"],  # 모든 헤더 허용
 )
 
+def agent_pipeline(paper_path, paper_id, state: AppState):
+    driver = driver_pool.get_driver()
+    try:
+        pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
+
+        markdown_document = pymupdf4llm.to_markdown(paper_path)
+
+        markdown_splitter = MarkdownHeaderTextSplitter(
+            headers_to_split_on=headers_to_split_on,
+            strip_headers=False, # 헤더 제거 off
+        )
+
+        md_header_splits = markdown_splitter.split_text(markdown_document)
+
+        md_header_splits = [section.page_content for section in md_header_splits]
+
+        # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
+        llm = state.llm
+
+        map_chain = PROMPT | llm | StrOutputParser()
+
+        doc_summaries = map_chain.batch(md_header_splits)
+
+        doc_summaries = '\n\n'.join(doc_summaries)
+
+        internal_links = create_internal_links(doc_summaries)
+
+        toc_markdown = f"# 목차\n\n{internal_links}\n\n"
+        final_markdown = toc_markdown + '\n --- \n' + doc_summaries
+
+        return final_markdown
+    finally:
+        driver_pool.return_driver(driver)
+
+# ThreadPoolExecutor 초기화
+executor = ThreadPoolExecutor(max_workers=5)
+
+async def agent_pipeline_async(paper_path, paper_id, state: AppState):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
+
 @app.get("/summary")
 async def summary_paper(
     paper_id: str = Query(..., description="Paper ID to search"),
@@ -232,20 +288,15 @@ async def summary_paper(
         res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Elasticsearch 오류: {e}")
-    
-    print('체크1')
 
     if res['found']:
         doc = res['_source']
         if 'overview' in doc and doc['overview'] and not gen:
-            print('체크2')
             return {"results": doc['overview'], "model": 0}
         else:
             paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
             try:
-                print('체크3-1')
                 results = await agent_pipeline_async(paper_path, paper_id, state)
-                print('체크3')
                 es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
                 return {"results": results, "model": 1}
             except Exception as e:
