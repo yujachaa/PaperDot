@@ -70,9 +70,9 @@ export const router = createBrowserRouter([
       {
         path: '/star',
         element: (
-          // <ErrorBoundary>
+          // <ErrorBoundary >
           <Star />
-          // </ErrorBoundary>
+          // </ErrorBoundary >
         ),
       },
       {
