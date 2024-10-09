@@ -173,7 +173,7 @@ def create_internal_links(markdown_text):
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper, driver):
-    doc_id = reverse_mapper[paper_id]
+    doc_id = reverse_mapper[int(paper_id)]
     if not doc_id:
         logger.error(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
         raise ValueError(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
