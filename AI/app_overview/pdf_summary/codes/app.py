@@ -66,6 +66,7 @@ origins = [
     "http://localhost:5173",
     "https://localhost:5173",  # 예를 들어 리액트 로컬 서버
     "https://j11b208.p.ssafy.io",  # 실제로 사용하는 도메인 추가
+    "http://j11b208.p.ssafy.io",
 ]
 
 headers_to_split_on = [
@@ -84,7 +85,7 @@ headers_to_split_on = [
 ]
 
 prompt_template = """
-다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요.
+다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요. '#'헤더 부분에는 '** **' 같은 Bold 처리는 하지마세요.
 
 "{text}"
 
