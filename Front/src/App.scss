@@ -50,36 +50,42 @@ body {
 }
 
 //마크다운 표시를 위한 h1, h2, h3 태그 설정
-h1 {
+#note h1 {
   font-weight: bold;
   font-size: 1.5rem; /* 24px */
   line-height: 2rem; /* 32px */
 }
 
-h2 {
+#note h2 {
   font-weight: bold;
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem; /* 28px */
 }
 
-h3 {
+#note h3 {
   font-weight: bold;
   font-size: 1.125rem; /* 18px */
   line-height: 1.5rem; /* 24px */
 }
 
-ul > li {
+#note ul > li {
   list-style-type: disc;
   list-style-position: inside;
 }
 
-ol > li {
+#note ol > li {
   list-style-type: decimal;
   list-style-position: inside;
 }
 
-li > ul {
+#note li > ul {
   text-indent: 1rem;
+}
+
+#note a {
+  opacity: 0.7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 // 통계차트 폰트 적용

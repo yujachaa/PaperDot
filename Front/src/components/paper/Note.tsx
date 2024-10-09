@@ -9,7 +9,8 @@ import { useLocation } from 'react-router-dom';
 import useTheme from '../../zustand/theme';
 import styles from './Note.module.scss';
 import ReactDOM from 'react-dom';
-import { getSummary } from '../../apis/paper'; // getSummary 함수 임포트
+import { getSummary } from '../../apis/paper';
+import { Tooltip } from 'react-tooltip';
 
 interface NoteProps {
   paperId: number;
@@ -114,6 +115,7 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
             console.log('클릭');
             getNote(paperId, true);
           }}
+          id="reload"
         >
           <p className="font-bold mobile:text-sm">{selectedModel}</p>
           <ReloadIcon
@@ -156,6 +158,12 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
       <ReactMarkdown rehypePlugins={[rehypeRaw]}>{summaryText}</ReactMarkdown>
 
       {showModal && ReactDOM.createPortal(<Modal />, document.body)}
+      <Tooltip
+        anchorSelect="#reload"
+        place="top"
+      >
+        현재 모델입니다
+      </Tooltip>
     </>
   ) : (
     <NoteSkeleton />
