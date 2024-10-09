@@ -49,25 +49,7 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
 
         const formattedData: DegreeData[] = [
           {
-            DEGREE: '교수',
-            UNDERUNIV: 0,
-            UNIV: 0,
-            BACHELOR: 0,
-            MASTER: 0,
-            DOCTOR: 0,
-            NONE: noneInitialValue.current,
-          },
-          {
-            DEGREE: '박사',
-            UNDERUNIV: 0,
-            UNIV: 0,
-            BACHELOR: 0,
-            MASTER: 0,
-            DOCTOR: 0,
-            NONE: noneInitialValue.current,
-          },
-          {
-            DEGREE: '석사',
+            DEGREE: '중고등학생',
             UNDERUNIV: 0,
             UNIV: 0,
             BACHELOR: 0,
@@ -85,7 +67,25 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
             NONE: noneInitialValue.current,
           },
           {
-            DEGREE: '중고등학생',
+            DEGREE: '석사',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '박사',
+            UNDERUNIV: 0,
+            UNIV: 0,
+            BACHELOR: 0,
+            MASTER: 0,
+            DOCTOR: 0,
+            NONE: noneInitialValue.current,
+          },
+          {
+            DEGREE: '교수',
             UNDERUNIV: 0,
             UNIV: 0,
             BACHELOR: 0,
@@ -159,7 +159,7 @@ const Degree: React.FC<DegreeProps> = ({ paperId }) => {
       ) : (
         <ResponsiveBar
           data={degreeData}
-          keys={['UNDERUNIV', 'UNIV', 'BACHELOR', 'MASTER', 'DOCTOR', 'NONE']}
+          keys={['DOCTOR', 'MASTER', 'BACHELOR', 'UNIV', 'UNDERUNIV', 'NONE']}
           indexBy="DEGREE"
           margin={{ top: 50, right: 50, bottom: 50, left: 70 }}
           padding={0.2}

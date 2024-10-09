@@ -115,7 +115,9 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
                 <p className="font-bold text-lg overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base">
                   {item.title}
                 </p>
-                <p className="mobile:text-sm">{item.authors.join(', ')}</p>
+                <p className="mobile:text-sm overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%]">
+                  {item.authors.join(', ')}
+                </p>
                 <p className="mobile:text-sm">{item.year}</p>
                 <div className={styles.tag}>
                   {item.keywords
