@@ -288,7 +288,7 @@ async def ask_question(request: QueryRequest):
         
         # Create a new FAISS index
         # 단계 1: 문서 로드(Load Documents)
-        docs = pymupdf4llm.to_markdown(index_file)
+        docs = pymupdf4llm.to_markdown(paper_path)
 
         # markdown_splitter = MarkdownHeaderTextSplitter(
         #     headers_to_split_on=headers_to_split_on,
