@@ -142,7 +142,7 @@ def create_internal_links(markdown_text):
     links = "<br>".join(links)
     return links
 
-def get_pdf(paper_path, paper_id, reverse_mapper, driver):
+async def get_pdf(paper_path, paper_id, reverse_mapper, driver):
     driver.delete_all_cookies()  # 쿠키 삭제로 독립적인 세션 유지
 
     doc_id = reverse_mapper.get(int(paper_id))
@@ -163,6 +163,14 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
     return pdf_document
 
 async def process_download_queue():
+    while not task_queue.empty():
+        doc_id, paper_path, driver = task_queue.get()
+        await download_pdf(doc_id, paper_path, driver)
+        task_queue.task_done()
+        # 파일 다운로드 완료 후 존재 여부 확인
+        if not os.path.exists(paper_path):
+            logger.error(f"PDF 파일 다운로드 실패: {paper_path}")
+            raise FileNotFoundError(f"PDF 파일 다운로드 실패: {paper_path}")
     while not task_queue.empty():
         doc_id, paper_path, driver = task_queue.get()
         await download_pdf(doc_id, paper_path, driver)
@@ -244,7 +252,7 @@ async def agent_pipeline_async(paper_path, paper_id, state: AppState):
 def agent_pipeline(paper_path, paper_id, state: AppState):
     driver = driver_pool
     try:
-        pdf_document = asyncio.run(get_pdf(paper_path, paper_id, state.reverse_mapper, driver))
+        pdf_document = await get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
 
         try:
             markdown_document = pymupdf4llm.to_markdown(paper_path)
