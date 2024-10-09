@@ -230,7 +230,7 @@ class AppState:
 
 # 의존성 주입 함수
 async def get_app_state():
-    return app.state
+    return AppState()
 
 driver_pool = WebDriverPool(max_size=5)
 
@@ -240,6 +240,8 @@ async def lifespan(app: FastAPI):
     global driver_pool
     logger.info("Initializing embedding system...")
     app.state = AppState()
+
+    # driver_pool = WebDriverPool(max_size=5)
     
     yield
     
