@@ -27,7 +27,10 @@ const Summary: React.FC<PaperInfoProps> = ({ paperId }) => {
 
       <div className={styles.contentArea}>
         {showNote ? (
-          <div className={`${styles.content} ${styles.note} ${isDarkMode ? styles.darkNote : ''}`}>
+          <div
+            className={`${styles.content} ${styles.note} ${isDarkMode ? styles.darkNote : ''}`}
+            id="note"
+          >
             <Note paperId={paperId} />
           </div>
         ) : (
