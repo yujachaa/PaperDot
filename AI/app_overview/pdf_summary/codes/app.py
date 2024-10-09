@@ -1,6 +1,7 @@
+# app.py
 import warnings
 import os
-from pdf_summary.codes.crawler import download_pdf 
+from pdf_summary.codes.crawler import download_pdf  # 수정된 download_pdf 사용
 from contextlib import asynccontextmanager
 import uvicorn
 import pickle
@@ -30,76 +31,32 @@ from langchain import hub
 import openai
 import pymupdf4llm
 import asyncio
-from selenium import webdriver
-from queue import Queue
-from threading import Lock, Thread
-import logging
+from concurrent.futures import ThreadPoolExecutor
 
-# 로깅 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# WebDriver 생성 함수
-def create_driver(port=9222):
-    from selenium.webdriver.chrome.service import Service
-    from selenium.webdriver.chrome.options import Options
-
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    env_path = os.path.join(current_dir, "../../config/.env")
-    load_dotenv(dotenv_path=env_path)
-    CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
-    DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
-
-    options = Options()
-    options.add_argument('--headless')  # 필요시 주석 해제
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument(f'--remote-debugging-port={port}')
-    options.add_argument('--log-level=3')
-    options.add_argument('--disable-blink-features=AutomationControlled')
-    options.binary_location = CHROME_PATH
-    options.add_argument('--disable-extensions')
-    options.add_argument('--disable-infobars')
-    options.add_argument('--disable-browser-side-navigation')
-    options.add_argument('--disable-features=VizDisplayCompositor')
-
-    service = Service(DRIVER_PATH)
-    driver = webdriver.Chrome(service=service, options=options)
-    return driver
-
-# WebDriver 초기화
-driver_pool = None
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../../config/.env")
+from pdf_summary.codes import driver_pool  # WebDriverPool을 가져옵니다.
 
 # Define paths
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, "../../config/.env")
 MAPPING_PICKLE_FILE = os.path.join(current_dir, "../models/doc_id_index_mapping.pkl")
 PAPER_STORAGE_PATH = os.path.join(current_dir, "../datas/")
 
 load_dotenv(dotenv_path=env_path)
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Elasticsearch 설정
-ES_HOST = os.getenv('ES_HOST')
-ES_PORT = os.getenv('ES_PORT')
-ES_USER = os.getenv('ES_USER')
-ES_PASSWORD = os.getenv('ES_PASSWORD')
+ES_HOST = os.getenv('ES_HOST')  # 예: 'localhost' 또는 'your-ec2-public-dns'
+ES_PORT = os.getenv('ES_PORT')  # 기본 포트; 다를 경우 변경
+ES_USER = os.getenv('ES_USER')  # 인증이 필요한 경우
+ES_PASSWORD = os.getenv('ES_PASSWORD')  # 인증이 필요한 경우
 ES_APIKEY = os.getenv('ES_APIKEY')
 INDEX_NAME = 'papers'
-
-mapper = None
-reverse_mapper = None
-llm = None
 
 # CORS 설정 추가
 origins = [
     "http://localhost:5173",
-    "https://localhost:5173",
-    "https://j11b208.p.ssafy.io",
+    "https://localhost:5173",  # 예를 들어 리액트 로컬 서버
+    "https://j11b208.p.ssafy.io",  # 실제로 사용하는 도메인 추가
 ]
 
 headers_to_split_on = [
@@ -109,7 +66,7 @@ headers_to_split_on = [
 ]
 
 prompt_template = """
-다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요. '#' 헤더 부분에는  Bold 처리 하지말아주세요.
+다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요.
 
 "{text}"
 
@@ -119,13 +76,14 @@ prompt_template = """
 PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"])
 
 def load_mapping_pickle_data(pickle_file):
+    """
+    피클 파일에서 데이터를 로드합니다.
+    """
     if not os.path.exists(pickle_file):
-        logger.error(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
         raise FileNotFoundError(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
     
     with open(pickle_file, 'rb') as f:
         data = pickle.load(f)
-    logger.info(f"피클 파일 {pickle_file} 로드 완료.")
     return data
 
 def create_internal_links(markdown_text):
@@ -142,94 +100,34 @@ def create_internal_links(markdown_text):
     links = "<br>".join(links)
     return links
 
-def get_pdf(paper_path, paper_id, reverse_mapper, driver):
-    driver.delete_all_cookies()  # 쿠키 삭제로 독립적인 세션 유지
-
-    doc_id = reverse_mapper.get(int(paper_id))
-    if not doc_id:
-        logger.error(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
-        raise ValueError(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
-
-    logger.info(f"Paper ID: {paper_id} maps to Doc ID: {doc_id}")
-
+def get_pdf(paper_path, paper_id, reverse_mapper):
     if not os.path.exists(paper_path):
-        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
-        task_queue.put((doc_id, paper_path, driver))
-        process_download_queue()  # 다운로드 큐 처리
-    else:
-        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
-
+        download_pdf(reverse_mapper[int(paper_id)], paper_path)
     with open(paper_path, "rb") as f:
         pdf_document = f.read()
     return pdf_document
-    driver.delete_all_cookies()  # 쿠키 삭제로 독립적인 세션 유지
-
-    doc_id = reverse_mapper.get(int(paper_id))
-    if not doc_id:
-        logger.error(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
-        raise ValueError(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
-
-    logger.info(f"Paper ID: {paper_id} maps to Doc ID: {doc_id}")
-
-    if not os.path.exists(paper_path):
-        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
-        task_queue.put((doc_id, paper_path, driver))
-    else:
-        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
-
-    with open(paper_path, "rb") as f:
-        pdf_document = f.read()
-    return pdf_document
-
-def process_download_queue():
-    while not task_queue.empty():
-        doc_id, paper_path, driver = task_queue.get()
-        try:
-            download_pdf(doc_id, paper_path, driver)
-            # 파일 다운로드 완료 후 존재 여부 확인
-            if not os.path.exists(paper_path):
-                logger.error(f"PDF 파일 다운로드 실패: {paper_path}")
-                raise FileNotFoundError(f"PDF 파일 다운로드 실패: {paper_path}")
-            logger.info(f"PDF 파일 다운로드 성공: {paper_path}")
-        except Exception as e:
-            logger.error(f"PDF 다운로드 중 오류 발생 (doc_id: {doc_id}): {e}")
-        finally:
-            task_queue.task_done()
-    while not task_queue.empty():
-        doc_id, paper_path, driver = task_queue.get()
-        await download_pdf(doc_id, paper_path, driver)
-        task_queue.task_done()
-        # 파일 다운로드 완료 후 존재 여부 확인
-        if not os.path.exists(paper_path):
-            logger.error(f"PDF 파일 다운로드 실패: {paper_path}")
-            raise FileNotFoundError(f"PDF 파일 다운로드 실패: {paper_path}")
-    while not task_queue.empty():
-        doc_id, paper_path, driver = task_queue.get()
-        await download_pdf(doc_id, paper_path, driver)
-        task_queue.task_done()
 
 # Elasticsearch 클라이언트 생성
 def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSWORD):
-    try:
-        if user and password:
-            es = Elasticsearch(
-                f"http://{host}:{port}",
-                basic_auth=(user, password),
-                request_timeout=60,
-            )
-        else:
-            es = Elasticsearch(
-                f"http://{host}:{port}",
-                request_timeout=60,
-            )
-        if not es.ping():
-            logger.error("Elasticsearch 연결에 실패했습니다.")
-            raise ValueError("Elasticsearch 연결에 실패했습니다.")
-        logger.info("Elasticsearch에 성공적으로 연결되었습니다.")
-        return es
-    except Exception as e:
-        logger.error(f"Elasticsearch 연결 중 오류 발생: {e}")
-        raise e
+    """
+    Elasticsearch 클라이언트에 연결합니다.
+    """
+    if user and password:
+        es = Elasticsearch(
+            f"http://{host}:{port}",
+            basic_auth=(user, password),
+            request_timeout=60,
+        )
+    else:
+        es = Elasticsearch(
+            f"http://{host}:{port}",
+            request_timeout=60,
+        )
+    # 연결 확인
+    if not es.ping():
+        raise ValueError("Elasticsearch 연결에 실패했습니다.")
+    print("Elasticsearch에 성공적으로 연결되었습니다.")
+    return es
 
 class QueryResponse(BaseModel):
     answer: str
@@ -249,75 +147,68 @@ class AppState:
 
 # 의존성 주입 함수
 async def get_app_state():
-    return AppState()
+    return app.state
+
+# ThreadPoolExecutor 초기화
+executor = ThreadPoolExecutor(max_workers=5)
+
+def agent_pipeline(paper_path, paper_id, state: AppState):
+    pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper)
+
+    markdown_document = pymupdf4llm.to_markdown(paper_path)
+
+    markdown_splitter = MarkdownHeaderTextSplitter(
+        headers_to_split_on=headers_to_split_on,
+        strip_headers=False, # 헤더 제거 off
+    )
+
+    md_header_splits = markdown_splitter.split_text(markdown_document)
+
+    md_header_splits = [section.page_content for section in md_header_splits]
+
+    # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
+    llm = state.llm
+
+    map_chain = PROMPT | llm | StrOutputParser()
+
+    doc_summaries = map_chain.batch(md_header_splits)
+
+    doc_summaries = '\n\n'.join(doc_summaries)
+
+    internal_links = create_internal_links(doc_summaries)
+
+    toc_markdown = f"# 목차\n\n{internal_links}\n\n"
+    final_markdown = toc_markdown + '\n --- \n' + doc_summaries
+
+    return final_markdown
+
+async def agent_pipeline_async(paper_path, paper_id, state: AppState):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
 
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global driver_pool
-    logger.info("Initializing embedding system...")
+    # 애플리케이션 시작 시 실행될 초기화 로직
+    print("Initializing embedding system...")
     app.state = AppState()
-
-    driver_pool = create_driver()
     
+    # lifespan에 진입 (애플리케이션 실행 중)
     yield
     
-    logger.info("Shutting down...")
-    driver_pool.quit()
+    # 애플리케이션 종료 시 실행될 정리 작업
+    print("Shutting down...")
+    driver_pool.close_all()
 
-# FastAPI 인스턴스 생성
+# FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,  # 허용할 도메인
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # 모든 메서드 허용 (GET, POST 등)
+    allow_headers=["*"],  # 모든 헤더 허용
 )
-
-# Message Queue 초기화
-task_queue = Queue()
-
-async def agent_pipeline_async(paper_path, paper_id, state: AppState):
-    return await asyncio.get_event_loop().run_in_executor(None, agent_pipeline, paper_path, paper_id, state)
-
-def agent_pipeline(paper_path, paper_id, state: AppState):
-    driver = driver_pool
-    try:
-        pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
-
-        try:
-            markdown_document = pymupdf4llm.to_markdown(paper_path)
-        except Exception as e:
-            logger.error(f"Markdown 변환 중 오류 발생 (paper_id: {paper_id}): {e}")
-            raise ValueError(f"PDF에서 텍스트를 추출하는 중 오류가 발생했습니다. (paper_id: {paper_id})")
-
-        markdown_splitter = MarkdownHeaderTextSplitter(
-            headers_to_split_on=headers_to_split_on,
-            strip_headers=False,
-        )
-
-        md_header_splits = markdown_splitter.split_text(markdown_document)
-
-        md_header_splits = [section.page_content for section in md_header_splits]
-
-        llm = state.llm
-
-        map_chain = PROMPT | llm | StrOutputParser()
-
-        doc_summaries = map_chain.batch(md_header_splits)
-
-        doc_summaries = '\n\n'.join(doc_summaries)
-
-        internal_links = create_internal_links(doc_summaries)
-
-        toc_markdown = f"# 목차\n\n{internal_links}\n\n"
-        final_markdown = toc_markdown + '\n --- \n' + doc_summaries
-
-        logger.info(f"Paper ID: {paper_id} 요약 완료.")
-        return final_markdown
-    finally:
-        driver_pool.delete_all_cookies()
 
 @app.get("/summary")
 async def summary_paper(
@@ -325,48 +216,43 @@ async def summary_paper(
     gen: bool = Query(..., description="RE:generate flag"),
     state: AppState = Depends(get_app_state)
 ):
+    """
+    요약 API 엔드포인트로, GET 요청으로 전달된 id에 대해 요약된 markdown 반환.
+    """
     es = state.es
 
     try:
         res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
     except Exception as e:
-        logger.error(f"Elasticsearch 오류: {e}")
         raise HTTPException(status_code=500, detail=f"Elasticsearch 오류: {e}")
 
     if res['found']:
         doc = res['_source']
         if 'overview' in doc and doc['overview'] and not gen:
-            logger.info(f"Paper ID: {paper_id}의 기존 요약 반환.")
             return {"results": doc['overview'], "model": 0}
         else:
-            paper_path = os.path.join(PAPER_STORAGE_PATH, f"{paper_id}.pdf")
+            paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
             try:
                 results = await agent_pipeline_async(paper_path, paper_id, state)
                 es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
-                logger.info(f"Paper ID: {paper_id}의 요약 생성 및 Elasticsearch 업데이트 완료.")
                 return {"results": results, "model": 1}
             except Exception as e:
-                logger.error(f"요약 생성 오류: {e}")
                 raise HTTPException(status_code=500, detail=f"요약 생성 오류: {e}")
     else:
-        logger.warning(f"Paper ID: {paper_id}을 Elasticsearch에서 찾을 수 없습니다.")
         results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
         return {"results": results, "model": 0}
 
 def main():
-    try:
-        uvicorn.run("app:app", host="0.0.0.0", port=3333, reload=True)
-    except Exception as e:
-        logger.error(f"오류 발생: {e}", exc_info=True)
-        # 모든 드라이버 종료
-        if driver_pool:
-            driver_pool.quit()
+    """
+    편의성을 위한 main 함수. uvicorn을 사용해 FastAPI 애플리케이션을 실행.
+    """
+    uvicorn.run("app:app", host="0.0.0.0", port=3333, reload=True)
 
 if __name__ == "__main__":
     try:
-        main()
+        # 기존 코드 실행
+        main()  # 주 실행 코드
     except Exception as e:
-        logger.error(f"오류 발생: {e}", exc_info=True)
-        # 모든 드라이버 종료
-        if driver_pool:
-            driver_pool.quit()
+        print(f"오류 발생: {e}")
+        import traceback
+        traceback.print_exc()
