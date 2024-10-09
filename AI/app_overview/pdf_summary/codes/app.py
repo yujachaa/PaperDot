@@ -47,8 +47,8 @@ def create_driver(port=9222):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     env_path = os.path.join(current_dir, "../../config/.env")
     load_dotenv(dotenv_path=env_path)
-    CHROME_PATH = os.path.join(current_dir, os.getenv('MY_CHROME_PATH'))
-    DRIVER_PATH = os.path.join(current_dir, os.getenv('MY_DRIVER_PATH'))
+    CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
+    DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
 
     options = Options()
     options.add_argument('--headless')  # 필요시 주석 해제
