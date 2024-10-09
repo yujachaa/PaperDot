@@ -1,6 +1,6 @@
 import warnings
 import os
-from pdf_summary.codes.crawler import download_pdf  # 수정된 download_pdf 사용
+from pdf_summary.codes.crawler import download_pdf 
 from contextlib import asynccontextmanager
 import uvicorn
 import pickle
@@ -46,8 +46,8 @@ class WebDriverPool:
     def __init__(self, max_size=5):
         self.pool = Queue(max_size)
         self.lock = Lock()
-        for _ in range(max_size):
-            driver = create_driver()
+        for i in range(max_size):
+            driver = create_driver(port=9222 + i)  # 포트를 다르게 설정하여 충돌 방지
             self.pool.put(driver)
             logger.info(f"WebDriver 인스턴스 초기화 완료. 현재 풀 크기: {self.pool.qsize()}")
 
@@ -67,7 +67,7 @@ class WebDriverPool:
             logger.info(f"WebDriver 인스턴스 종료됨. 남은 풀 크기: {self.pool.qsize()}")
 
 # WebDriver 생성 함수
-def create_driver():
+def create_driver(port=9222):
     from selenium.webdriver.chrome.service import Service
     from selenium.webdriver.chrome.options import Options
 
@@ -78,12 +78,12 @@ def create_driver():
     DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
 
     options = Options()
-    options.add_argument('--headless')
+    options.add_argument('--headless')  # 필요시 주석 해제
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
-    options.add_argument('--remote-debugging-port=9222')
+    options.add_argument(f'--remote-debugging-port={port}')  # 각 인스턴스마다 서로 다른 포트 사용
     options.add_argument('--log-level=3')
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.binary_location = CHROME_PATH
@@ -97,10 +97,10 @@ def create_driver():
     return driver
 
 # WebDriver 풀 초기화 (최대 5개)
-driver_pool = WebDriverPool(max_size=5)
+driver_pool = None
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../config/.env")
+env_path = os.path.join(current_dir, "../../config/.env")
 
 # Define paths
 MAPPING_PICKLE_FILE = os.path.join(current_dir, "../models/doc_id_index_mapping.pkl")
@@ -111,10 +111,10 @@ load_dotenv(dotenv_path=env_path)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Elasticsearch 설정
-ES_HOST = os.getenv('ES_HOST')  # 예: 'localhost' 또는 'your-ec2-public-dns'
-ES_PORT = os.getenv('ES_PORT')  # 기본 포트; 다를 경우 변경
-ES_USER = os.getenv('ES_USER')  # 인증이 필요한 경우
-ES_PASSWORD = os.getenv('ES_PASSWORD')  # 인증이 필요한 경우
+ES_HOST = os.getenv('ES_HOST')
+ES_PORT = os.getenv('ES_PORT')
+ES_USER = os.getenv('ES_USER')
+ES_PASSWORD = os.getenv('ES_PASSWORD')
 ES_APIKEY = os.getenv('ES_APIKEY')
 INDEX_NAME = 'papers'
 
@@ -125,8 +125,8 @@ llm = None
 # CORS 설정 추가
 origins = [
     "http://localhost:5173",
-    "https://localhost:5173",  # 예를 들어 리액트 로컬 서버
-    "https://j11b208.p.ssafy.io",  # 실제로 사용하는 도메인 추가
+    "https://localhost:5173",
+    "https://j11b208.p.ssafy.io",
 ]
 
 headers_to_split_on = [
@@ -146,9 +146,6 @@ prompt_template = """
 PROMPT = PromptTemplate(template=prompt_template, input_variables=["text"])
 
 def load_mapping_pickle_data(pickle_file):
-    """
-    피클 파일에서 데이터를 로드합니다.
-    """
     if not os.path.exists(pickle_file):
         logger.error(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
         raise FileNotFoundError(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
@@ -173,8 +170,7 @@ def create_internal_links(markdown_text):
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper, driver):
-    # 쿠키를 삭제하여 독립적인 세션 유지
-    driver.delete_all_cookies()
+    driver.delete_all_cookies()  # 쿠키 삭제로 독립적인 세션 유지
 
     doc_id = reverse_mapper.get(int(paper_id))
     if not doc_id:
@@ -183,7 +179,6 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
 
     logger.info(f"Paper ID: {paper_id} maps to Doc ID: {doc_id}")
 
-    # PDF 파일이 존재하는지 확인
     if not os.path.exists(paper_path):
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
         download_pdf(doc_id, paper_path, driver)
@@ -196,9 +191,6 @@ def get_pdf(paper_path, paper_id, reverse_mapper, driver):
 
 # Elasticsearch 클라이언트 생성
 def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSWORD):
-    """
-    Elasticsearch 클라이언트에 연결합니다.
-    """
     try:
         if user and password:
             es = Elasticsearch(
@@ -211,7 +203,6 @@ def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSW
                 f"http://{host}:{port}",
                 request_timeout=60,
             )
-        # 연결 확인
         if not es.ping():
             logger.error("Elasticsearch 연결에 실패했습니다.")
             raise ValueError("Elasticsearch 연결에 실패했습니다.")
@@ -239,31 +230,38 @@ class AppState:
 
 # 의존성 주입 함수
 async def get_app_state():
-    return AppState()
+    return app.state
+
+driver_pool = WebDriverPool(max_size=5)
 
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 애플리케이션 시작 시 실행될 초기화 로직
+    global driver_pool
     logger.info("Initializing embedding system...")
     app.state = AppState()
     
-    # lifespan에 진입 (애플리케이션 실행 중)
     yield
     
-    # 애플리케이션 종료 시 실행될 정리 작업
     logger.info("Shutting down...")
     driver_pool.close_all()
 
-# FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
+# FastAPI 인스턴스 생성
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # 허용할 도메인
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # 모든 메서드 허용 (GET, POST 등)
-    allow_headers=["*"],  # 모든 헤더 허용
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+# ThreadPoolExecutor 초기화
+executor = ThreadPoolExecutor(max_workers=5)
+
+async def agent_pipeline_async(paper_path, paper_id, state: AppState):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
 
 def agent_pipeline(paper_path, paper_id, state: AppState):
     driver = driver_pool.get_driver()
@@ -274,14 +272,13 @@ def agent_pipeline(paper_path, paper_id, state: AppState):
 
         markdown_splitter = MarkdownHeaderTextSplitter(
             headers_to_split_on=headers_to_split_on,
-            strip_headers=False, # 헤더 제거 off
+            strip_headers=False,
         )
 
         md_header_splits = markdown_splitter.split_text(markdown_document)
 
         md_header_splits = [section.page_content for section in md_header_splits]
 
-        # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
         llm = state.llm
 
         map_chain = PROMPT | llm | StrOutputParser()
@@ -300,22 +297,12 @@ def agent_pipeline(paper_path, paper_id, state: AppState):
     finally:
         driver_pool.return_driver(driver)
 
-# ThreadPoolExecutor 초기화
-executor = ThreadPoolExecutor(max_workers=5)
-
-async def agent_pipeline_async(paper_path, paper_id, state: AppState):
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
-
 @app.get("/summary")
 async def summary_paper(
     paper_id: str = Query(..., description="Paper ID to search"),
     gen: bool = Query(..., description="RE:generate flag"),
     state: AppState = Depends(get_app_state)
 ):
-    """
-    요약 API 엔드포인트로, GET 요청으로 전달된 id에 대해 요약된 markdown 반환.
-    """
     es = state.es
 
     try:
@@ -345,14 +332,12 @@ async def summary_paper(
         return {"results": results, "model": 0}
 
 def main():
-    """
-    편의성을 위한 main 함수. uvicorn을 사용해 FastAPI 애플리케이션을 실행.
-    """
     uvicorn.run("app:app", host="0.0.0.0", port=3333, reload=True)
 
 if __name__ == "__main__":
     try:
-        # 기존 코드 실행
-        main()  # 주 실행 코드
+        main()
     except Exception as e:
         logger.error(f"오류 발생: {e}", exc_info=True)
+        if driver_pool:
+            driver_pool.close_all()
