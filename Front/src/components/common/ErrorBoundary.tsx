@@ -1,10 +1,8 @@
 import React, { ReactNode, ErrorInfo } from 'react';
 import styles from './ErrorBoundary.module.scss';
-import { useNavigate } from 'react-router-dom';
 
 interface ErrorBoundaryProps {
   children?: ReactNode;
-  navigate: (path: string) => void;
 }
 
 interface ErrorBoundaryState {
@@ -27,7 +25,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   handleGoBack = () => {
-    this.props.navigate('/'); // Use navigate prop passed down from the functional wrapper
+    window.history.back();
   };
 
   render() {
@@ -39,7 +37,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             className={styles.backButton}
             onClick={this.handleGoBack}
           >
-            메인 페이지로 돌아가기
+            이전 페이지로 돌아가기
           </button>
         </div>
       );
@@ -49,14 +47,4 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-const ErrorBoundaryWithNavigate = (props: ErrorBoundaryProps) => {
-  const navigate = useNavigate();
-  return (
-    <ErrorBoundary
-      {...props}
-      navigate={navigate}
-    />
-  );
-};
-
-export default ErrorBoundaryWithNavigate;
+export default ErrorBoundary;
