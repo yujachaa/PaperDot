@@ -202,7 +202,7 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
 
   const getMessage = async () => {
     const response = await getChatMessage(roomId);
-
+    console.log(response);
     let data = response.data.filter((prev: any) => {
       if (prev) return prev;
     });
