@@ -112,8 +112,11 @@ public class HlsStreamService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        copycheck=true;
-        System.out.println("종료");
+        if(radioNumber==5){
+            copycheck=true;
+            System.out.println("종료");
+        }
+
     }
 
     double getMp3Duration(String inputPath) throws IOException {
