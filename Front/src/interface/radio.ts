@@ -33,9 +33,9 @@ export const RadioLists = [
     year: '2016',
   },
   {
-    id: 65,
-    title: '표피항상성과 건조피부의 관리',
-    author: '박장서',
-    year: '2008',
+    id: 10633,
+    title: '미술관 관람객의 방문결정요인과 행동의도에 관한 연구',
+    author: '나선후, 여영숙',
+    year: '2019',
   },
 ];
