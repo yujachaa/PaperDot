@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
-import { getUserBookmarks, trueToggleBookmark } from '../../apis/bookmark';
+import { getUserBookmarks } from '../../apis/bookmark';
 
 interface UserFavoritesProps {
   memberId: number;
@@ -9,6 +10,8 @@ interface UserFavoritesProps {
 
 const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const navigate = useNavigate();
+  const [showFullBox, setShowFullBox] = useState<boolean>(false);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -33,6 +36,18 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
 
     fetchData();
   }, [memberId]);
+
+  // showFullBox가 true로 변경될 때 infoBox를 닫기 위해 selectedNode를 null로 설정
+  useEffect(() => {
+    if (showFullBox) {
+      setSelectedNode(null); // infoBox를 닫음
+    }
+  }, [showFullBox]);
+
+  const goDetail = (id: number) => {
+    console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/paper/${id}`);
+  };
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -80,7 +95,7 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
           .distance(150),
       )
       // 노드 간 반발력 설정
-      .force('charge', d3.forceManyBody().strength(-100))
+      .force('charge', d3.forceManyBody().strength(-25))
       // 시뮬레이션 중심 위치 지정
       .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -162,6 +177,7 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
     function handleClick(d: any, links: any) {
       // 선택된 노드 상태 설정
       setSelectedNode(d);
+      setShowFullBox(false);
       const relatedNodes = links
         // 클릭된 노드와 연결된 링크 찾기
         .filter((link: any) => link.source.id === d.id || link.target.id === d.id)
@@ -174,34 +190,39 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
     // nodesData와 linksData가 변경될 때마다 useEffect 실행
   }, [nodesData, linksData, selectedNode]);
 
-  // 북마크 토글 함수
-  const handleBookmarkToggle = async (paperId: number) => {
-    try {
-      await trueToggleBookmark(paperId);
-      console.log(`Toggled bookmark for paperId: ${paperId}`);
-      // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
-      removeNode(paperId);
-    } catch (error) {
-      console.error(`Error toggling bookmark for paperId: ${paperId}`, error);
-    }
-  };
-
-  // 노드 삭제 함수
-  const removeNode = (id: string | number) => {
-    // 해당 ID 가진 노드 삭제
-    const newNodes = nodesData.filter((node) => node.id !== id);
-    // 해당 노드와 연결된 링크 삭제
-    const newLinks = linksData.filter((link) => link.source.id !== id && link.target.id !== id);
-    // 새로운 노드 데이터 설정
-    setNodesData(newNodes);
-    // 새로운 링크 데이터 설정
-    setLinksData(newLinks);
-    // 선택된 노드를 초기화
-    setSelectedNode(null);
-  };
+  const renderInfoFullBox = () =>
+    showFullBox && (
+      <div className={styles.infoFullBox}>
+        <button
+          className={styles.closeFullBoxButton}
+          onClick={() => setShowFullBox(false)}
+        >
+          ✕
+        </button>
+        <ul className={styles.nodeList}>
+          {nodesData.map((node, index) => (
+            <li key={index}>
+              <p
+                className={styles.nodeTitle}
+                onClick={() => goDetail(node.id)}
+              >
+                {node.title}
+              </p>
+              <p>
+                <span>저자</span> {node.author}
+              </p>
+              <p>
+                <span>발행 연도</span> {node.year}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
 
   return (
     <div className={styles.favorites}>
+      {renderInfoFullBox()}
       <svg
         ref={svgRef}
         className={styles.networkChart}
@@ -218,22 +239,29 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
           <ul className={styles.nodeList}>
             {linkedNodes.map((node, index) => (
               <li key={index}>
-                <p className={styles.nodeTitle}>{node.title}</p>
+                <p
+                  className={styles.nodeTitle}
+                  onClick={() => goDetail(node.id)}
+                >
+                  {node.title}
+                </p>
                 <p>
                   <span>저자</span> {node.author}
                 </p>
                 <p>
                   <span>발행 연도</span> {node.year}
                 </p>
-                <button
-                  className={styles.bookmarkButton}
-                  onClick={() => handleBookmarkToggle(node.id)}
-                ></button>
               </li>
             ))}
           </ul>
         </div>
       )}
+      <button
+        className={styles.fullListButton}
+        onClick={() => setShowFullBox(true)}
+      >
+        전체 목록
+      </button>
     </div>
   );
 };

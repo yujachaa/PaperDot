@@ -199,6 +199,7 @@ const Signup: React.FC = () => {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
+                maxLength={100}
                 placeholder="ID"
                 value={userID}
                 onChange={(e) => {
@@ -222,6 +223,7 @@ const Signup: React.FC = () => {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
+                maxLength={100}
                 placeholder="Nickname"
                 value={nickname}
                 onChange={(e) => {
@@ -247,6 +249,7 @@ const Signup: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
+                maxLength={100}
                 onChange={handlePasswordChange}
               />
               <span
@@ -266,6 +269,7 @@ const Signup: React.FC = () => {
                 type={showPasswordCheck ? 'text' : 'password'}
                 placeholder="Password Check"
                 value={passwordCheck}
+                maxLength={100}
                 onChange={handlePasswordCheckChange}
               />
               <span
@@ -285,6 +289,7 @@ const Signup: React.FC = () => {
             <input
               type="text"
               placeholder="YYYY"
+              maxLength={100}
               value={birthyear}
               onChange={handleBirthyearChange}
             />

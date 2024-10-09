@@ -121,6 +121,7 @@ const ChangePassword: React.FC = () => {
               <input
                 type={hide[0] ? 'password' : 'text'}
                 name="currentPassword"
+                maxLength={100}
                 value={passwords.currentPassword}
                 onChange={handleChange}
                 disabled={isPasswordVerified}
@@ -153,6 +154,7 @@ const ChangePassword: React.FC = () => {
             <input
               type={hide[1] ? 'password' : 'text'}
               name="newPassword"
+              maxLength={100}
               value={passwords.newPassword}
               onChange={handleChange}
             />
@@ -177,6 +179,7 @@ const ChangePassword: React.FC = () => {
             <input
               type={hide[2] ? 'password' : 'text'}
               name="confirmPassword"
+              maxLength={100}
               value={passwords.confirmPassword}
               onChange={handleChange}
             />
