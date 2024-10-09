@@ -153,37 +153,40 @@ async def get_app_state():
 executor = ThreadPoolExecutor(max_workers=5)
 
 def agent_pipeline(paper_path, paper_id, state: AppState):
+    print('pipe-line-input')
     pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper)
-
+    print('pipe-line-input')
     markdown_document = pymupdf4llm.to_markdown(paper_path)
-
+    print('pipe-line-input')    
     markdown_splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=headers_to_split_on,
         strip_headers=False, # 헤더 제거 off
     )
-
+    print('pipe-line-input')
     md_header_splits = markdown_splitter.split_text(markdown_document)
-
+    print('pipe-line-input')
     md_header_splits = [section.page_content for section in md_header_splits]
-
+    print('pipe-line-input')
     # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
     llm = state.llm
-
+    print('pipe-line-input')
     map_chain = PROMPT | llm | StrOutputParser()
-
+    print('pipe-line-input')
     doc_summaries = map_chain.batch(md_header_splits)
-
+    print('pipe-line-input')
     doc_summaries = '\n\n'.join(doc_summaries)
-
+    print('pipe-line-input')
     internal_links = create_internal_links(doc_summaries)
-
+    print('pipe-line-input')
     toc_markdown = f"# 목차\n\n{internal_links}\n\n"
     final_markdown = toc_markdown + '\n --- \n' + doc_summaries
 
     return final_markdown
 
 async def agent_pipeline_async(paper_path, paper_id, state: AppState):
+    print('loof1')
     loop = asyncio.get_event_loop()
+    print('loof2')
     return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
 
 # FastAPI lifespan 이벤트 핸들러
