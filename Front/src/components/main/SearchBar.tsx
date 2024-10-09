@@ -120,6 +120,7 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
           placeholder="제목, 키워드로 논문을 검색하세요."
           className={styles.input}
         />
+
         <button
           className={`${styles.button} ${isDarkMode ? styles.dark : ''}`}
           onClick={handleSearch} // 클릭 시 handleSearch 함수 호출
