@@ -232,7 +232,7 @@ class AppState:
 async def get_app_state():
     return AppState()
 
-driver_pool = WebDriverPool(max_size=5)
+# driver_pool = WebDriverPool(max_size=5)
 
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
@@ -241,7 +241,7 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing embedding system...")
     app.state = AppState()
 
-    # driver_pool = WebDriverPool(max_size=5)
+    driver_pool = WebDriverPool(max_size=5)
     
     yield
     
