@@ -225,15 +225,19 @@ async def summary_paper(
         res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Elasticsearch 오류: {e}")
+    
+    print('체크1')
 
     if res['found']:
         doc = res['_source']
         if 'overview' in doc and doc['overview'] and not gen:
+            print('체크2')
             return {"results": doc['overview'], "model": 0}
         else:
             paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
             try:
                 results = await agent_pipeline_async(paper_path, paper_id, state)
+                print('체크3')
                 es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
                 return {"results": results, "model": 1}
             except Exception as e:

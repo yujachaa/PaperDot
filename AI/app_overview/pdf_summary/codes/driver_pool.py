@@ -11,9 +11,12 @@ class WebDriverPool:
     def __init__(self, max_size=5):
         self.pool = Queue(max_size)
         self.lock = Lock()
+        print('풀 1')
         for _ in range(max_size):
             driver = self.create_driver()
             self.pool.put(driver)
+        print('풀 2')
+
 
     def create_driver(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,7 +24,7 @@ class WebDriverPool:
         load_dotenv(dotenv_path=env_path)
         CHROME_PATH = os.path.join(current_dir, os.getenv('LINUX_CHROME_PATH'))
         DRIVER_PATH = os.path.join(current_dir, os.getenv('LINUX_DRIVER_PATH'))
-
+        print('풀 3')
         options = Options()
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
@@ -36,7 +39,7 @@ class WebDriverPool:
         options.add_argument('--disable-infobars')
         options.add_argument('--disable-browser-side-navigation')
         options.add_argument('--disable-features=VizDisplayCompositor')
-
+        print('풀 4')
         service = Service(DRIVER_PATH)
         driver = webdriver.Chrome(service=service, options=options)
         return driver
