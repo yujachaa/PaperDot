@@ -173,19 +173,23 @@ def create_internal_links(markdown_text):
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper, driver):
-    doc_id = reverse_mapper[int(paper_id)]
+    # 쿠키를 삭제하여 독립적인 세션 유지
+    driver.delete_all_cookies()
+
+    doc_id = reverse_mapper.get(int(paper_id))
     if not doc_id:
         logger.error(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
         raise ValueError(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
-    
+
     logger.info(f"Paper ID: {paper_id} maps to Doc ID: {doc_id}")
-    
+
+    # PDF 파일이 존재하는지 확인
     if not os.path.exists(paper_path):
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
         download_pdf(doc_id, paper_path, driver)
     else:
         logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
-    
+
     with open(paper_path, "rb") as f:
         pdf_document = f.read()
     return pdf_document
