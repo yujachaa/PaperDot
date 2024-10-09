@@ -1,15 +1,15 @@
+# app.py
 import warnings
 import os
-from pdf_summary.codes.crawler import download_pdf  # embedding.py에서 가져옴
+from pdf_summary.codes.crawler import download_pdf  # 수정된 download_pdf 사용
 from contextlib import asynccontextmanager
 import uvicorn
 import pickle
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Depends
 from pydantic import BaseModel
 import numpy as np
 import re
-import urllib
 import urllib.parse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,22 +28,20 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter
 from langchain.prompts import PromptTemplate
 from elasticsearch import Elasticsearch
 from langchain import hub
-# from sklearn.cluster import KMeans
-# from sklearn.manifold import TSNE
 import openai
-from langchain_core.runnables import chain
 import pymupdf4llm
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
-
-current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../config/.env")
+from pdf_summary.codes import driver_pool  # WebDriverPool을 가져옵니다.
 
 # Define paths
+current_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(current_dir, "../config/.env")
 MAPPING_PICKLE_FILE = os.path.join(current_dir, "../models/doc_id_index_mapping.pkl")
 PAPER_STORAGE_PATH = os.path.join(current_dir, "../datas/")
 
 load_dotenv(dotenv_path=env_path)
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Elasticsearch 설정
@@ -54,11 +52,6 @@ ES_PASSWORD = os.getenv('ES_PASSWORD')  # 인증이 필요한 경우
 ES_APIKEY = os.getenv('ES_APIKEY')
 INDEX_NAME = 'papers'
 
-mapper = None
-reverse_mapper = None
-llm = None
-mapper = None
-
 # CORS 설정 추가
 origins = [
     "http://localhost:5173",
@@ -67,18 +60,9 @@ origins = [
 ]
 
 headers_to_split_on = [
-    (
-        "#",
-        "Header 1",
-    ),
-    (
-        "##",
-        "Header 2",
-    ),
-    (
-        "###",
-        "Header 3",
-    ),
+    ("#", "Header 1"),
+    ("##", "Header 2"),
+    ("###", "Header 3"),
 ]
 
 prompt_template = """
@@ -103,29 +87,14 @@ def load_mapping_pickle_data(pickle_file):
     return data
 
 def create_internal_links(markdown_text):
-    # 정규 표현식 패턴: 줄 시작에서 하나 이상의 '#' 뒤에 공백과 텍스트가 오는 패턴
-    # header_pattern = re.compile(r'^(#{1,6})\s+(.*)', re.MULTILINE)
     header_pattern = re.compile(r'^(#)\s+(.*)', re.MULTILINE)
-    
-    # 모든 헤더 찾기
     headers = header_pattern.findall(markdown_text)
     
     links = []
     for i, header in enumerate(headers, start=1):
         hashes, header_text = header
-        # 공백을 '-'로 대체하고 소문자로 변환 (GitHub 스타일 앵커 기준)
         anchor = re.sub(r'\s+', '-', header_text.strip()).lower()
-        # 특수 문자 제거 (필요에 따라 조정 가능)
-        # anchor = re.sub(r'[^\w\-]', '', anchor)
-        # 특수 문자 제거 (이모지를 유지하기 위해 이모지 유니코드 범위는 허용)
-        # anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1F64F\u1F680-\u1F6FF]', '', anchor)
-        # 특수 문자 제거 시 이모지 유니코드를 포함하여 유지 (필요 시 추가)
-        # anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF]', '', anchor)
         anchor = re.sub(r'[^\w\-\u2600-\u27BF\u1F300-\u1FAFF\u1F900-\u1F9FF\u1F600-\u1F64F]', '', anchor)
-
-        # 내부 링크 형식 생성
-        # anchor = urllib.parse.quote(anchor)
-        # link = f"[{header_text}](#{anchor})"
         link = f"[{i}. {header_text}](#{anchor})"
         links.append(link)
     links = "<br>".join(links)
@@ -146,19 +115,13 @@ def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSW
     if user and password:
         es = Elasticsearch(
             f"http://{host}:{port}",
-            #api_key=f"{ES_APIKEY}",
             basic_auth=(user, password),
             request_timeout=60,
-            # max_retries=10,  # 재시도 횟수를 늘림
-            # retry_on_timeout=True
         )
     else:
         es = Elasticsearch(
             f"http://{host}:{port}",
-            #api_key=f"{ES_APIKEY}",
             request_timeout=60,
-            # max_retries=10,  # 재시도 횟수를 늘림
-            # retry_on_timeout=True
         )
     # 연결 확인
     if not es.ping():
@@ -170,42 +133,27 @@ class QueryResponse(BaseModel):
     answer: str
     model: int
 
+# FastAPI 상태 클래스 정의
+class AppState:
+    def __init__(self):
+        self.mapper = load_mapping_pickle_data(MAPPING_PICKLE_FILE)
+        self.reverse_mapper = {v: k for k, v in self.mapper.items()}
+        self.llm = ChatOpenAI(
+            model_name="gpt-4o-mini",
+            streaming=True,
+            temperature=0,
+        )
+        self.es = create_es_client()
 
-# FastAPI lifespan event handler
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global mapper, reverse_mapper, llm
-    # 애플리케이션 시작 시 실행될 초기화 로직
-    print("Initializing embedding system...")
-    mapper = load_mapping_pickle_data(MAPPING_PICKLE_FILE)
-    reverse_mapper = {v: k for k, v in mapper.items()}
+# 의존성 주입 함수
+async def get_app_state():
+    return app.state
 
-    # es = create_es_client()
-    llm = ChatOpenAI(
-        model_name="gpt-4o-mini",
-        streaming=True,
-        temperature=0,
-    )
+# ThreadPoolExecutor 초기화
+executor = ThreadPoolExecutor(max_workers=5)
 
-    # lifespan에 진입 (애플리케이션 실행 중)
-    yield
-
-    # 애플리케이션 종료 시 실행될 정리 작업
-    print("Shutting down...")
-
-# FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
-app = FastAPI(lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # 허용할 도메인
-    allow_credentials=True,
-    allow_methods=["*"],  # 모든 메서드 허용 (GET, POST 등)
-    allow_headers=["*"],  # 모든 헤더 허용
-)
-
-def agent_pipeline(paper_path, paper_id):
-    global mapper, reverse_mapper
-    pdf_document = get_pdf(paper_path, paper_id, reverse_mapper)
+def agent_pipeline(paper_path, paper_id, state: AppState):
+    pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper)
 
     markdown_document = pymupdf4llm.to_markdown(paper_path)
 
@@ -218,69 +166,81 @@ def agent_pipeline(paper_path, paper_id):
 
     md_header_splits = [section.page_content for section in md_header_splits]
 
-    llm = ChatOpenAI(
-        temperature=0,
-        model_name="gpt-4o-mini",
-        streaming=True,
-    )
+    # 이미 state.llm이 초기화되어 있으므로 재초기화하지 않음
+    llm = state.llm
 
     map_chain = PROMPT | llm | StrOutputParser()
 
     doc_summaries = map_chain.batch(md_header_splits)
 
-    len(doc_summaries)
-
-    # print(doc_summaries)
-
     doc_summaries = '\n\n'.join(doc_summaries)
-
 
     internal_links = create_internal_links(doc_summaries)
 
-    # toc_markdown = "# 목차\n\n" + '\n'.join(internal_links) + '\n\n'
     toc_markdown = f"# 목차\n\n{internal_links}\n\n"
     final_markdown = toc_markdown + '\n --- \n' + doc_summaries
 
     return final_markdown
 
+async def agent_pipeline_async(paper_path, paper_id, state: AppState):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, agent_pipeline, paper_path, paper_id, state)
+
+# FastAPI lifespan 이벤트 핸들러
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 애플리케이션 시작 시 실행될 초기화 로직
+    print("Initializing embedding system...")
+    app.state = AppState()
+    
+    # lifespan에 진입 (애플리케이션 실행 중)
+    yield
+    
+    # 애플리케이션 종료 시 실행될 정리 작업
+    print("Shutting down...")
+    driver_pool.close_all()
+
+# FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
+app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # 허용할 도메인
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 메서드 허용 (GET, POST 등)
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 @app.get("/summary")
-def summary_paper(paper_id: str = Query(..., description="Paper ID to search"), gen: bool = Query(..., description="RE:generate flag")):
+async def summary_paper(
+    paper_id: str = Query(..., description="Paper ID to search"),
+    gen: bool = Query(..., description="RE:generate flag"),
+    state: AppState = Depends(get_app_state)
+):
     """
     요약 API 엔드포인트로, GET 요청으로 전달된 id에 대해 요약된 markdown 반환.
     """
-    # import warnings
-    # warnings.filterwarnings("ignore")
+    es = state.es
 
-    global mapper, reverse_mapper
-    es = create_es_client()
+    try:
+        res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Elasticsearch 오류: {e}")
 
-    res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
-
-    # es에 있다면
     if res['found']:
         doc = res['_source']
-        # overview 필드가 비어 있는지 확인
         if 'overview' in doc and doc['overview'] and not gen:
-            # 이미 요약된 내용이 있다면 그 내용을 반환
             return {"results": doc['overview'], "model": 0}
-
-        # es에 없다면 pdf 로더
         else:
             paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
-            results = agent_pipeline(paper_path, paper_id)
-
-            es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
-
-            return {"results": results, "model": 1}
-
-
-    # es 에 삽입
-
-    # es 종료
-
-    results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
-    return {"results": results, "mdoel": 0}
+            try:
+                results = await agent_pipeline_async(paper_path, paper_id, state)
+                es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
+                return {"results": results, "model": 1}
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"요약 생성 오류: {e}")
+    else:
+        results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
+        return {"results": results, "model": 0}
 
 def main():
     """
