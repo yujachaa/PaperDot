@@ -21,7 +21,7 @@ const SearchResult: React.FC = () => {
   const currentPage = parseInt(searchParams.get('p') || '1', 10);
   const [totalCnt, setTotalCnt] = useState<number>(0); // 검색 결과 개수 (예시)
   const itemsPerPage = 20; // 페이지당 보여줄 항목 수
-  const totalPages = Math.ceil(totalCnt / itemsPerPage); // 전체 페이지 수 계산
+  const totalPages = totalCnt > 0 ? Math.ceil(totalCnt / itemsPerPage) : 1; // 전체 페이지 수 계산
   const [searchResult, setSearchResult] = useState<SearchResultPaper[] | null>(null);
 
   const [pageInput, setPageInput] = useState(currentPage.toString());
