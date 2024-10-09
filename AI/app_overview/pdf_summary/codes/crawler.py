@@ -19,7 +19,11 @@ def download_pdf(doc_id, save_path):
     print("step")
     url = f"https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn={doc_id}&oCn={doc_id}&dbt=JAKO"
     print("step")
-    driver = driver_pool.get_driver()
+    try:
+        driver = driver_pool.get_driver()
+    except Exception as e:
+        print(f"{doc_id} - 오류 발생: {e}")
+
     print("step")
     try:
         print(f"{doc_id} - 논문 페이지로 이동 중...")
