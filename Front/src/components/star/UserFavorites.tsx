@@ -11,7 +11,7 @@ interface UserFavoritesProps {
 const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const navigate = useNavigate();
-  const [showFullBox, setShowFullBox] = useState<boolean>(true);
+  const [showFullBox, setShowFullBox] = useState<boolean>(false);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -36,6 +36,13 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
 
     fetchData();
   }, [memberId]);
+
+  // showFullBox가 true로 변경될 때 infoBox를 닫기 위해 selectedNode를 null로 설정
+  useEffect(() => {
+    if (showFullBox) {
+      setSelectedNode(null); // infoBox를 닫음
+    }
+  }, [showFullBox]);
 
   const goDetail = (id: number) => {
     console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
@@ -170,6 +177,7 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
     function handleClick(d: any, links: any) {
       // 선택된 노드 상태 설정
       setSelectedNode(d);
+      setShowFullBox(false);
       const relatedNodes = links
         // 클릭된 노드와 연결된 링크 찾기
         .filter((link: any) => link.source.id === d.id || link.target.id === d.id)
@@ -248,6 +256,12 @@ const UserFavorites: React.FC<UserFavoritesProps> = ({ memberId }) => {
           </ul>
         </div>
       )}
+      <button
+        className={styles.fullListButton}
+        onClick={() => setShowFullBox(true)}
+      >
+        전체 목록
+      </button>
     </div>
   );
 };
