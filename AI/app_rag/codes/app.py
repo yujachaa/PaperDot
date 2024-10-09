@@ -277,8 +277,8 @@ async def ask_question(request: QueryRequest):
             download_pdf(reverse_mapper[int(paper_id)], paper_path)
 
         # Step 3: Store the paper PDF in Elasticsearch
-        with open(paper_path, "rb") as f:
-            pdf_content = f.read()
+        # with open(paper_path, "rb") as f:
+        #     pdf_content = f.read()
             # es.index(index=INDEX_NAME, id=paper_id, body={"pdf": pdf_content})
         
         
