@@ -25,6 +25,10 @@
   margin: 0 0 0.15rem 0;
   cursor: pointer;
   padding: 0.5rem 0.3rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .searchDropdown::-webkit-scrollbar {

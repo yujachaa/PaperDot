@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 불러오기
 import styles from './SearchBar.module.scss';
 import searchIcon from '../../assets/images/search.svg'; // SVG 아이콘 불러오기
@@ -25,9 +25,9 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
   const [records, setRecords] = useState<string[]>(JSON.parse(getSearchHistory() || '[]')); //검색기록 가져오기
   const [searchResult, setSearchResult] = useState<SearchResultItem[]>([]);
 
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+  // useEffect(() => {
+  //   setValue(initialValue);
+  // }, []);
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -87,7 +87,7 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
     const searchTerm = value.trim();
     if (searchTerm === '') return;
 
-    //검색 기록 업데이트
+    // 검색 기록 업데이트
     // 세션 스토리지에서 검색 기록 불러오기
     let history = JSON.parse(getSearchHistory() || '[]');
     // 중복된 검색어가 있으면 삭제하고 최신으로 추가
@@ -98,8 +98,15 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
     setSearchHistory(JSON.stringify(updatedHistory));
     // 검색 기록 업데이트
     setRecords(updatedHistory);
-    //(미완)첫페이지 검색결과 API 호출하기 -> 페이지 이동해서 처음으로 하도록!!
-    navigate(`/search?q=${encodeURIComponent(value)}&p=1`);
+
+    const targetPath = `/search?q=${encodeURIComponent(value)}&p=1`;
+
+    // 현재 경로와 같은 경우 새로고침, 다른 경우 navigate 호출
+    if (location.pathname + location.search === targetPath) {
+      window.location.reload();
+    } else {
+      navigate(targetPath);
+    }
   };
 
   return (
