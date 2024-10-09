@@ -79,7 +79,7 @@ public class PaperService {
         while (iterator.hasNext()) {
             ElasticSearchResponse paperSimpleDocument = iterator.next();
             OriginalJson originalJson = paperSimpleDocument.getOriginalJson();
-            if(originalJson.getTitle().getKo() == null || originalJson.getTitle().getEn() == null)
+            if(originalJson.getTitle().getKo() == null && originalJson.getTitle().getEn() == null)
                 iterator.remove();
 
             if(originalJson.getAuthors() == null || originalJson.getAuthors().isEmpty())
@@ -157,6 +157,8 @@ public class PaperService {
                 Hit<ElasticSearchResponse> hit = search.hits().hits().get(i);
                 elasticSearchResponseList.add(hit.source());
                 elasticSearchResponseList.get(i).setId(Long.valueOf(hit.id()));
+                System.out.println(hit.id());
+                System.out.println(elasticSearchResponseList.get(i).getOriginalJson().getTitle().getKo());
             }
 
 
@@ -177,8 +179,8 @@ public class PaperService {
         //    System.out.println("Id List + "+paperSimpleDocument.getId());
         //}
 
-        nullCheck2(elasticSearchResponseList);
-
+        //nullCheck2(elasticSearchResponseList);
+        System.out.println(elasticSearchResponseList.size());
         List<Long> stringIds = elasticSearchResponseList.stream().map(ElasticSearchResponse::getId).toList();
         /*
 //        // paperSearchResponseList caching
