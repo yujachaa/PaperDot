@@ -16,10 +16,11 @@ import time
 import os
 
 def download_pdf(doc_id, save_path):
+    print("step")
     url = f"https://scienceon.kisti.re.kr/srch/selectPORSrchArticle.do?cn={doc_id}&oCn={doc_id}&dbt=JAKO"
-
+    print("step")
     driver = driver_pool.get_driver()
-    
+    print("step")
     try:
         print(f"{doc_id} - 논문 페이지로 이동 중...")
         driver.get(url)
@@ -74,11 +75,13 @@ def download_pdf(doc_id, save_path):
         driver_pool.return_driver(driver)
 
 def clean_pdf_url(pdf_url):
+    print("step2")
     pdf_url = pdf_url.replace("&amp;", "&")
     return pdf_url
 
 def download_pdf_with_session(pdf_url, save_path, driver):
     try:
+        print("step-3")
         # Selenium에서 쿠키 추출
         session = requests.Session()
         for cookie in driver.get_cookies():
