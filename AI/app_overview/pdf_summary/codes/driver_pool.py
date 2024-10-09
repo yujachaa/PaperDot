@@ -45,6 +45,7 @@ class WebDriverPool:
         return driver
 
     def get_driver(self):
+        print("get_log")
         return self.pool.get()
 
     def return_driver(self, driver):
