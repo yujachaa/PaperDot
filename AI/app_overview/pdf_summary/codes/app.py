@@ -35,6 +35,12 @@ from selenium import webdriver
 from queue import Queue
 from threading import Lock
 
+import logging
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # WebDriver 풀 클래스 정의
 class WebDriverPool:
     def __init__(self, max_size=5):
@@ -43,17 +49,22 @@ class WebDriverPool:
         for _ in range(max_size):
             driver = create_driver()
             self.pool.put(driver)
+            logger.info(f"WebDriver 인스턴스 초기화 완료. 현재 풀 크기: {self.pool.qsize()}")
 
     def get_driver(self):
-        return self.pool.get()
+        driver = self.pool.get()
+        logger.info(f"WebDriver 인스턴스 가져옴. 현재 풀 크기: {self.pool.qsize()}")
+        return driver
 
     def return_driver(self, driver):
         self.pool.put(driver)
+        logger.info(f"WebDriver 인스턴스 풀에 반환됨. 현재 풀 크기: {self.pool.qsize()}")
 
     def close_all(self):
         while not self.pool.empty():
             driver = self.pool.get()
             driver.quit()
+            logger.info(f"WebDriver 인스턴스 종료됨. 남은 풀 크기: {self.pool.qsize()}")
 
 # WebDriver 생성 함수
 def create_driver():
@@ -139,10 +150,12 @@ def load_mapping_pickle_data(pickle_file):
     피클 파일에서 데이터를 로드합니다.
     """
     if not os.path.exists(pickle_file):
+        logger.error(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
         raise FileNotFoundError(f"피클 파일 {pickle_file}을 찾을 수 없습니다.")
     
     with open(pickle_file, 'rb') as f:
         data = pickle.load(f)
+    logger.info(f"피클 파일 {pickle_file} 로드 완료.")
     return data
 
 def create_internal_links(markdown_text):
@@ -160,8 +173,19 @@ def create_internal_links(markdown_text):
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper, driver):
+    doc_id = reverse_mapper.get(paper_id)
+    if not doc_id:
+        logger.error(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
+        raise ValueError(f"paper_id {paper_id}에 대한 doc_id를 찾을 수 없습니다.")
+    
+    logger.info(f"Paper ID: {paper_id} maps to Doc ID: {doc_id}")
+    
     if not os.path.exists(paper_path):
-        download_pdf(reverse_mapper[int(paper_id)], paper_path, driver)
+        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 존재하지 않습니다. 다운로드 시작.")
+        download_pdf(doc_id, paper_path, driver)
+    else:
+        logger.info(f"Paper ID: {paper_id}에 해당하는 PDF가 이미 존재합니다.")
+    
     with open(paper_path, "rb") as f:
         pdf_document = f.read()
     return pdf_document
@@ -171,22 +195,27 @@ def create_es_client(host=ES_HOST, port=ES_PORT, user=ES_USER, password=ES_PASSW
     """
     Elasticsearch 클라이언트에 연결합니다.
     """
-    if user and password:
-        es = Elasticsearch(
-            f"http://{host}:{port}",
-            basic_auth=(user, password),
-            request_timeout=60,
-        )
-    else:
-        es = Elasticsearch(
-            f"http://{host}:{port}",
-            request_timeout=60,
-        )
-    # 연결 확인
-    if not es.ping():
-        raise ValueError("Elasticsearch 연결에 실패했습니다.")
-    print("Elasticsearch에 성공적으로 연결되었습니다.")
-    return es
+    try:
+        if user and password:
+            es = Elasticsearch(
+                f"http://{host}:{port}",
+                basic_auth=(user, password),
+                request_timeout=60,
+            )
+        else:
+            es = Elasticsearch(
+                f"http://{host}:{port}",
+                request_timeout=60,
+            )
+        # 연결 확인
+        if not es.ping():
+            logger.error("Elasticsearch 연결에 실패했습니다.")
+            raise ValueError("Elasticsearch 연결에 실패했습니다.")
+        logger.info("Elasticsearch에 성공적으로 연결되었습니다.")
+        return es
+    except Exception as e:
+        logger.error(f"Elasticsearch 연결 중 오류 발생: {e}")
+        raise e
 
 class QueryResponse(BaseModel):
     answer: str
@@ -212,14 +241,14 @@ async def get_app_state():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 애플리케이션 시작 시 실행될 초기화 로직
-    print("Initializing embedding system...")
+    logger.info("Initializing embedding system...")
     app.state = AppState()
     
     # lifespan에 진입 (애플리케이션 실행 중)
     yield
     
     # 애플리케이션 종료 시 실행될 정리 작업
-    print("Shutting down...")
+    logger.info("Shutting down...")
     driver_pool.close_all()
 
 # FastAPI 인스턴스 생성, lifespan 이벤트 핸들러 사용
@@ -262,6 +291,7 @@ def agent_pipeline(paper_path, paper_id, state: AppState):
         toc_markdown = f"# 목차\n\n{internal_links}\n\n"
         final_markdown = toc_markdown + '\n --- \n' + doc_summaries
 
+        logger.info(f"Paper ID: {paper_id} 요약 완료.")
         return final_markdown
     finally:
         driver_pool.return_driver(driver)
@@ -287,21 +317,26 @@ async def summary_paper(
     try:
         res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
     except Exception as e:
+        logger.error(f"Elasticsearch 오류: {e}")
         raise HTTPException(status_code=500, detail=f"Elasticsearch 오류: {e}")
 
     if res['found']:
         doc = res['_source']
         if 'overview' in doc and doc['overview'] and not gen:
+            logger.info(f"Paper ID: {paper_id}의 기존 요약 반환.")
             return {"results": doc['overview'], "model": 0}
         else:
-            paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
+            paper_path = os.path.join(PAPER_STORAGE_PATH, f"{paper_id}.pdf")
             try:
                 results = await agent_pipeline_async(paper_path, paper_id, state)
                 es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
+                logger.info(f"Paper ID: {paper_id}의 요약 생성 및 Elasticsearch 업데이트 완료.")
                 return {"results": results, "model": 1}
             except Exception as e:
+                logger.error(f"요약 생성 오류: {e}")
                 raise HTTPException(status_code=500, detail=f"요약 생성 오류: {e}")
     else:
+        logger.warning(f"Paper ID: {paper_id}을 Elasticsearch에서 찾을 수 없습니다.")
         results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
         return {"results": results, "model": 0}
 
@@ -316,6 +351,4 @@ if __name__ == "__main__":
         # 기존 코드 실행
         main()  # 주 실행 코드
     except Exception as e:
-        print(f"오류 발생: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.error(f"오류 발생: {e}", exc_info=True)

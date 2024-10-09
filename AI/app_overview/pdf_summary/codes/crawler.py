@@ -59,7 +59,7 @@ def download_pdf(doc_id, save_path, driver):
             screenshot_path = f"./screenshot_{doc_id}.png"
             driver.save_screenshot(screenshot_path)
             print(f"{doc_id} - 스크린샷 저장됨: {screenshot_path}")
-    
+
     except Exception as e:
         print(f"{doc_id} - 오류 발생: {e}")
         # 스크린샷 저장
