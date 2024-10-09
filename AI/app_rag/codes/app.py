@@ -204,21 +204,25 @@ async def ask_question(request: QueryRequest):
 
     # Step 5: 프롬프트 생성(Create Prompt)
     prompt = PromptTemplate.from_template(
-        """You are an assistant for question-answering tasks. 
-    Use the following pieces of retrieved context to answer the question. 
-    If you don't know the answer, just say that you don't know. 
-    Answer in Korean.
+    #     """You are an assistant for question-answering tasks. 
+    # Use the following pieces of retrieved context to answer the question. 
+    # If you don't know the answer, just say that you don't know. 
+    # Answer in Korean.
+        """You are an assistant for question-answering tasks, specifically focused on providing information related to academic papers. 
+            Use the following pieces of retrieved context to answer the question. 
+            If the question is unrelated to academic papers, or if the context does not provide sufficient information, politely respond that this is beyond your scope.
+            Answer in Korean.
 
-    #Previous Chat History:
-    {chat_history}
+        #Previous Chat History:
+        {chat_history}
 
-    #Question: 
-    {question} 
+        #Question: 
+        {question} 
 
-    #Context: 
-    {context} 
+        #Context: 
+        {context} 
 
-    #Answer:"""
+        #Answer:"""
     )
 
     # Step 6: 언어모델(LLM) 생성
@@ -321,21 +325,25 @@ async def ask_question(request: QueryRequest):
 
     # Step 5: 프롬프트 생성(Create Prompt)
     prompt = PromptTemplate.from_template(
-        """You are an assistant for question-answering tasks. 
-    Use the following pieces of retrieved context to answer the question. 
-    If you don't know the answer, just say that you don't know. 
-    Answer in Korean.
+    #     """You are an assistant for question-answering tasks. 
+    # Use the following pieces of retrieved context to answer the question. 
+    # If you don't know the answer, just say that you don't know. 
+    # Answer in Korean.
+        """You are an assistant for question-answering tasks, specifically focused on providing information related to academic papers. 
+            Use the following pieces of retrieved context to answer the question. 
+            If the question is unrelated to academic papers, or if the context does not provide sufficient information, politely respond that this is beyond your scope.
+            Answer in Korean.
 
-    #Previous Chat History:
-    {chat_history}
+        #Previous Chat History:
+        {chat_history}
 
-    #Question: 
-    {question} 
+        #Question: 
+        {question} 
 
-    #Context: 
-    {context} 
+        #Context: 
+        {context} 
 
-    #Answer:"""
+        #Answer:"""
     )
 
     # Step 6: 언어모델(LLM) 생성
