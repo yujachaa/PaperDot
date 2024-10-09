@@ -54,7 +54,7 @@ const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteR
           )}
         </ul>
       ) : (
-        <div className="text-light-text pl-11">이전 검색 기록이 없습니다.</div>
+        <div className="text-light-text pl-5">이전 검색 기록이 없습니다.</div>
       )}
     </div>
   );
