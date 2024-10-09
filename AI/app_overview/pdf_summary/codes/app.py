@@ -239,7 +239,7 @@ class AppState:
 
 # 의존성 주입 함수
 async def get_app_state():
-    return app.state
+    return AppState()
 
 # FastAPI lifespan 이벤트 핸들러
 @asynccontextmanager
