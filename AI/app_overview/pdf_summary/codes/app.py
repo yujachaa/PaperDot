@@ -142,7 +142,7 @@ def create_internal_links(markdown_text):
     links = "<br>".join(links)
     return links
 
-async def get_pdf(paper_path, paper_id, reverse_mapper, driver):
+def get_pdf(paper_path, paper_id, reverse_mapper, driver):
     driver.delete_all_cookies()  # 쿠키 삭제로 독립적인 세션 유지
 
     doc_id = reverse_mapper.get(int(paper_id))
@@ -252,7 +252,7 @@ async def agent_pipeline_async(paper_path, paper_id, state: AppState):
 def agent_pipeline(paper_path, paper_id, state: AppState):
     driver = driver_pool
     try:
-        pdf_document = await get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
+        pdf_document = get_pdf(paper_path, paper_id, state.reverse_mapper, driver)
 
         try:
             markdown_document = pymupdf4llm.to_markdown(paper_path)
