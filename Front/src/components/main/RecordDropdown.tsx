@@ -56,7 +56,13 @@ const RecordDropdown: React.FC<DropDownProps> = ({ className, records, onDeleteR
                 <img
                   src={xIcon}
                   alt="x아이콘"
-                  onClick={(event) => handleDelete(event, index)} // x 클릭 시 해당 기록 삭제
+                  onClick={(event) => {
+                    event.stopPropagation(); // 이벤트 전파 중지
+                    handleDelete(event, index);
+                  }} // x 클릭 시 해당 기록 삭제
+                  onMouseDown={(event) => {
+                    event.stopPropagation(); // 이벤트 전파 중지
+                  }}
                 />
               </li>
             ),

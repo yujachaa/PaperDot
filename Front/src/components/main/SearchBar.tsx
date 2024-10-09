@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 불러오기
 import styles from './SearchBar.module.scss';
 import searchIcon from '../../assets/images/search.svg'; // SVG 아이콘 불러오기
@@ -8,6 +8,7 @@ import SearchDropdown from './SearchDropdown';
 import { searchTitle } from '../../apis/search';
 import { HitItem } from '../../interface/search';
 import { getSearchHistory, setSearchHistory } from '../../utills/sessionStorage';
+import { debounce } from 'lodash';
 
 type SearchResultItem = {
   id: number;
@@ -25,27 +26,42 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
   const [records, setRecords] = useState<string[]>(JSON.parse(getSearchHistory() || '[]')); //검색기록 가져오기
   const [searchResult, setSearchResult] = useState<SearchResultItem[]>([]);
 
-  // useEffect(() => {
-  //   setValue(initialValue);
-  // }, []);
+  const debouncedSearch = useCallback(
+    debounce(async (searchTerm) => {
+      if (searchTerm.trim() === '') {
+        setSearchResult([]);
+        return;
+      }
 
-  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    console.log('검색어 바뀜: ' + value);
-    const response = await searchTitle(event.target.value.toLowerCase());
-    console.log('검색응답: ', response.hits.hits);
-    const transformedArray = response.hits.hits.map((item: HitItem) => {
-      return {
-        id: item._id,
-        title: item._source.original_json.title.ko,
-        authors: item._source.original_json.authors.split(';'),
-        year: parseInt(item._source.original_json.year),
-      };
-    });
+      try {
+        const response = await searchTitle(searchTerm.toLowerCase());
+        console.log('검색응답: ', response.hits.hits);
+        const transformedArray = response.hits.hits.map((item: HitItem) => ({
+          id: item._id,
+          title: item._source.original_json.title.ko,
+          authors: item._source.original_json.authors.split(';'),
+          year: parseInt(item._source.original_json.year),
+        }));
 
-    console.log('리스트로 변환: ', transformedArray);
-    setSearchResult(transformedArray);
-  };
+        console.log('리스트로 변환: ', transformedArray);
+        setSearchResult(transformedArray);
+      } catch (error) {
+        console.error('검색 중 오류 발생: ', error);
+      }
+    }, 200),
+    [],
+  ); //0.5초 안에 호출된 가장 마지막 api 만 서버로 호출
+
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = event.target.value.replace(/[^a-zA-Z0-9ㄱ-힣\s]/g, ''); // 특수문자를 제외한 값만 남기기
+      setValue(newValue);
+      console.log('검색어 바뀜: ' + newValue);
+
+      debouncedSearch(newValue);
+    },
+    [debouncedSearch], // 의존성 배열에 debouncedSearch 추가
+  );
 
   const handleFocus = async () => {
     setIsFocused(true);
