@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import BookMark from '../common/BookMark';
@@ -7,6 +8,8 @@ import { getBookmarks, trueToggleBookmark } from '../../apis/bookmark';
 const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [showFullBox, setShowFullBox] = useState<boolean>(false);
 
   // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
@@ -32,6 +35,18 @@ const Favorites = () => {
 
     fetchData();
   }, []);
+
+  // showFullBox가 true로 변경될 때 infoBox를 닫기 위해 selectedNode를 null로 설정
+  useEffect(() => {
+    if (showFullBox) {
+      setSelectedNode(null); // infoBox를 닫음
+    }
+  }, [showFullBox]);
+
+  const goDetail = (id: number) => {
+    console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/paper/${id}`);
+  };
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -79,7 +94,7 @@ const Favorites = () => {
           .distance(150),
       )
       // 노드 간 반발력 설정
-      .force('charge', d3.forceManyBody().strength(-100))
+      .force('charge', d3.forceManyBody().strength(-25))
       // 시뮬레이션 중심 위치 지정
       .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -161,6 +176,7 @@ const Favorites = () => {
     function handleClick(d: any, links: any) {
       // 선택된 노드 상태 설정
       setSelectedNode(d);
+      setShowFullBox(false);
       const relatedNodes = links
         // 클릭된 노드와 연결된 링크 찾기
         .filter((link: any) => link.source.id === d.id || link.target.id === d.id)
@@ -205,8 +221,47 @@ const Favorites = () => {
 
   const Modal = () => <div className={styles.modal}>북마크 해제되었습니다.✅</div>;
 
+  const renderInfoFullBox = () =>
+    showFullBox && (
+      <div className={styles.infoFullBox}>
+        <button
+          className={styles.closeFullBoxButton}
+          onClick={() => setShowFullBox(false)}
+        >
+          ✕
+        </button>
+        <ul className={styles.nodeList}>
+          {nodesData.map((node, index) => (
+            <li key={index}>
+              <p
+                className={styles.nodeTitle}
+                onClick={() => goDetail(node.id)}
+              >
+                {node.title}
+              </p>
+              <p>
+                <span>저자</span> {node.author}
+              </p>
+              <p>
+                <span>발행 연도</span> {node.year}
+              </p>
+              <button className={styles.bookmarkButton}>
+                <BookMark
+                  paperId={node.id}
+                  isBookmarked={true}
+                  clickBookmark={() => handleBookmarkToggle(node.id)}
+                  isLoading={false}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+
   return (
     <div className={styles.favorites}>
+      {renderInfoFullBox()}
       <svg
         ref={svgRef}
         className={styles.networkChart}
@@ -223,7 +278,12 @@ const Favorites = () => {
           <ul className={styles.nodeList}>
             {linkedNodes.map((node, index) => (
               <li key={index}>
-                <p className={styles.nodeTitle}>{node.title}</p>
+                <p
+                  className={styles.nodeTitle}
+                  onClick={() => goDetail(node.id)}
+                >
+                  {node.title}
+                </p>
                 <p>
                   <span>저자</span> {node.author}
                 </p>
@@ -244,6 +304,12 @@ const Favorites = () => {
         </div>
       )}
       {showModal && <Modal />}
+      <button
+        className={styles.fullListButton}
+        onClick={() => setShowFullBox(true)}
+      >
+        전체 목록
+      </button>
     </div>
   );
 };

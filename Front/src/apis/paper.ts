@@ -71,3 +71,16 @@ export const getPaperStatistics = async (paperId: number) => {
     throw error;
   }
 };
+
+//논문 요약 가져오는 요청 gen=false 처음 요청, gen true 다시시도 요청
+//모델 표시 (0:라마, 1:gpt)
+export const getSummary = async (paperId: number, gen: boolean) => {
+  try {
+    const response = await api.get(`/summary?paper_id=${paperId}&gen=${gen}`);
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('논문 요약 조회 실패:', error);
+    throw error;
+  }
+};

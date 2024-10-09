@@ -54,12 +54,15 @@ const EditProfile: React.FC = () => {
     try {
       const response = await withdrawUser();
       if (response?.status === 200) {
+        sessionStorage.removeItem('token');
+        toast.success('회원 탈퇴가 완료되었습니다.');
         navigate('/');
       } else {
         console.error('회원 탈퇴 실패:', response?.data);
       }
     } catch (error) {
       console.error('회원 탈퇴 중 오류 발생:', error);
+      toast.error('회원 탈퇴 중 오류가 발생했습니다.');
     } finally {
       handleCloseModal();
     }
@@ -140,6 +143,7 @@ const EditProfile: React.FC = () => {
             <input
               type="text"
               value={nickname}
+              maxLength={100}
               onChange={(e) => {
                 setNickname(e.target.value);
                 setIsNicknameAvailable(null);
@@ -155,6 +159,43 @@ const EditProfile: React.FC = () => {
                 ? '사용 가능'
                 : '중복 체크'}
             </button>
+          </div>
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Birth</label>
+          <input
+            type="text"
+            value={birthyear}
+            disabled
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Gender</label>
+          <div className={styles.genderGroup}>
+            <div>
+              <input
+                type="radio"
+                name="gender"
+                value="MALE"
+                checked={gender === 'MALE'}
+                onChange={() => setGender('MALE')}
+                disabled
+              />{' '}
+              남
+            </div>
+            <div>
+              <input
+                type="radio"
+                name="gender"
+                value="FEMALE"
+                checked={gender === 'FEMALE'}
+                onChange={() => setGender('FEMALE')}
+                disabled
+              />{' '}
+              여
+            </div>
           </div>
         </div>
 
