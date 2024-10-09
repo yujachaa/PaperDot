@@ -37,7 +37,7 @@ from pdf_summary.codes import driver_pool  # WebDriverPool을 가져옵니다.
 
 # Define paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../config/.env")
+env_path = os.path.join(current_dir, "../../config/.env")
 MAPPING_PICKLE_FILE = os.path.join(current_dir, "../models/doc_id_index_mapping.pkl")
 PAPER_STORAGE_PATH = os.path.join(current_dir, "../datas/")
 
