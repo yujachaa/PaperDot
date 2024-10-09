@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavigate 훅 불러오기
 import styles from './SearchBar.module.scss';
 import searchIcon from '../../assets/images/search.svg'; // SVG 아이콘 불러오기
@@ -25,9 +25,9 @@ const SearchBar: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) =
   const [records, setRecords] = useState<string[]>(JSON.parse(getSearchHistory() || '[]')); //검색기록 가져오기
   const [searchResult, setSearchResult] = useState<SearchResultItem[]>([]);
 
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+  // useEffect(() => {
+  //   setValue(initialValue);
+  // }, []);
 
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
