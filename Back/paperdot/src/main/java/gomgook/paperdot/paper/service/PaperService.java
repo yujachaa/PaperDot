@@ -1,6 +1,12 @@
 package gomgook.paperdot.paper.service;
 
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.*;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gomgook.paperdot.bookmark.entity.Bookmark;
@@ -16,6 +22,9 @@ import gomgook.paperdot.paper.entity.PaperSimpleDocument;
 import gomgook.paperdot.paper.repository.PaperESRepository;
 import gomgook.paperdot.paper.repository.PaperJpaRepository;
 import gomgook.paperdot.paper.repository.PapersimpleESRepository;
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,7 +59,7 @@ public class PaperService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private RestClient Client;
+    private ElasticsearchClient esClient;
 
 
     private final WebClient webClient;
@@ -60,6 +69,26 @@ public class PaperService {
     public PaperService(WebClient.Builder webClientBuilder, RedisTemplate<String, Object> redisTemplate ) {
         this.webClient = webClientBuilder.baseUrl("http://j11b208.p.ssafy.io:8000").build();
         this.redisTemplate = redisTemplate;
+    }
+
+    public void nullCheck2(List<ElasticSearchResponse> paperSimpleDocumentList) {
+        if(paperSimpleDocumentList.isEmpty()) return;
+
+        Iterator<ElasticSearchResponse> iterator = paperSimpleDocumentList.iterator();
+
+        while (iterator.hasNext()) {
+            ElasticSearchResponse paperSimpleDocument = iterator.next();
+            OriginalJson originalJson = paperSimpleDocument.getOriginalJson();
+            if(originalJson.getTitle().getKo() == null || originalJson.getTitle().getEn() == null)
+                iterator.remove();
+
+            if(originalJson.getAuthors() == null || originalJson.getAuthors().isEmpty())
+                iterator.remove();
+
+            if(originalJson.getYear() == null)
+                iterator.remove();
+        }
+
     }
 
     public void nullCheck(List<PaperSimpleDocument> paperSimpleDocumentList) {
@@ -99,22 +128,58 @@ public class PaperService {
 
          */
 
+        List<ElasticSearchResponse> elasticSearchResponseList = new ArrayList<>();
+
+        Long totalCount = (long)0;
+        try{
+
+            SearchResponse<ElasticSearchResponse> search = esClient.search(s -> s
+                            .index("papers")
+                            .size(20)
+                            .from(from*size)
+                            .trackTotalHits(tth->tth.enabled(true))
+                            .query(q -> q
+                                    .bool(b -> b
+                                            .must(m -> m
+                                                    .exists(e -> e.field("original_json.abstract"))
+                                            ).must(m -> m
+                                                    .matchPhrasePrefix(mpp -> mpp
+                                                            .field("original_json.title.ko")
+                                                            .query(keyword)
+                                                    )
+                                            )
+                                    )
+                            ),
+                    ElasticSearchResponse.class);
+            totalCount = search.hits().total().value();
+
+            for (int i = 0; i < search.hits().hits().size(); i++) {
+                Hit<ElasticSearchResponse> hit = search.hits().hits().get(i);
+                elasticSearchResponseList.add(hit.source());
+                elasticSearchResponseList.get(i).setId(Long.valueOf(hit.id()));
+            }
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        System.out.println("ElasticSearchComplete");
+
+
         // ES에서 LIST 가져오기
-        List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findByOriginalJsonTitle(keyword).orElse(new ArrayList<>());
+        //List<PaperSimpleDocument> paperSimpleDocumentList = papersimpleESRepository.findByOriginalJsonTitle(keyword).orElse(new ArrayList<>());
 
         //paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
-
-
-        System.out.println("from"+from+"size"+size);
-
 
         //for(PaperSimpleDocument paperSimpleDocument : paperSimpleDocumentList) {
         //    System.out.println("Id List + "+paperSimpleDocument.getId());
         //}
-        nullCheck(paperSimpleDocumentList);
 
-        List<Long> stringIds = paperSimpleDocumentList.stream().map(PaperSimpleDocument::getId).toList();
+        nullCheck2(elasticSearchResponseList);
 
+        List<Long> stringIds = elasticSearchResponseList.stream().map(ElasticSearchResponse::getId).toList();
         /*
 //        // paperSearchResponseList caching
         String redisKey = "searchData::"+keyword;
@@ -123,34 +188,42 @@ public class PaperService {
 
         // 총 검색 리스트 갯수
         //Long totalCount = (stringIds.isEmpty()) ? 0 : (long)paperSimpleDocumentList.size();
-        Long totalCount = (long) paperSimpleDocumentList.size();
 
+        /*=======
+        Long totalCount = (long) paperSimpleDocumentList.size();
+         ========*/
 
         // pagination
-        /*
+        /*=================
         int pageSize = 20;
         int end = Math.min(pageSize, paperSimpleDocumentList.size());
          */
 
+        /*==================
         int min = Math.min(paperSimpleDocumentList.size()-from*size, size);
         paperSimpleDocumentList = paperSimpleDocumentList.subList(from*min, from*min+min);
         System.out.println("list size :"+paperSimpleDocumentList.size());
         // 20개 검색된 논문리스트 DTO 구성
-        List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, paperSimpleDocumentList);
+
+
+         */
+        List<PaperSearchResponse> paperSearchResponseList = setPaperSearchResponses(memberId, stringIds, elasticSearchResponseList);
 
 //
 //        // 총 논문 수 + 1페이지 논문 데이터
+
+
         TotalPageSearchResponse totalPageSearchResponse = new TotalPageSearchResponse();
         totalPageSearchResponse.setPaperSearchResponseList(paperSearchResponseList);
         totalPageSearchResponse.setTotal(totalCount);
-
+        System.out.println("logic complete");
 
         return totalPageSearchResponse;
     }
 
 
     // 사용자 북마크 정보, 북마크 횟수 추가
-    public List<PaperSearchResponse> setPaperSearchResponses(Long memberId, List<Long> ids, List<PaperSimpleDocument> paperSimpleDocumentList) {
+    public List<PaperSearchResponse> setPaperSearchResponses(Long memberId, List<Long> ids, List<ElasticSearchResponse> paperSimpleDocumentList) {
 
         List<PaperSearchResponse> paperSearchResponseList = new ArrayList<>();
 
@@ -163,7 +236,7 @@ public class PaperService {
 
         // 논문 북마크 횟수
         List<PaperEntity> sqlPaperList = new ArrayList<>();
-        for(PaperSimpleDocument paperSimpleDocument : paperSimpleDocumentList){
+        for(ElasticSearchResponse paperSimpleDocument : paperSimpleDocumentList){
             long id = paperSimpleDocument.getId();
             sqlPaperList.add(paperJpaRepository.findById(id));
         }
@@ -176,7 +249,7 @@ public class PaperService {
 
 
         for(int i=0; i< paperSimpleDocumentList.size(); i++) {
-            PaperSimpleDocument paperSimpleDocument = paperSimpleDocumentList.get(i);
+            ElasticSearchResponse paperSimpleDocument = paperSimpleDocumentList.get(i);
             PaperEntity sqlPaper = (sqlPaperList.isEmpty()) ? new PaperEntity() : sqlPaperList.get(i);
 
             PaperSearchResponse paperSearchResponse = setPaperSearchResponse(paperSimpleDocument, sqlPaper);
@@ -230,7 +303,7 @@ public class PaperService {
     }
 
     // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
-    private static PaperSearchResponse  setPaperSearchResponse(PaperSimpleDocument python, PaperEntity sql) {
+    private static PaperSearchResponse  setPaperSearchResponse(ElasticSearchResponse python, PaperEntity sql) {
         PaperSearchResponse response = new PaperSearchResponse();
 
         response.setId(python.getId());
@@ -251,7 +324,7 @@ public class PaperService {
         response.setTitle(title);
         response.setAuthors(authors);
         response.setCnt(sql.getBookmarkCnt());
-        System.out.println("id : "+response.getId()+ "sql id : "+ sql.getId() + " cnt : "+response.getCnt());
+        //System.out.println("id : "+response.getId()+ "sql id : "+ sql.getId() + " cnt : "+response.getCnt());
         response.setYear(originalJsonFrom.getYear());
 
         response.setBookmark(false);

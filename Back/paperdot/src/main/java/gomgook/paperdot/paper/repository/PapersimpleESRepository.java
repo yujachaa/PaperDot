@@ -17,6 +17,7 @@ public interface PapersimpleESRepository extends ElasticsearchRepository<PaperSi
     @Query("{\"terms\": {\"doc_id\": ?0}}")
     Optional<List<PaperSimpleDocument>> findAllByDocIdIn(List<String> docIds);
 
+
     // Match 쿼리와 from, size 설정
     //@Query("{ \"match\": { \"original_json.title.ko\": \"?0\"  } }")
     //@Query("{ \"bool\": { \"should\": [ { \"term\": { \"original_json.title.ko\": \"?0\" } }, { \"term\": { \"original_json.title.ko.keyword\": \"?0\" } } ] } }")
