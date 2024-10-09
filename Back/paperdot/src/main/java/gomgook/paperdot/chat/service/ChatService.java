@@ -67,7 +67,8 @@ public class ChatService {
             chatMessageDto.setSenderId(chat.getSenderId());
             Member member = memberRepository.findById(chat.getSenderId()).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
             chatMessageDto.setNickname(member.getNickname());
-
+            chatMessageDto.setMessage(chat.getMessage());
+            
             chatMessageDtoList.add(chatMessageDto);
         }
 
