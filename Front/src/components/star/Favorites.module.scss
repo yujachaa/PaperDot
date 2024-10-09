@@ -148,6 +148,27 @@
   z-index: 100;
 }
 
+.fullListButton {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: #2e2e2e;
+  z-index: 1000;
+}
+
+.fullListButton:hover {
+  background-color: #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-weight: 700;
+  color: #2e2e2e;
+}
+
 @media (max-width: 768px) {
   .infoBox {
     width: 290px;
@@ -177,6 +198,16 @@
 
   .nodeList p {
     margin: 3px 0;
+  }
+
+  .infoFullBox {
+    width: 290px;
+    max-height: 200px;
+    padding: 0.5rem;
+    left: 50%;
+    top: 300px;
+    transform: translateX(-50%);
+    font-size: 1rem;
   }
 }
 
