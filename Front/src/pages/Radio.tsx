@@ -63,7 +63,10 @@ const Radio = () => {
       <div className={`${styles.content}`}>
         <div className={`${styles.radio}`}>
           <PlayList Radio={RadioLists[Number(id) - 1]} />
-          <RadioScript className="mt-4" />
+          <RadioScript
+            radioId={Number(id)}
+            className="mt-4"
+          />
         </div>
         <ChatRoom
           className="mt-4"
