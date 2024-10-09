@@ -101,10 +101,14 @@ def create_internal_links(markdown_text):
     return links
 
 def get_pdf(paper_path, paper_id, reverse_mapper):
+    print('pdf')
     if not os.path.exists(paper_path):
+        print('pdf-2')
         download_pdf(reverse_mapper[int(paper_id)], paper_path)
     with open(paper_path, "rb") as f:
+        print('pdf-3')
         pdf_document = f.read()
+    print('pdf-4')
     return pdf_document
 
 # Elasticsearch 클라이언트 생성
