@@ -61,12 +61,14 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
     setIsCopied(true);
   };
 
+  const removeBrTags = (text: string) => text.split(/<br\s*\/?>/i).join('');
+
   const getNote = async (paperId: number, gen: boolean) => {
     setIsLoaded(false);
     try {
       const response = await getSummary(paperId, gen); // getSummary 호출
       console.log('요약 데이터:', response);
-      copyText.current = response.results;
+      copyText.current = removeBrTags(response.results);
       const editedText = addHeadingTagsWithIdsAfterHr(response.results);
       setSummaryText(editedText);
       console.log(editedText);
