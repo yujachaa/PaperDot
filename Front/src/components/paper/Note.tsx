@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CopyIcon from '../../assets/images/copy.svg?react';
 import CopiedIcon from '../../assets/images/copied.svg?react';
 import ReloadIcon from '../../assets/images/reload.svg?react';
@@ -25,6 +25,7 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
   const location = useLocation();
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [summaryText, setSummaryText] = useState<string>('');
+  const copyText = useRef('');
 
   useEffect(() => {
     const fetchNote = async () => {
@@ -49,7 +50,7 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
 
   const getCopy = async () => {
     try {
-      await navigator.clipboard.writeText(summaryText);
+      await navigator.clipboard.writeText(copyText.current);
       setShowModal(true);
       setTimeout(() => {
         setShowModal(false);
@@ -60,11 +61,14 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
     setIsCopied(true);
   };
 
+  const removeBrTags = (text: string) => text.split(/<br\s*\/?>/i).join('');
+
   const getNote = async (paperId: number, gen: boolean) => {
     setIsLoaded(false);
     try {
       const response = await getSummary(paperId, gen); // getSummary 호출
       console.log('요약 데이터:', response);
+      copyText.current = removeBrTags(response.results);
       const editedText = addHeadingTagsWithIdsAfterHr(response.results);
       setSummaryText(editedText);
       console.log(editedText);
