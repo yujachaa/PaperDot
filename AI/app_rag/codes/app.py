@@ -50,6 +50,26 @@ reverse_mapper = None
 store = {}
 download_queue = asyncio.Queue()  # 비동기 다운로드 큐 추가
 
+prompt = """
+    You are an assistant for question-answering tasks, specifically focused on providing information related to academic papers. 
+    Use the following pieces of retrieved context to answer the question. 
+    If the question involves terms that are not found in the retrieved context, but are common academic terms, please provide a standard definition.
+    If the question is unrelated to academic papers, or if the context does not provide sufficient information, politely respond that this is beyond your scope.
+    Answer in Korean.
+    
+    #Previous Chat History:
+    {chat_history}
+    
+    #Question:
+    {question}
+    
+    #Context:
+    {context}
+    
+    #Answer:
+    """
+
+
 # CORS 설정 추가
 origins = [
     "http://localhost:5173",
@@ -154,11 +174,9 @@ async def ask_question(request: QueryRequest):
         vectorstore = FAISS.load_local(index_file, embeddings, allow_dangerous_deserialization=True)
 
     retriever = vectorstore.as_retriever()
-    prompt = PromptTemplate.from_template(
-        """You are an assistant for question-answering tasks, specifically focused on providing information related to academic papers. \
-            Use the following pieces of retrieved context to answer the question. \
-            If the question is unrelated to academic papers, or if the context does not provide sufficient information, politely respond that this is beyond your scope.\nAnswer in Korean.\n\n#Previous Chat History:\n{chat_history}\n\n#Question:\n{question}\n\n#Context:\n{context}\n\n#Answer:"""
-    )
+
+    
+    prompt = PromptTemplate.from_template(prompt)
 
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
     chain = (
@@ -223,11 +241,7 @@ async def ask_question_v2(request: QueryRequest):
         vectorstore = FAISS.load_local(index_file, embeddings, allow_dangerous_deserialization=True)
 
     retriever = vectorstore.as_retriever()
-    prompt = PromptTemplate.from_template(
-        """You are an assistant for question-answering tasks, specifically focused on providing information related to academic papers. \
-            Use the following pieces of retrieved context to answer the question. \
-            If the question is unrelated to academic papers, or if the context does not provide sufficient information, politely respond that this is beyond your scope.\nAnswer in Korean.\n\n#Previous Chat History:\n{chat_history}\n\n#Question:\n{question}\n\n#Context:\n{context}\n\n#Answer:"""
-    )
+    prompt = PromptTemplate.from_template(prompt)
 
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
     chain = (
