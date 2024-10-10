@@ -1,25 +1,25 @@
 .mypageContainer {
-  max-width: 680px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
 .tabMenu {
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
-  border-bottom: 5px solid #2e2e2e;
-  gap: 5%;
+  margin-bottom: 1.3rem;
+  border-bottom: 3px solid #2e2e2e;
+  gap: 10%;
 }
 
 .dark {
-  border-bottom: 5px solid #fafafa;
+  border-bottom: 3px solid #fafafa;
 }
 
 .tabButton {
   box-sizing: border-box;
   font-weight: 700;
-  padding: 1rem;
-  font-size: 2.8rem;
+  padding: 0.5rem;
+  font-size: 2rem;
   cursor: pointer;
   border: none;
   background: none;
@@ -30,10 +30,10 @@
 .tabButton.active::before {
   content: '';
   position: absolute;
-  bottom: 1.5rem;
+  bottom: 1rem;
   left: 0;
   width: 100%;
-  height: 1.4rem;
+  height: 1rem;
   background-color: #a7c7e7;
   z-index: -1;
 }
