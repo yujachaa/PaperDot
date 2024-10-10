@@ -1,4 +1,6 @@
 import { Authapi, api, searchApi } from './core';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const getDetail = async (paperId: number) => {
   try {
@@ -79,8 +81,15 @@ export const getSummary = async (paperId: number, gen: boolean) => {
     const response = await api.get(`/summary?paper_id=${paperId}&gen=${gen}`);
     // console.log(response.data);
     return response.data;
-  } catch (error) {
-    console.error('논문 요약 조회 실패:', error);
+  } catch (error: any) {
+    if (error.response && error.response.status === 504) {
+      toast.error('서버 응답 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.');
+    } else if (error.code === 'ERR_NETWORK') {
+      toast.error('네트워크가 불안정합니다. 새로고침해주세요.');
+    } else {
+      console.error('논문 요약 조회 실패:', error);
+      toast.error('논문 요약 조회에 실패했습니다.');
+    }
     throw error;
   }
 };
