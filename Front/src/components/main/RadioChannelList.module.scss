@@ -1,0 +1,74 @@
+.radioList {
+  display: flex;
+  padding: 13rem 13rem 0rem 13rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  align-self: stretch;
+
+  & {
+    @media (max-width: 768px) {
+      padding: 2rem 2rem 0rem 2rem;
+      align-items: center;
+    }
+  }
+}
+
+.channelItem {
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+.channelList {
+  width: 100%;
+
+  & {
+    @media (max-width: 768px) {
+      width: 50%;
+      min-width: 300px;
+    }
+  }
+}
+
+.imgContainer {
+  cursor: pointer;
+  // width: 300px;
+  height: auto;
+  // overflow: hidden;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+  margin-right: 10px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.hoverImg {
+  border-radius: 35px;
+  transition: box-shadow 0.3s ease;
+}
+
+.hoverImg:hover {
+  border-radius: 35px;
+  box-sizing: border-box;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); // 그림자 추가
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  transition-delay: 10ms;
+}
