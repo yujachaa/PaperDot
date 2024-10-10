@@ -8,7 +8,12 @@ import LeftArrowIcon from '../assets/images/channel/leftArrow.svg?react';
 import RightArrowIcon from '../assets/images/channel/rightArrow.svg?react';
 import Footer from '../components/common/Footer';
 import useTheme from '../zustand/theme';
-import { getSearchPage, getSearchResult, getSearchResultLogined } from '../apis/search';
+import {
+  getSearchPage,
+  getSearchPageLogined,
+  getSearchResult,
+  getSearchResultLogined,
+} from '../apis/search';
 import { SearchResultPaper } from '../interface/search';
 import { useAuth } from '../hooks/useAuth';
 
@@ -47,7 +52,9 @@ const SearchResult: React.FC = () => {
         //2페이지~
         setSearchResult(null); // 데이터를 초기화
         try {
-          const response = await getSearchPage(searchTerm, pageNo); // 비동기 함수 호출
+          const response = isLoggedIn
+            ? await getSearchPageLogined(searchTerm, pageNo)
+            : await getSearchPage(searchTerm, pageNo); // 비동기 함수 호출
           console.log('논문검색 ' + pageNo + '페이지 가져왔어요~', response);
           setTotalCnt(response.total);
           setSearchResult(response.paperSearchResponseList);
