@@ -259,6 +259,8 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
             # overview 필드가 비어 있는지 확인
             if 'overview' in doc and doc['overview'] and not gen:
                 # 이미 요약된 내용이 있다면 그 내용을 반환
+                if len(doc['overview']) == 75:
+                    return {"results": doc['overview'], "model": 3}
                 return {"results": doc['overview'], "model": 0}
 
             # es에 없다면 pdf 로더
