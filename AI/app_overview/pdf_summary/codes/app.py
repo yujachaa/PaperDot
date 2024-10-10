@@ -98,6 +98,7 @@ queue = Queue()
 
 async def download_worker():
     while True:
+        print(1)
         paper_id, paper_path, reverse_mapper = await queue.get()
         try:
             download_pdf(reverse_mapper[int(paper_id)], paper_path)
