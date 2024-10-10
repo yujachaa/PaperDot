@@ -217,7 +217,7 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
       <img
         src={notice}
         alt="공지사항"
-        className="absolute top-24 right-6 cursor-pointer z-30 object-cover"
+        className="absolute top-24 right-6 cursor-pointer z-30"
         onClick={() => {
           setIsNotice(true);
         }}
