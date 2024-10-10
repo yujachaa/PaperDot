@@ -2,7 +2,7 @@ import { AIApi, api } from './core';
 
 export const chatAiApi = async (paper_id: string, question: string, user_id: string) => {
   try {
-    const response = await AIApi.post('/chatAI', { paper_id, question, user_id });
+    const response = await AIApi.post('/chatAI-2', { paper_id, question, user_id });
     return response;
   } catch (err: any) {
     throw new Error(err);
