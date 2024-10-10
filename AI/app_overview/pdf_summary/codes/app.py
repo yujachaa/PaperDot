@@ -272,6 +272,7 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
     except Exception as e:
         print(f"요약 오류 발생: {e}")
         results = "## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 🙏 \n\n ### 해당 논문의 원본 데이터를 찾을 수 없습니다."
+        es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
         return {"results": results, "model": 2}
     # es 에 삽입
 
