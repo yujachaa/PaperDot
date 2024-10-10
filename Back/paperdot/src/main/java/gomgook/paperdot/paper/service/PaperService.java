@@ -259,6 +259,7 @@ public class PaperService {
             // 사용자 북마크정보 저장
             for (Bookmark bookmark : bookmarks) {
                 if(paperSearchResponse.getId().equals(bookmark.getPaper().getId()) ) {
+                    System.out.println("member Id : " + memberId + " paper Id : "+ paperSearchResponse.getId() + " ==== true ====");
                     paperSearchResponse.setBookmark(true);
                 }
             }
