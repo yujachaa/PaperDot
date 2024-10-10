@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ResultList.module.scss';
 import BookMark from '../common/BookMark';
@@ -17,18 +17,19 @@ const ResultList: React.FC<ResultListProps> = ({ searchResult, searchTerm }) => 
   const clickBookmark = useBookmark();
   const isLoggedIn = useAuth();
 
-  const [bookmarkStates, setBookmarkStates] = useState<boolean[]>(
-    searchResult ? searchResult.map((item) => item.bookmark) : [],
-  );
-  const [bookmarkCounts, setBookmarkCounts] = useState<number[]>(
-    searchResult ? searchResult.map((item) => item.cnt) : [],
-  );
-  const [isLoadingStates, setIsLoadingStates] = useState<boolean[]>(
-    searchResult ? searchResult.map(() => false) : [],
-  );
-  const [showModalStates, setShowModalStates] = useState<boolean[]>(
-    searchResult ? searchResult.map(() => false) : [],
-  );
+  const [bookmarkStates, setBookmarkStates] = useState<boolean[]>([]);
+  const [bookmarkCounts, setBookmarkCounts] = useState<number[]>([]);
+  const [isLoadingStates, setIsLoadingStates] = useState<boolean[]>([]);
+  const [showModalStates, setShowModalStates] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    if (searchResult) {
+      setBookmarkStates(searchResult.map((item) => item.bookmark));
+      setBookmarkCounts(searchResult.map((item) => item.cnt));
+      setIsLoadingStates(searchResult.map(() => false));
+      setShowModalStates(searchResult.map(() => false));
+    }
+  }, [searchResult]);
 
   const handleBookmarkClick = async (paperId: number, index: number) => {
     if (isLoadingStates[index]) return;
