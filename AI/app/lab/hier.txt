@@ -1,0 +1,22 @@
+root
+├── doc_id
+├── title
+│   ├── ko
+│   └── en
+├── authors
+├── journal
+│   ├── ko
+│   └── en
+├── year
+├── abstract
+│   ├── ko
+│   └── en
+├── keywords
+│   └── en
+├── body_text
+│   ├── section
+│   └── text
+├── ref_entries
+│   ├── FIGURE
+│   │   ├── text
+│   │   └── type

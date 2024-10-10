@@ -1,0 +1,4 @@
+**/config/.env
+tf_idf/models/*
+lab/doc2vec_model
+**/datas/*
