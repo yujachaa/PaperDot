@@ -81,6 +81,10 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
       }
     }
   };
+  const handleCommandClick = (command: string) => {
+    setInputValue(command + ' ');
+    setFocusIdx(filterCommands.length);
+  };
 
   const postAiChat = async (paper_id: string, question: string, user_id: string) => {
     if (isLoading) {
@@ -106,7 +110,6 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
   const handleSendMessage = async () => {
     if (getTokenSessionStorage() === null) {
       toast.error('로그인이 필요합니다.', {
@@ -251,6 +254,7 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
               key={command.id}
               command={command.command}
               focus={index === focusIdx}
+              onClick={handleCommandClick}
             />
           ))}
         </div>
