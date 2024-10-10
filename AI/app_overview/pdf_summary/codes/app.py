@@ -281,8 +281,9 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
         # Elasticsearch 클라이언트를 종료하여 리소스를 해제합니다.
         if es:
             es.close()
-        results = "## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 🙏 \n\n ### 해당 논문의 원본 데이터를 찾을 수 없습니다."
-        return {"results": results, "model": 2}
+            
+    results = "## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 🙏 \n\n ### 해당 논문의 원본 데이터를 찾을 수 없습니다."
+    return {"results": results, "model": 2}
 
 
 def main():
