@@ -271,12 +271,12 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
                 return {"results": results, "model": 1}
     except Exception as e:
         print(f"요약 오류 발생: {e}")
-        results = "\n\n ## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 해당 논문의 원본 데이터를 찾을 수 없습니다. 🙏"
+        results = "<br> ## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 해당 논문의 원본 데이터를 찾을 수 없습니다. 🙏"
         return {"results": results, "model": 0}
     # es 에 삽입
 
     # es 종료
-    results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
+    results = "<br> ## 🙏 재요약 버튼을 눌러주세요. 🙏"
     return {"results": results, "model": 0}
 
 def main():
