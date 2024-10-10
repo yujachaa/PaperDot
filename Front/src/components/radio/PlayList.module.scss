@@ -14,11 +14,14 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   .sub {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 400;
+    @media (max-width: 768px) {
+      font-size: 0.95rem;
+    }
   }
 }
 .name {
@@ -36,9 +39,16 @@
 }
 @media (max-width: 768px) {
   .name {
-    overflow: hidden; /* 넘치는 부분 숨김 */
-    white-space: nowrap; /* 줄 바꿈 방지 */
-    text-overflow: ellipsis; /* ...으로 표시 */
+    // overflow: hidden; /* 넘치는 부분 숨김 */
+    // white-space: nowrap; /* 줄 바꿈 방지 */
+    // text-overflow: ellipsis; /* ...으로 표시 */
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 최대 줄 수 설정 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 말줄임 표시 */
+    font-size: 1rem;
   }
 }
 

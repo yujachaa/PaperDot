@@ -78,7 +78,7 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
 
   return (
     <div className={`${styles.container} ${className}`}>
-      <MusicIcon className="w-14 h-14 ml-3" />
+      <MusicIcon className="w-14 h-14 ml-3 mobile:w-10 mobile:h-10" />
       <div className={`${styles.content}`}>
         <div className={`${styles.name}`}>{title}</div>
         <div className={`${styles.sub}`}>
@@ -89,12 +89,12 @@ const PlayList = ({ className, Radio }: PlayListProps) => {
       <BookMark
         paperId={id}
         isBookmarked={isBookmarked}
-        className="absolute top-2.5 right-5"
+        className="absolute top-2.5 right-3 w-5"
         clickBookmark={handleBookmarkClick}
         isLoading={isLoading.current}
       />
       <div
-        className="absolute bottom-1.5 right-4 cursor-pointer"
+        className="absolute bottom-1.5 right-4 cursor-pointer mobile:text-sm"
         onClick={handleClick}
       >
         상세보기 &gt;{' '}
