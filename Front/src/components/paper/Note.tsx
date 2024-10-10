@@ -11,6 +11,8 @@ import styles from './Note.module.scss';
 import ReactDOM from 'react-dom';
 import { getSummary } from '../../apis/paper';
 import { Tooltip } from 'react-tooltip';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface NoteProps {
   paperId: number;
@@ -89,8 +91,12 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
         setSelectedModel('GPT-4o');
       }
       setIsLoaded(true);
-    } catch (error) {
-      console.error('논문 요약 조회 실패:', error);
+    } catch (error: any) {
+      if (error.response && error.response.status === 504) {
+        toast.error('서버 응답 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        console.error('논문 요약 조회 실패:', error);
+      }
     }
   };
 
