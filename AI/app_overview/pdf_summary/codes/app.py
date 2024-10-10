@@ -85,7 +85,7 @@ headers_to_split_on = [
 ]
 
 prompt_template = """
-다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요. '#'헤더 부분에는 '** **' 같은 Bold 처리는 하지마세요.
+다음 텍스트를 읽고 되도록 한글로 핵심 내용을 요약해 주세요. 요약 시에는 markdown 태그를 적극 활용해주세요. '#' 헤더가 있다면 각 문단에 어울리는 이모지를 헤더에 포함해 꾸며주세요. 헤더 부분에는 '** **' 같은 Bold 처리는 하지마세요.
 
 "{text}"
 
@@ -248,31 +248,34 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
     요약 API 엔드포인트로, GET 요청으로 전달된 id에 대해 요약된 markdown 반환.
     """
     global mapper, reverse_mapper
-    es = create_es_client()
+    try:
+        es = create_es_client()
 
-    res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
+        res = es.get(index=INDEX_NAME, id=paper_id, ignore=404)
 
-    # es에 있다면
-    if res['found']:
-        doc = res['_source']
-        # overview 필드가 비어 있는지 확인
-        if 'overview' in doc and doc['overview'] and not gen:
-            # 이미 요약된 내용이 있다면 그 내용을 반환
-            return {"results": doc['overview'], "model": 0}
+        # es에 있다면
+        if res['found']:
+            doc = res['_source']
+            # overview 필드가 비어 있는지 확인
+            if 'overview' in doc and doc['overview'] and not gen:
+                # 이미 요약된 내용이 있다면 그 내용을 반환
+                return {"results": doc['overview'], "model": 0}
 
-        # es에 없다면 pdf 로더
-        else:
-            paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
-            results = await agent_pipeline(paper_path, paper_id)
+            # es에 없다면 pdf 로더
+            else:
+                paper_path = f"{PAPER_STORAGE_PATH}{paper_id}.pdf"
+                results = await agent_pipeline(paper_path, paper_id)
 
-            es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
+                es.update(index=INDEX_NAME, id=paper_id, body={"doc": {"overview": results}})
 
-            return {"results": results, "model": 1}
-
+                return {"results": results, "model": 1}
+    except Exception as e:
+        print(f"요약 오류 발생: {e}")
+        results = "\n\n ## 🙏 논문 플랫폼(ScienceOn)에 투고가 취소된 논문입니다. 해당 논문의 원본 데이터를 찾을 수 없습니다. 🙏"
+        return {"results": results, "mdoel": 0}
     # es 에 삽입
 
     # es 종료
-
     results = "\n\n ## 🙏 재요약 버튼을 눌러주세요. 🙏"
     return {"results": results, "mdoel": 0}
 
