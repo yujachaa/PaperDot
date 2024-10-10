@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatToSave {
-    private Long chatRoomId;
+    private int chatRoomId;
     private Long senderId;
     private String message;
 }
