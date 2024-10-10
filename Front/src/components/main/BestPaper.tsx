@@ -123,7 +123,7 @@ const BestPaper: React.FC = () => {
             {categoryData[selectedCategory]?.map((paper, index) => (
               <li
                 key={paper.paperId}
-                className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base hover:bg-grey"
+                className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base hover:bg-light-toggle-background dark:hover:bg-dark-toggle-background"
                 onClick={() => {
                   goDetail(paper.paperId);
                 }}
