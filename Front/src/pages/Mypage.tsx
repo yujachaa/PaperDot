@@ -11,7 +11,7 @@ const Mypage: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
 
   const tabVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 0 },
     visible: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
   };
