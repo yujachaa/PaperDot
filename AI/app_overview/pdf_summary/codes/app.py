@@ -261,6 +261,7 @@ async def summary_paper(paper_id: str = Query(..., description="Paper ID to sear
                 # 이미 요약된 내용이 있다면 그 내용을 반환
                 if len(doc['overview']) == 75:
                     return {"results": doc['overview'], "model": 3}
+                print(len(doc['overview']))
                 return {"results": doc['overview'], "model": 0}
 
             # es에 없다면 pdf 로더
