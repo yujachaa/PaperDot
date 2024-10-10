@@ -28,12 +28,15 @@ public class ChatService {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     // 메시지 저장 메서드
-    public void saveMessage(int roomId, ChatToSave message) throws JsonProcessingException {
+    public ChatMessageDto saveMessage(int roomId, ChatToSave message) throws JsonProcessingException {
         String key = "chatroom:" + roomId;
         Long memberId = message.getSenderId();
 
         String jsonString = objectMapper.writeValueAsString(message);
         redisTemplate.opsForList().rightPush(key, jsonString);
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
+
+        return new ChatMessageDto(roomId, memberId, member.getNickname(), message.getMessage());
     }
     public List<ChatMessageDto> getChatMessages(int roomId) {
         String key = "chatroom:" + roomId;

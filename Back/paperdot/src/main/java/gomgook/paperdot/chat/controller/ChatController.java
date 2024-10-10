@@ -9,6 +9,9 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
@@ -17,8 +20,8 @@ public class ChatController {
 
     @MessageMapping("/chat/{roomId}")
     @SendTo("/topic/{roomId}")
-    public ChatToSave sendMessage(@DestinationVariable int roomId, ChatToSave message) throws JsonProcessingException {
-        chatService.saveMessage(roomId, message);
-        return message;
+    public ChatMessageDto sendMessage(@DestinationVariable int roomId, ChatToSave message) throws JsonProcessingException {
+        ChatMessageDto chatMessageDto = chatService.saveMessage(roomId, message);
+        return chatMessageDto;
     }
 }
