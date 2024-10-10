@@ -65,3 +65,16 @@ export const getSearchPage = async (queryTerm: string, pageNo: number) => {
     throw error;
   }
 };
+
+// 검색결과 페이지네이션 api - 로그인 한 경우
+export const getSearchPageLogined = async (queryTerm: string, pageNo: number) => {
+  try {
+    const response = await Authapi.get(
+      `/api/papers/search?keyword=${queryTerm}&from=${pageNo - 1}`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error('검색 페이지네이션 에러!:', error);
+    throw error;
+  }
+};

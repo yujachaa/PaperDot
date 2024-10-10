@@ -68,6 +68,13 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
     try {
       const response = await getSummary(paperId, gen); // getSummary 호출
       console.log('요약 데이터:', response);
+      if (response.model === 2) {
+        //논문정보가 없어서 요약할 수 없는 경우
+        copyText.current = '';
+        setSummaryText(response.results);
+        setIsLoaded(true);
+        return;
+      }
       copyText.current = removeBrTags(response.results);
       const editedText = addHeadingTagsWithIdsAfterHr(response.results);
       setSummaryText(editedText);
@@ -76,7 +83,6 @@ const Note: React.FC<NoteProps> = ({ paperId }) => {
       console.log('요약내용', summaryText);
       if (response.model === 0) {
         console.log('모델 라마');
-
         setSelectedModel('LLama3.1-ko');
       } else {
         console.log('모델 지피티');

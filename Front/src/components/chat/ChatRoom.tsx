@@ -177,6 +177,8 @@ const ChatRoom = ({ className, paperId, roomId }: ChatRoomProps) => {
 
   useEffect(() => {
     const stompClient = Stomp.over(() => new SockJS(`${BASE_URL}/api/stomp`));
+    //stomp 디버그 로그 제거
+    stompClient.debug = () => {};
     clientRef.current = stompClient;
     const headers = {
       Authorization: 'Bearer ' + '123', // JWT 토큰을 여기에 넣어주세요
