@@ -28,8 +28,8 @@ public class Schedule {
 
     private static int sequence5 = 0;
     private static int copy5 =0;
-    private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
-//    private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
+     private static final String SEGMENT_DIRECTORY = "/home/ubuntu/radio-mp3/";
+    // private static final String SEGMENT_DIRECTORY = "C:/Users/SSAFY/Desktop/S11P21B208/Radio/radio/src/main/resources/music/";
 
     @Autowired
     HlsStreamService hlsStreamService;
@@ -93,8 +93,13 @@ public class Schedule {
     // 각 태스크별 작업 메서드
     public void executeTask1() throws IOException {
         System.out.println(1 + "번 라디오 타이머");
-        makem3u8(sequence1++, 1);
-        if(hlsStreamService.getCopycheck()){
+
+        if(hlsStreamService.getCopycheck())
+        {
+            makem3u8(sequence1++, 1);
+        }
+
+        if(hlsStreamService.getCopycheck() && sequence1 >=20){
 
             copyTs(copy1,1);
             copy1++;
@@ -105,8 +110,10 @@ public class Schedule {
 
     public void executeTask2() throws IOException {
         System.out.println(2 + "번 라디오 타이머");
-        makem3u8(sequence2++, 2);
-        if(hlsStreamService.getCopycheck()){
+        if(hlsStreamService.getCopycheck()) {
+            makem3u8(sequence2++, 2);
+        }
+        if(hlsStreamService.getCopycheck() && sequence2 >=20){
 
             copyTs(copy2,2);
             copy2++;
@@ -116,8 +123,11 @@ public class Schedule {
 
     public void executeTask3() throws IOException {
         System.out.println(3 + "번 라디오 타이머");
-        makem3u8(sequence3++, 3);
-        if(hlsStreamService.getCopycheck()){
+        if(hlsStreamService.getCopycheck())
+        {
+            makem3u8(sequence3++, 3);
+        }
+        if(hlsStreamService.getCopycheck() && sequence3>=20){
 
             copyTs(copy3,3);
             copy3++;
@@ -127,8 +137,11 @@ public class Schedule {
 
     public void executeTask4() throws IOException {
         System.out.println(4 + "번 라디오 타이머");
-        makem3u8(sequence4++, 4);
+
         if(hlsStreamService.getCopycheck()){
+            makem3u8(sequence4++, 4);
+        }
+        if(hlsStreamService.getCopycheck() && sequence4>=20){
 
             copyTs(copy4,4);
             copy4++;
@@ -138,9 +151,10 @@ public class Schedule {
 
     public void executeTask5() throws IOException {
         System.out.println(5 + "번 라디오 타이머");
-        makem3u8(sequence5++, 5);
         if(hlsStreamService.getCopycheck()){
-
+            makem3u8(sequence5++, 5);
+        }
+        if(hlsStreamService.getCopycheck() && sequence5>=20){
             copyTs(copy5,5);
             copy5++;
         }
