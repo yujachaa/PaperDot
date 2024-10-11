@@ -17,20 +17,20 @@
   </tr>
   <tr>
     <td>라디오 채널</td>
-    <td><img src="radio-web.jpg" alt="fitPose" width="200"/></td>
-    <td><img src="radio-app.jpg" alt="fitDepth" width="200"/></td>
-    <td><img src="radio-dark.jpg" alt="rain_28" width="200"/></td>
+    <td><img src="./docs_assets/radio-web.jpg" alt="fitPose" width="200"/></td>
+    <td><img src="./docs_assets/radio-app.jpg" alt="fitDepth" width="200"/></td>
+    <td><img src="./docs_assets/radio-dark.jpg" alt="rain_28" width="200"/></td>
   </tr>
   <tr>
     <td>논문요약</td>
-    <td><img src="summary-web.jpg" alt="rain_34" width="200"/></td>
-    <td><img src="summary-app.jpg" alt="m3" width="200"/></td>
-    <td><img src="summary-dark.jpg" alt="m3_2" width="200"/></td>
+    <td><img src="./docs_assets/summary-web.jpg" alt="rain_34" width="200"/></td>
+    <td><img src="./docs_assets/summary-app.jpg" alt="m3" width="200"/></td>
+    <td><img src="./docs_assets/summary-dark.jpg" alt="m3_2" width="200"/></td>
   </tr>
   <tr>
    <td>북마크별자리</td>
-    <td><img src="star-web.jpg" alt="rain_34" width="200"/></td>
-    <td><img src="star-dark.jpg" alt="m3" width="200"/></td>
+    <td><img src="./docs_assets/star-web.jpg" alt="rain_34" width="200"/></td>
+    <td><img src="./docs_assets/star-dark.jpg" alt="m3" width="200"/></td>
   </tr>
 </table>
 
