@@ -1,0 +1,16 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:6
+#EXT-X-MEDIA-SEQUENCE:25
+#EXT-X-DISCONTINUITY-SEQUENCE:0
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXTINF:4.0,
+media-ulsusdkv7_b3_25.ts
+#EXTINF:4.0,
+media-ulsusdkv7_b3_26.ts
+#EXTINF:4.0,
+media-ulsusdkv7_b3_27.ts
+#EXTINF:4.0,
+media-ulsusdkv7_b3_28.ts
+#EXTINF:4.0,
+media-ulsusdkv7_b3_29.ts
