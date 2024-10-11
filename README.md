@@ -1,38 +1,53 @@
 # 📚 논문을 흥미롭게 `PaperDot.` (논문 요약 및 라디오 서비스)
 
 
-
-
 ### 🌟 서비스 주소
 - 서비스의 실제 동작을 확인할 수 있는 [서비스 링크](https://j11b208.p.ssafy.io) 🌍
 ---
 
-<h3 style="text-align: left;">주요 기능의 스크린샷을 통해 인터페이스와 사용 방법을 미리 확인하세요 📸</h1>
+<h3 style="text-align: left;">주요 기능의 스크린샷을 통해 인터페이스와 사용 방법을 미리 확인하세요 📸</h3>
+
+<h4>[1]. 데스크탑 및 다크모드</h4>
 <table style="width: 100%; text-align: center;">
   <tr>
     <th>기능 이름</th>
     <th>데스크탑</th>
-    <th>모바일 반응형</th>
     <th>다크모드</th>
   </tr>
   <tr>
-    <td>라디오 채널</td>
-    <td><img src="./docs_assets/radio-web.jpg" alt="fitPose" width="200"/></td>
-    <td><img src="./docs_assets/radio-app.jpg" alt="fitDepth" width="200"/></td>
-    <td><img src="./docs_assets/radio-dark.jpg" alt="rain_28" width="200"/></td>
+    <td><strong>라디오 채널</strong></td>
+    <td><img src="./docs_assets/radio-web.gif" alt="fitPose" width="300"/></td>
+    <td><img src="./docs_assets/radio-dark.gif" alt="rain_28" width="300"/></td>
   </tr>
   <tr>
-    <td>논문요약</td>
-    <td><img src="./docs_assets/summary-web.jpg" alt="rain_34" width="200"/></td>
-    <td><img src="./docs_assets/summary-app.jpg" alt="m3" width="200"/></td>
-    <td><img src="./docs_assets/summary-dark.jpg" alt="m3_2" width="200"/></td>
+    <td><strong>논문요약</strong></td>
+    <td><img src="./docs_assets/summary-web.gif" alt="rain_34" width="300"/></td>
+    <td><img src="./docs_assets/summary-dark.gif" alt="m3_2" width="300"/></td>
   </tr>
   <tr>
-   <td>북마크별자리</td>
-    <td><img src="./docs_assets/star-web.jpg" alt="rain_34" width="200"/></td>
-    <td><img src="./docs_assets/star-dark.jpg" alt="m3" width="200"/></td>
+    <td><strong>북마크별자리</strong></td>
+    <td colspan="2"><img src="./docs_assets/star-dark.gif" alt="m3" width="600"/></td>
   </tr>
 </table>
+
+---
+
+<h4>[2]. 모바일 반응형</h4>
+<table style="width: 100%; text-align: center;">
+  <tr>
+    <th>기능 이름</th>
+    <th>라디오 채널</th>
+    <th>논문요약</th>
+    <th>북마크별자리</th>
+  </tr>
+  <tr>
+    <td><strong>이미지</strong></td>
+    <td><img src="./docs_assets/radio-app.gif" alt="fitPose" width="300"/></td>
+    <td><img src="./docs_assets/summary-app.gif" alt="rain_28" width="300"/></td>
+    <td><img src="./docs_assets/star-app.gif" alt="rain_28" width="300"/></td>
+  </tr>
+</table>
+
 
 이 서비스는 사용자가 `논문`을 `검색`하고 `요약`본을 확인하면서, `챗봇을 통해` `질문`할 수 있는 `논문 웹 서비스`입니다. `논문을 요약`해서 `읽어주는 라디오`와 `논문 간 연관도를 시각화`한 논문 `별자리 서비스` 등을 통해 논문을 흥미롭게 접할 수 있는 요소를 더했습니다. 이 README는 서비스의 기능과 설치 방법에 대해 안내합니다.
 
@@ -117,7 +132,7 @@
 ## 🚀 설치 및 실행 방법
 ### 1. 요구사항
 - **Docker**가 설치되어 있어야 합니다 🐳
-- **Python 3.12.3** 버전을 사용합니다 🐍
+- **Python 3.11.10** 버전을 사용합니다 🐍
 - **MySQL** 데이터베이스 연결 정보가 필요합니다 (자세한 정보는 아래 참조)
 
 ### 2. 클론 및 설정
@@ -132,15 +147,15 @@ $ cd S11P21B208
   MYSQL_HOST=j11b208.p.ssafy.io
   MYSQL_PORT=3306
   MYSQL_USER=root
-  MYSQL_PASSWORD=paperdot1!2@nonemoon
+  MYSQL_PASSWORD=INPUT YOUR PASSWORD 
   DATABASE=paperdot
   ```
 
-### 4. Docker 컨테이너 실행
+<!-- ### 4. Docker 컨테이너 실행
 ```bash
 $ docker-compose up -d
 ```
-- 서비스가 Docker 컨테이너로 실행됩니다. 프론트엔드와 백엔드가 모두 구성되어 있습니다.
+- 서비스가 Docker 컨테이너로 실행됩니다. 프론트엔드와 백엔드가 모두 구성되어 있습니다. -->
 
 ## 🛠 기술 스택
 | 분야           | 기술스택       | 담당자                      |
@@ -181,63 +196,63 @@ $ docker-compose up -d
 
 ## 프로젝트 구조
 ```
-feed-me/
-S11P12B104
-├─ .gitignore  📄
-├─ AI  🤖
-│  └─ gpu-server  🖥️
-│     └─ lab-phil  🧪
-│        ├─ 0_codes  💻
-│        ├─ assets  🎨
-│        ├─ configs  ⚙️
-│        ├─ consumer.sh  🔄
-│        ├─ data  📊
-│        ├─ LICENSE-CODE  📜
-│        ├─ model  🧠
-│        │  ├─ anything_control_pipeline.py  📝
-│        │  ├─ assets  🎨
-│        │  ├─ consumer.py  📝
-│        │  ├─ pixel_model.py  📝
-│        │  ├─ segment_anything_model.py  📝
-│        │  └─ utils.py  🛠️
-│        ├─ pyproject.toml  📝
-│        ├─ pytest.ini  🧪
-│        ├─ README.md  📄
-│        ├─ requirements  📋
-│        ├─ scripts  📜
-│        └─ tests  🧪
-├─ Backend-feedme  💻
-│  ├─ feedme  🍽️
-│  │  ├─ .env  🌍
-│  │  ├─ Dockerfile  🐳
-│  │  ├─ gradle  📦
-│  │  ├─ gradlew  ⚙️
-│  │  ├─ gradlew.bat  ⚙️
-│  │  └─ src  📂
-│  │     ├─ main  🚀
-│  │     │  ├─ java  ☕
-│  │     │  │  └─ com  🌐
-│  │     │  │     └─ todoslave  💼
-│  │     │  │        └─ feedme  🍽️
-│  │     │  │           ├─ config  ⚙️
-│  │     │  │           ├─ controller  🎮
-│  │     │  │           ├─ domain  🌱
-│  │     │  │           │  └─ entity  🏛️
-│  │     │  │           ├─ DTO  📦
-│  │     │  │           ├─ repository  🗄️
-│  │     │  │           └─ service  🛠️
-│  │     └─ resources  📂
-│  │     └─ test  🧪
-├─ Front-feedme  🖼️
-│  ├─ .gitignore  📄
-│  ├─ default.conf  ⚙️
-│  ├─ docker-compose.yml  🐳
-│  ├─ Dockerfile  🐳
-│  ├─ package-lock.json  📦
-│  ├─ package.json  📦
-│  ├─ public  🌐
-│  └─ src  📂
-└─ README.md  📄
+PaperDot/
+📂 S11P21B208
+├── 📂 .gitlab
+│   ├── 📂 issue_templates
+│   └── 📂 merge_request_templates
+├── 📂 AI
+│   ├── 📂 app
+│   │   ├── 📂 api
+│   │   ├── 📂 config
+│   │   ├── 📂 embeddings
+│   │   ├── 📂 search
+│   │   ├── 📂 tf_idf
+│   │   └── 📂 vector_search
+│   ├── 📂 app_overview
+│   │   ├── 📂 caches
+│   │   └── 📂 pdf_summary
+│   └── 📂 app_rag
+│       ├── 📂 caches
+│       ├── 📂 datas
+│       └── 📂 models
+├── 📂 Back
+│   └── 📂 paperdot
+│       ├── 📂 bin
+│       │   ├── 📂 main
+│       │   └── 📂 test
+│       ├── 📂 gradle
+│       └── 📂 src
+│           ├── 📂 main
+│           │   ├── 📂 java
+│           │   │   └── 📂 gomgook
+│           │   │       └── 📂 paperdot
+│           │   └── 📂 resources
+│           └── 📂 test
+├── 📂 Front
+│   ├── 📂 public
+│   └── 📂 src
+│       ├── 📂 apis
+│       ├── 📂 assets
+│       │   └── 📂 images
+│       ├── 📂 components
+│       │   ├── 📂 chat
+│       │   ├── 📂 common
+│       │   ├── 📂 main
+│       │   └── 📂 search
+│       ├── 📂 pages
+│       └── 📂 router
+└── 📂 Radio
+    └── 📂 radio
+        ├── 📂 bin
+        │   ├── 📂 main
+        │   └── 📂 test
+        ├── 📂 gradle
+        └── 📂 src
+            ├── 📂 java
+            │   └── 📂 com
+            └── 📂 resources
+
 ```
 
 ### 설명
