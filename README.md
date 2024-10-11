@@ -68,22 +68,22 @@
       <img src="./docs_assets/LCH.jpg" alt="이찬호" height="150" width="150" style="border-radius: 50%;"/>
       <h4>이찬호</h4>
       <p><strong>역할:</strong> 팀장, INFRA</p>
-      <p><strong>연락처:</strong> @navere.com</p>
-      <p><strong>GIT:</strong> <a href="https://sangphilpark.github.io/about/" target="_blank">github.com/찬호</a></p>
+      <p><strong>연락처:</strong> leechanho96@naver.com</p>
+      <p><strong>GIT:</strong> <a href="https://github.com/mpegmafia" target="_blank">github.com/찬호</a></p>
     </td>
     <td style="text-align: center; padding: 10px;">
       <img src="./docs_assets/KSM.jpg" alt="권성민" height="150" width="150" style="border-radius: 50%;"/>
       <h4>권성민</h4>
       <p><strong>역할:</strong> FE / HLS </p>
-      <p><strong>연락처:</strong> @gmail.com</p>
-      <p><strong>GIT:</strong> <a href="https://sangphilpark.github.io/about/" target="_blank">github.com/성민</a></p>
+      <p><strong>연락처:</strong> snna58@chungbuk.ac.kr</p>
+      <p><strong>GIT:</strong> <a href="https://github.com/kwonja" target="_blank">github.com/성민</a></p>
     </td>
     <td style="text-align: center; padding: 10px;">
       <img src="./docs_assets/KMK.jpg" alt="김민경" height="150" width="150" style="border-radius: 50%;"/>
       <h4>김민경</h4>
       <p><strong>역할:</strong> BE</p>
-      <p><strong>연락처:</strong> pagerank990@gmail.com </p>
-      <p><strong>기술 블로그:</strong> <a href="https://sangphilpark.github.io/about/" target="_blank">Git-io</a></p>
+      <p><strong>연락처:</strong> alsrud869@gmail.com </p>
+      <p><strong>기술 블로그:</strong> <a href="https://github.com/formoin" target="_blank">github.com/민경</a></p>
     </td>
   </tr>
   <tr>
@@ -98,14 +98,14 @@
       <img src="./docs_assets/LYJ.jpg" alt="이윤주" height="150" width="150" style="border-radius: 50%;"/>
       <h4>이윤주</h4>
       <p><strong>역할:</strong> FE </p>
-      <p><strong>연락처:</strong> @gmail.com</p>
-      <p><strong>GIT:</strong> <a href="https://sangphilpark.github.io/about/" target="_blank">github.com/현지</a></p>
+      <p><strong>연락처:</strong> yunj333@gmail.com</p>
+      <p><strong>GIT:</strong> <a href="https://github.com/yujachaa" target="_blank">github.com/윤주</a></p>
     </td>
     <td style="text-align: center; padding: 10px;">
       <img src="./docs_assets/JHS.jpg" alt="장현수" height="150" width="150" style="border-radius: 50%;"/>
       <h4>장현수</h4>
       <p><strong>역할:</strong> FE</p>
-      <p><strong>연락처:</strong> wkdalsrud113@naver.com</p>
+      <p><strong>연락처:</strong> jhsssafy@gmail.com</p>
       <p><strong>GIT:</strong> <a href="https://github.com/baek-yak" target="_blank">github.com/현수</a></p>
     </td>
   </tr>
