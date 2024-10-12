@@ -1,0 +1,4 @@
+
+# 모든 파일을 추적하지만, .gitkeep 파일은 제외
+* filter=lfs diff=lfs merge=lfs -text
+*.gitkeep !filter !diff !merge
