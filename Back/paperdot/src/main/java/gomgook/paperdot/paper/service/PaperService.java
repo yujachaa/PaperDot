@@ -305,8 +305,14 @@ public class PaperService {
 //        redisTemplate.expire(key, 5000000, TimeUnit.DAYS);
     }
 
+<<<<<<< HEAD
     // client 응답 DTO 세팅 (파이썬 다큐먼트 + sql 북마크 정보 세팅)
     private static PaperSearchResponse  setPaperSearchResponse(ElasticSearchResponse python, PaperEntity sql) {
+=======
+    // client 응답 DTO 세팅
+
+    private static PaperSearchResponse getPaperSearchResponse(List<Paper> sqlPaperList, int i, List<PythonPaper> pythonSearchList) {
+>>>>>>> 5b829c0a175ea459b214ddb527731190cd7b2e86
         PaperSearchResponse response = new PaperSearchResponse();
 
         response.setId(python.getId());
