@@ -25,7 +25,7 @@
 }
 
 .title {
-  width: 90%;
+  width: 87%;
 }
 
 .content {
@@ -41,9 +41,30 @@
 }
 
 .bookmark {
+  width: 10%;
   @media (max-width: 768px) {
     position: absolute;
     top: 1.25rem;
     right: 1.25rem;
+  }
+}
+
+.modal {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #2e2e2e;
+  color: #fafafa;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+
+  @media (max-width: 768px) {
+    white-space: pre-line; // 줄바꿈을 허용하도록 설정
+    font-size: 0.875rem;
+    width: 55%;
+    text-align: center;
   }
 }

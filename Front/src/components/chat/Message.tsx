@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import useTheme from '../../zustand/theme';
 import style from './Message.module.scss';
 import { GroupMessage } from '../../interface/chat';
+import { getMemberIdFromToken } from '../../utills/tokenParser';
 
 type MessageProps = {
   className?: string;
@@ -10,17 +11,17 @@ type MessageProps = {
 };
 
 const Message = ({ className, openModal, data }: MessageProps) => {
-  const { Writernickname, message } = data;
+  const { nickname, message, senderId } = data;
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const boxRef = useRef<HTMLDivElement>(null); // .box 요소의 참조
 
   const handleClick = () => {
+    if (senderId === -1 || senderId === getMemberIdFromToken()) {
+      return;
+    }
     if (boxRef.current) {
-      // offsetTop과 offsetLeft는 부모 요소에 대한 상대적 위치를 반환
       const top = boxRef.current.offsetTop;
       const left = boxRef.current.offsetLeft;
-
-      // 결과를 모달 위치에 넘김
       openModal(top, left, data);
     }
   };
@@ -31,12 +32,18 @@ const Message = ({ className, openModal, data }: MessageProps) => {
       ref={boxRef}
     >
       <div
-        className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''} cursor-pointer`}
+        className={`${style.nickname} ${isDarkMode ? `${style.dark}` : ''} ${senderId === -1 || senderId === getMemberIdFromToken() ? 'cursor-no-drop' : 'cursor-pointer'}
+        
+        `}
         onClick={handleClick}
       >
-        {Writernickname}
+        <span
+          className={`${senderId === -1 && ` ${style.chatbot} ${isDarkMode && style.chatdark}`}`}
+        >
+          {nickname}
+        </span>
       </div>
-      <div className={`${style.text}`}>{message}</div>
+      <div className={`${style.text} ${senderId === -1 && style.typing_effect} `}>{message}</div>
     </div>
   );
 };

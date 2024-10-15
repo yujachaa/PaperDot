@@ -11,7 +11,7 @@
   height: 60px;
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 700;
   padding-left: 25px;
@@ -26,6 +26,7 @@
   scrollbar-color: #626262 transparent;
   scrollbar-width: auto;
   position: relative;
+  word-break: break-all;
 }
 
 @media (max-width: 768px) {
@@ -40,4 +41,35 @@
   width: 100%;
   border-top: 1px solid #c4c4c4;
   height: 70px;
+  position: relative;
+}
+
+.command {
+  position: absolute;
+  bottom: 4rem;
+  left: 1rem;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5px;
+}
+
+.question {
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  bottom: 70px;
+  right: 20px;
+  background-color: #a7c7e7;
+  border-radius: 5px;
+}
+.loading {
+  width: 1rem;
+  height: 1rem;
 }

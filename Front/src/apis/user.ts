@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { api, Authapi } from './core';
+import { api, Authapi, searchApi } from './core';
 import { getMemberIdFromToken } from '../utills/tokenParser';
 
 // 회원가입
@@ -165,6 +165,24 @@ export async function updateUserProfile(
       degree,
     });
 
+    if (response?.status === 200) {
+      try {
+        await searchApi.post('/papers_statistics/_update_by_query', {
+          query: {
+            term: {
+              user_id: memberId,
+            },
+          },
+          script: {
+            source: `ctx._source.degree = '${degree}'`,
+            lang: 'painless',
+          },
+        });
+        console.log('추가 업데이트 성공');
+      } catch (error) {
+        console.log(error);
+      }
+    }
     return response;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {

@@ -4,8 +4,8 @@ import useTheme from '../../zustand/theme';
 import { Rank } from '../../interface/paper';
 import { getBest } from '../../apis/paper';
 import { useNavigate } from 'react-router-dom';
-
-type Category = '인문/사회' | '공학' | '자연과학' | '의약학' | '예체능';
+import { Category } from '../../interface/radio';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const categories: Category[] = ['인문/사회', '공학', '자연과학', '의약학', '예체능'];
 
@@ -18,147 +18,10 @@ const categoryMap: Record<Category, number> = {
   예체능: 5,
 };
 
-// const categoryData: Record<Category, Rank[]> = {
-//   '인문/사회': [
-//     {
-//       paperId: 12,
-//       title: '인공 지능에서 인공 감정으로',
-//       rank: 1,
-//     },
-//     {
-//       paperId: 13,
-//       title: '인공 지능에서 인공 감정으로1',
-//       rank: 2,
-//     },
-//     {
-//       paperId: 14,
-//       title: '인공 지능에서 인공 감정으로2',
-//       rank: 3,
-//     },
-//     {
-//       paperId: 15,
-//       title: '인공 지능에서 인공 감정으로3',
-//       rank: 4,
-//     },
-//     {
-//       paperId: 16,
-//       title: '인공 지능에서 인공 감정으로4',
-//       rank: 5,
-//     },
-//   ],
-//   공학: [
-//     {
-//       paperId: 12,
-//       title: '인공 지능에서 인공 감정으로',
-//       rank: 1,
-//     },
-//     {
-//       paperId: 13,
-//       title: '인공 지능에서 인공 감정으로1',
-//       rank: 2,
-//     },
-//     {
-//       paperId: 14,
-//       title: '인공 지능에서 인공 감정으로2',
-//       rank: 3,
-//     },
-//     {
-//       paperId: 15,
-//       title: '인공 지능에서 인공 감정으로3',
-//       rank: 4,
-//     },
-//     {
-//       paperId: 16,
-//       title: '인공 지능에서 인공 감정으로4',
-//       rank: 5,
-//     },
-//   ],
-//   자연과학: [
-//     {
-//       paperId: 12,
-//       title: '인공 지능에서 인공 감정으로',
-//       rank: 1,
-//     },
-//     {
-//       paperId: 13,
-//       title: '인공 지능에서 인공 감정으로1',
-//       rank: 2,
-//     },
-//     {
-//       paperId: 14,
-//       title: '인공 지능에서 인공 감정으로2',
-//       rank: 3,
-//     },
-//     {
-//       paperId: 15,
-//       title: '인공 지능에서 인공 감정으로3',
-//       rank: 4,
-//     },
-//     {
-//       paperId: 16,
-//       title: '인공 지능에서 인공 감정으로4',
-//       rank: 5,
-//     },
-//   ],
-//   의약학: [
-//     {
-//       paperId: 12,
-//       title: '인공 지능에서 인공 감정으로',
-//       rank: 1,
-//     },
-//     {
-//       paperId: 13,
-//       title: '인공 지능에서 인공 감정으로1',
-//       rank: 2,
-//     },
-//     {
-//       paperId: 14,
-//       title: '인공 지능에서 인공 감정으로2',
-//       rank: 3,
-//     },
-//     {
-//       paperId: 15,
-//       title: '인공 지능에서 인공 감정으로3',
-//       rank: 4,
-//     },
-//     {
-//       paperId: 16,
-//       title: '인공 지능에서 인공 감정으로4',
-//       rank: 5,
-//     },
-//   ],
-//   예체능: [
-//     {
-//       paperId: 12,
-//       title: '인공 지능에서 인공 감정으로',
-//       rank: 1,
-//     },
-//     {
-//       paperId: 13,
-//       title: '인공 지능에서 인공 감정으로1',
-//       rank: 2,
-//     },
-//     {
-//       paperId: 14,
-//       title: '인공 지능에서 인공 감정으로2',
-//       rank: 3,
-//     },
-//     {
-//       paperId: 15,
-//       title: '인공 지능에서 인공 감정으로3',
-//       rank: 4,
-//     },
-//     {
-//       paperId: 16,
-//       title: '인공 지능에서 인공 감정으로4',
-//       rank: 5,
-//     },
-//   ],
-// };
-
 const BestPaper: React.FC = () => {
   const isDarkMode = useTheme((state) => state.isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState<Category>('인문/사회');
+  const [previousCategory, setPreviousCategory] = useState<Category | null>(null);
   const [categoryData, setCategoryData] = useState<Record<Category, Rank[]>>(
     {} as Record<Category, Rank[]>,
   );
@@ -192,9 +55,12 @@ const BestPaper: React.FC = () => {
 
   // 카테고리 클릭 시 데이터가 없으면 fetch
   const handleCategoryClick = (category: Category) => {
-    setSelectedCategory(category);
-    if (!categoryData[category]) {
-      fetchBestData(category);
+    if (category !== selectedCategory) {
+      setPreviousCategory(selectedCategory);
+      setSelectedCategory(category);
+      if (!categoryData[category]) {
+        fetchBestData(category);
+      }
     }
   };
 
@@ -204,10 +70,23 @@ const BestPaper: React.FC = () => {
     navigate(`/paper/${id}`);
   };
 
+  // 애니메이션 방향 결정
+  const getDirection = () => {
+    const currentIndex = categories.indexOf(selectedCategory);
+    const previousIndex = previousCategory ? categories.indexOf(previousCategory) : 0;
+    return currentIndex > previousIndex ? 100 : -100; // 오른쪽에서 왼쪽, 왼쪽에서 오른쪽을 결정
+  };
+
+  // 애니메이션 variants
+  const variants = {
+    hidden: (direction: number) => ({ opacity: 0, x: direction }), // 방향에 따른 시작 위치
+    visible: { opacity: 1, x: 0 }, // 중앙
+    exit: (direction: number) => ({ opacity: 0, x: -direction }), // 방향에 따른 종료 위치
+  };
+
   return (
     <div className={styles.bestPaper}>
       <div className="text-xl font-bold ml-3">Best 논문</div>
-      <p className="text-base ml-3">최근 가장 많이 찾은 논문입니다.</p>
       <div className="w-full overflow-x-auto">
         <div className="flex justify-between mt-4 w-full px-2 text-lg mobile:min-w-[24rem] mobile:text-base mobile:gap-1">
           {categories.map((category) => (
@@ -227,19 +106,33 @@ const BestPaper: React.FC = () => {
       {loading ? (
         <p>Loading...</p> // 로딩 중일 때 표시
       ) : (
-        <ul className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}>
-          {categoryData[selectedCategory]?.map((paper, index) => (
-            <li
-              key={paper.paperId}
-              className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base"
-              onClick={() => {
-                goDetail(paper.paperId);
-              }}
-            >
-              <span className="mr-1">0{index + 1}</span> {paper.title}
-            </li>
-          ))}
-        </ul>
+        <AnimatePresence
+          mode="wait"
+          custom={getDirection()}
+        >
+          <motion.ul
+            key={selectedCategory}
+            className={`${styles.bestList} flex flex-col items-start w-full gap-3 ml-1 mr-1`}
+            custom={getDirection()}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={variants}
+            transition={{ duration: 0.3 }}
+          >
+            {categoryData[selectedCategory]?.map((paper, index) => (
+              <li
+                key={paper.paperId}
+                className="text-lg ml-3 cursor-pointer overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base hover:bg-light-toggle-background dark:hover:bg-dark-toggle-background"
+                onClick={() => {
+                  goDetail(paper.paperId);
+                }}
+              >
+                <span className="mr-1">0{index + 1}</span> {paper.title}
+              </li>
+            ))}
+          </motion.ul>
+        </AnimatePresence>
       )}
     </div>
   );

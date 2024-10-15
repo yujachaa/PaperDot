@@ -8,13 +8,27 @@
   margin-bottom: 15px;
 }
 .nickname {
-  width: 15%;
+  width: 30%;
   color: #71717a;
 }
 .text {
-  width: 85%;
+  margin-left: 1rem;
+  width: 65%;
+  word-break: break-all;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .dark {
   color: #fafafa;
+}
+
+.chatbot {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #a7c7e7;
+}
+
+.chatdark {
+  background-color: #7295b0;
 }

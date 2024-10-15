@@ -4,15 +4,10 @@ import Slider from 'react-slick';
 import { useNavigate } from 'react-router-dom';
 import Tag from './Tag';
 import useTheme from '../../zustand/theme';
+import { RelationData } from '../../interface/paper';
 
 interface RelationPaperProps {
-  relation: {
-    id: number;
-    title: string;
-    author: string[];
-    year: number;
-    keyword: string[];
-  }[];
+  relation: RelationData[];
 }
 
 const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
@@ -120,11 +115,13 @@ const Relation: React.FC<RelationPaperProps> = ({ relation }) => {
                 <p className="font-bold text-lg overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%] mobile:text-base">
                   {item.title}
                 </p>
-                <p className="mobile:text-sm">{item.author.join(', ')}</p>
+                <p className="mobile:text-sm overflow-hidden whitespace-nowrap text-ellipsis max-w-[95%]">
+                  {item.authors.join(', ')}
+                </p>
                 <p className="mobile:text-sm">{item.year}</p>
                 <div className={styles.tag}>
-                  {item.keyword
-                    ? item.keyword.map((item) => (
+                  {item.keywords
+                    ? item.keywords.slice(0, 3).map((item) => (
                         <Tag
                           key={item}
                           keyword={item}
