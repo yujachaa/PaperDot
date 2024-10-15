@@ -1,0 +1,16 @@
+.command {
+  width: 8rem;
+  height: 2rem;
+  background-color: #a7c7e7;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #78a4d1;
+  }
+}
+
+.focus {
+  background-color: #78a4d1;
+}

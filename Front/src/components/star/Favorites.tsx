@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import styles from './Favorites.module.scss';
 import BookMark from '../common/BookMark';
-import { getBookmarks, toggleBookmark } from '../../apis/bookmark';
+import { getBookmarks, trueToggleBookmark } from '../../apis/bookmark';
 
 const Favorites = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const [showFullBox, setShowFullBox] = useState<boolean>(false);
 
-  // 노드 데이터(제목, 저자, 연도)
+  // 노드 데이터(제목, 저자, 연도, 그룹)
   const [nodesData, setNodesData] = useState<any[]>([]);
   // 링크 데이터
   const [linksData, setLinksData] = useState<any[]>([]);
@@ -31,6 +35,18 @@ const Favorites = () => {
 
     fetchData();
   }, []);
+
+  // showFullBox가 true로 변경될 때 infoBox를 닫기 위해 selectedNode를 null로 설정
+  useEffect(() => {
+    if (showFullBox) {
+      setSelectedNode(null); // infoBox를 닫음
+    }
+  }, [showFullBox]);
+
+  const goDetail = (id: number) => {
+    console.log(`논문 ID: ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/paper/${id}`);
+  };
 
   useEffect(() => {
     const svgElement = svgRef.current as SVGSVGElement | null;
@@ -62,7 +78,7 @@ const Favorites = () => {
     // 줌 핸들러 svg에 적용
     svg.call(zoomHandler);
 
-    // 노드 색상을 그룹별로 설정
+    // 그룹별 색상을 설정하는 컬러 스케일 (d3.schemeCategory10 사용)
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     // 시뮬레이션 생성
@@ -78,7 +94,7 @@ const Favorites = () => {
           .distance(150),
       )
       // 노드 간 반발력 설정
-      .force('charge', d3.forceManyBody().strength(-400))
+      .force('charge', d3.forceManyBody().strength(-25))
       // 시뮬레이션 중심 위치 지정
       .force('center', d3.forceCenter(width / 2, height / 2));
 
@@ -88,7 +104,7 @@ const Favorites = () => {
       // 링크 색상
       .attr('stroke', '#999')
       // 링크 투명도
-      .attr('stroke-opacity', 0.5)
+      .attr('stroke-opacity', 1)
       .selectAll('line')
       // 링크 데이터 바인딩
       .data(linksData)
@@ -100,8 +116,6 @@ const Favorites = () => {
     // 노드 그림
     const node = svgGroup
       .append('g')
-      // 노드 테두리 색상
-      .attr('stroke', '#fff')
       // 노드 테두리 두께
       .selectAll('polygon')
       // 노드 데이터 바인딩
@@ -110,8 +124,9 @@ const Favorites = () => {
       .append('polygon')
       // 별 좌표 생성
       .attr('points', createStarPoints(0, 0, 15, 7, 5))
-      // 그룹에 따른 색상 지정
-      .attr('fill', (d: any) => color(d.group))
+      // 그룹에 따른 색상 지정 (노랑 형광색 강조, 그 외 그룹은 색상)
+      .attr('fill', (d: any) => (d === selectedNode ? '#FFFF00' : color(d.group))) // 그룹에 따라 색상 설정
+      .attr('stroke-width', (d: any) => (d === selectedNode ? 4 : 1)) // 클릭된 노드의 테두리를 굵게
       // 드래그 핸들러 추가
       .call(
         d3
@@ -123,23 +138,7 @@ const Favorites = () => {
       // 노드 클릭시 처리할 함수
       .on('click', (_: any, d: any) => handleClick(d, linksData));
 
-    // 노드에 제목 추가
-    const text = svgGroup
-      .append('g')
-      .selectAll('text')
-      // 노드 데이터 바인딩
-      .data(nodesData)
-      .enter()
-      .append('text')
-      .attr('x', 8)
-      .attr('y', 3)
-      // 텍스트는 노드 제목
-      .text((d: any) => d.title)
-      .style('font-size', '12px')
-      // 텍스트 색상
-      .style('fill', '#fff');
-
-    // 시뮬레이션 각 단계마다 위치 업뎃
+    // 시뮬레이션 각 단계마다 위치 업데이트
     simulation.on('tick', () => {
       // 링크 위치 설정
       link
@@ -149,8 +148,6 @@ const Favorites = () => {
         .attr('y2', (d: any) => d.target.y);
       // 노드 위치 설정
       node.attr('transform', (d: any) => `translate(${d.x}, ${d.y})`);
-      // 텍스트 위치 설정
-      text.attr('x', (d: any) => d.x + 10).attr('y', (d: any) => d.y + 5);
     });
 
     // 드래그 시작 시 호출 함수
@@ -179,6 +176,7 @@ const Favorites = () => {
     function handleClick(d: any, links: any) {
       // 선택된 노드 상태 설정
       setSelectedNode(d);
+      setShowFullBox(false);
       const relatedNodes = links
         // 클릭된 노드와 연결된 링크 찾기
         .filter((link: any) => link.source.id === d.id || link.target.id === d.id)
@@ -187,13 +185,18 @@ const Favorites = () => {
       // 연결된 노드들을 상태에 저장
       setLinkedNodes([d, ...relatedNodes]);
     }
+
     // nodesData와 linksData가 변경될 때마다 useEffect 실행
-  }, [nodesData, linksData]);
+  }, [nodesData, linksData, selectedNode]);
 
   // 북마크 토글 함수
   const handleBookmarkToggle = async (paperId: number) => {
     try {
-      await toggleBookmark(paperId);
+      setShowModal(true);
+      await trueToggleBookmark(paperId);
+      setTimeout(() => {
+        setShowModal(false);
+      }, 1500);
       console.log(`Toggled bookmark for paperId: ${paperId}`);
       // 북마크가 성공적으로 토글되면 UI에서 해당 노드를 삭제
       removeNode(paperId);
@@ -216,8 +219,49 @@ const Favorites = () => {
     setSelectedNode(null);
   };
 
+  const Modal = () => <div className={styles.modal}>북마크 해제되었습니다.✅</div>;
+
+  const renderInfoFullBox = () =>
+    showFullBox && (
+      <div className={styles.infoFullBox}>
+        <button
+          className={styles.closeFullBoxButton}
+          onClick={() => setShowFullBox(false)}
+        >
+          ✕
+        </button>
+        <ul className={styles.nodeList}>
+          {nodesData.map((node, index) => (
+            <li key={index}>
+              <p
+                className={styles.nodeTitle}
+                onClick={() => goDetail(node.id)}
+              >
+                {node.title}
+              </p>
+              <p>
+                <span>저자</span> {node.author}
+              </p>
+              <p>
+                <span>발행 연도</span> {node.year}
+              </p>
+              <button className={styles.bookmarkButton}>
+                <BookMark
+                  paperId={node.id}
+                  isBookmarked={true}
+                  clickBookmark={() => handleBookmarkToggle(node.id)}
+                  isLoading={false}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+
   return (
     <div className={styles.favorites}>
+      {renderInfoFullBox()}
       <svg
         ref={svgRef}
         className={styles.networkChart}
@@ -234,20 +278,24 @@ const Favorites = () => {
           <ul className={styles.nodeList}>
             {linkedNodes.map((node, index) => (
               <li key={index}>
-                <p className={styles.nodeTitle}>{node.title}</p>
+                <p
+                  className={styles.nodeTitle}
+                  onClick={() => goDetail(node.id)}
+                >
+                  {node.title}
+                </p>
                 <p>
                   <span>저자</span> {node.author}
                 </p>
                 <p>
                   <span>발행 연도</span> {node.year}
                 </p>
-                <button
-                  className={styles.bookmarkButton}
-                  onClick={() => handleBookmarkToggle(node.id)}
-                >
+                <button className={styles.bookmarkButton}>
                   <BookMark
                     paperId={node.id}
-                    bookmark={true}
+                    isBookmarked={true}
+                    clickBookmark={() => handleBookmarkToggle(node.id)}
+                    isLoading={false}
                   />
                 </button>
               </li>
@@ -255,6 +303,13 @@ const Favorites = () => {
           </ul>
         </div>
       )}
+      {showModal && <Modal />}
+      <button
+        className={styles.fullListButton}
+        onClick={() => setShowFullBox(true)}
+      >
+        전체 목록
+      </button>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import {
   isValidBirthYear,
 } from '../utills/userValidation';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import useTheme from '../zustand/theme';
 
 const Signup: React.FC = () => {
   const [userID, setUserID] = useState('');
@@ -23,13 +24,18 @@ const Signup: React.FC = () => {
   const [birthyear, setBirthyear] = useState('');
   const [birthyearError, setBirthyearError] = useState('');
   const [gender, setGender] = useState('');
-  const [degree, setDegree] = useState('UNDERUNIV');
+  const [degree, setDegree] = useState('');
   const [isUserIdAvailable, setIsUserIdAvailable] = useState<boolean | null>(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState<boolean | null>(null);
   const [isBothChecked, setIsBothChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordCheck, setShowPasswordCheck] = useState(false);
   const navigate = useNavigate();
+  const { setDarkFalse } = useTheme();
+
+  useEffect(() => {
+    setDarkFalse(); // 화이트 모드로 강제 설정
+  }, [setDarkFalse]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -110,7 +116,9 @@ const Signup: React.FC = () => {
       isNicknameAvailable === true &&
       !passwordError &&
       !birthyearError &&
-      password === passwordCheck
+      password === passwordCheck &&
+      gender !== '' &&
+      degree !== ''
     ) {
       setIsBothChecked(true);
     } else {
@@ -131,13 +139,26 @@ const Signup: React.FC = () => {
     checkBothConditions();
   };
 
+  // 비밀번호 확인 검증
+  const handlePasswordCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPasswordCheck = e.target.value;
+    setPasswordCheck(newPasswordCheck);
+
+    if (newPasswordCheck !== password) {
+      setPasswordError('비밀번호가 일치하지 않습니다.');
+    } else {
+      setPasswordError('');
+    }
+    checkBothConditions();
+  };
+
   // 생년 검증
   const handleBirthyearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newBirthyear = e.target.value;
     setBirthyear(newBirthyear);
 
     if (!isValidBirthYear(newBirthyear)) {
-      setBirthyearError('생년은 숫자 4자리여야 합니다.');
+      setBirthyearError('1900~2024년 사이 값만 입력 가능합니다.');
     } else {
       setBirthyearError('');
     }
@@ -146,7 +167,15 @@ const Signup: React.FC = () => {
 
   useEffect(() => {
     checkBothConditions();
-  }, [isUserIdAvailable, isNicknameAvailable, password, passwordCheck, birthyear, birthyearError]);
+  }, [
+    isUserIdAvailable,
+    isNicknameAvailable,
+    password,
+    passwordCheck,
+    birthyear,
+    birthyearError,
+    handleBirthyearChange,
+  ]);
 
   return (
     <div className={styles.signupContainer}>
@@ -170,6 +199,7 @@ const Signup: React.FC = () => {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
+                maxLength={100}
                 placeholder="ID"
                 value={userID}
                 onChange={(e) => {
@@ -193,6 +223,7 @@ const Signup: React.FC = () => {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
+                maxLength={100}
                 placeholder="Nickname"
                 value={nickname}
                 onChange={(e) => {
@@ -218,6 +249,7 @@ const Signup: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Password"
                 value={password}
+                maxLength={100}
                 onChange={handlePasswordChange}
               />
               <span
@@ -237,7 +269,8 @@ const Signup: React.FC = () => {
                 type={showPasswordCheck ? 'text' : 'password'}
                 placeholder="Password Check"
                 value={passwordCheck}
-                onChange={(e) => setPasswordCheck(e.target.value)}
+                maxLength={100}
+                onChange={handlePasswordCheckChange}
               />
               <span
                 className={styles.passwordIcon}
@@ -246,6 +279,9 @@ const Signup: React.FC = () => {
                 {showPasswordCheck ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+            {passwordCheck !== password && (
+              <p className={styles.errorText}>비밀번호가 일치하지 않습니다.</p>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -253,6 +289,7 @@ const Signup: React.FC = () => {
             <input
               type="text"
               placeholder="YYYY"
+              maxLength={100}
               value={birthyear}
               onChange={handleBirthyearChange}
             />
@@ -291,6 +328,7 @@ const Signup: React.FC = () => {
               value={degree}
               onChange={(e) => setDegree(e.target.value)}
             >
+              <option value="NULL">선택해주세요</option>
               <option value="UNDERUNIV">중고등학생</option>
               <option value="UNIV">대학생</option>
               <option value="BACHELOR">석사</option>
